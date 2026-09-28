@@ -1,0 +1,3241 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Monitoring Tapak Suci — Cabang Cerme</title>
+<style>
+/* ================= DASAR / TOKEN ================= */
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --navy:#0b1230;--indigo:#1e1b4b;--indigo2:#3730a3;--violet:#4f46e5;
+  --g900:#0f3d21;--g800:#14532d;--g700:#166534;--g600:#1a7f3d;--g500:#22a352;--g400:#4ade80;
+  --g050:#eef7f1;--g100:#dff0e5;
+  --y400:#facc15;--y500:#eab308;--y050:#fef9e3;
+  --ink:#0f172a;--muted:#64748b;--line:#e6e8f2;--tile:#f5f6fb;
+  --danger:#dc2626;--warn:#d97706;--info:#4f46e5;
+  --grad:linear-gradient(140deg,#0b1230 0%,#1e1b4b 45%,#3730a3 100%);
+  --grad-brand:linear-gradient(135deg,var(--g600),var(--g800));
+  --sh-lg:0 40px 80px -44px rgba(2,6,23,.9);
+  --sh-sm:0 14px 30px -20px rgba(2,6,23,.55);
+}
+html,body{min-height:100%}
+body{
+  font-family:"Segoe UI",system-ui,-apple-system,Roboto,"Helvetica Neue",Arial,sans-serif;
+  background:var(--grad);background-attachment:fixed;color:var(--ink);
+  line-height:1.55;font-size:15px;-webkit-font-smoothing:antialiased;
+}
+h1,h2,h3,h4,h5{line-height:1.25;font-weight:800;letter-spacing:-.2px}
+a{color:var(--g700)}
+button,input,select,textarea{font:inherit;color:inherit}
+.hidden{display:none !important}
+.muted{color:var(--muted)}
+.small{font-size:13px}
+.center{text-align:center}
+
+/* ================= TOMBOL ================= */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:1px solid transparent;
+  background:#fff;color:var(--ink);padding:11px 17px;border-radius:14px;font-weight:700;cursor:pointer;
+  transition:.16s;text-decoration:none;white-space:nowrap;letter-spacing:-.1px}
+.btn:hover{transform:translateY(-1px)}
+.btn:active{transform:translateY(0)}
+.btn.primary{background:var(--grad-brand);color:#fff;box-shadow:0 14px 26px -16px rgba(20,83,45,.9)}
+.btn.primary:hover{background:linear-gradient(135deg,var(--g700),var(--g900))}
+.btn.accent{background:var(--y400);color:#3b2f00;border-color:var(--y500)}
+.btn.ghost{background:#fff;border-color:var(--line);color:var(--ink)}
+.btn.ghost:hover{border-color:var(--g500);color:var(--g700)}
+.btn.danger{background:#fff;border-color:#f3c2c2;color:var(--danger)}
+.btn.danger:hover{background:#fdf0f0}
+.btn.glass{background:rgba(255,255,255,.12);color:#fff;border-color:rgba(255,255,255,.22)}
+.btn.glass:hover{background:rgba(255,255,255,.2);color:#fff}
+.btn.sm{padding:7px 12px;font-size:13px;border-radius:11px}
+.btn.block{width:100%}
+.btn[disabled]{opacity:.55;cursor:not-allowed;transform:none}
+.icon-btn{border:1px solid var(--line);background:#fff;width:38px;height:38px;border-radius:50%;cursor:pointer;
+  display:inline-flex;align-items:center;justify-content:center;font-size:17px;line-height:1}
+.icon-btn:hover{border-color:var(--g500);color:var(--g700)}
+
+/* ================= SURFACE / KARTU ================= */
+.surface{background:#fff;border-radius:28px;padding:26px;box-shadow:var(--sh-lg)}
+.surface > * + *{margin-top:16px}
+.card{background:var(--tile);border:1px solid #eceef6;border-radius:22px;padding:20px}
+.card.wide{background:#fff}
+.card-head{display:flex;flex-wrap:wrap;gap:12px;align-items:flex-start;justify-content:space-between;margin-bottom:16px}
+.card-head h3{font-size:16.5px}
+.card-head p{color:var(--muted);font-size:13.5px;margin-top:3px;font-weight:400}
+.grid{display:grid;gap:14px}
+.g2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.g3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.g4{grid-template-columns:repeat(4,minmax(0,1fr))}
+@media(max-width:900px){.g3,.g4{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:560px){.g2,.g3{grid-template-columns:1fr}.g4{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+/* Angka gaya finance */
+.stat{background:#fff;border:1px solid var(--line);border-radius:20px;padding:16px 17px;
+  box-shadow:0 10px 24px -22px rgba(2,6,23,.6)}
+.stat .lbl{font-size:11.5px;color:var(--muted);font-weight:800;text-transform:uppercase;letter-spacing:.7px}
+.stat .val{font-size:31px;font-weight:800;color:var(--ink);letter-spacing:-1.4px;line-height:1.1;margin-top:5px}
+.stat .sub{font-size:12.5px;color:var(--muted);margin-top:2px}
+.stat.stat-donut{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px;text-align:center}
+.stat.stat-donut .lbl{margin-top:0}
+
+/* ================= HERO (gradient) ================= */
+.hero{background:var(--grad);color:#fff;border-radius:26px;padding:22px;position:relative;overflow:hidden;
+  display:flex;flex-wrap:wrap;gap:20px;align-items:center;justify-content:space-between;box-shadow:var(--sh-sm)}
+.hero::after{content:"";position:absolute;width:330px;height:330px;right:-110px;top:-150px;border-radius:50%;
+  background:radial-gradient(circle,rgba(74,222,128,.32),transparent 66%)}
+.hero::before{content:"";position:absolute;width:260px;height:260px;left:-90px;bottom:-170px;border-radius:50%;
+  background:radial-gradient(circle,rgba(250,204,21,.2),transparent 66%)}
+.hero > *{position:relative;z-index:1}
+.hero .h-lbl{font-size:11.5px;text-transform:uppercase;letter-spacing:1.1px;font-weight:800;opacity:.72}
+.hero .h-big{font-size:44px;font-weight:800;letter-spacing:-2.2px;line-height:1.04;margin-top:5px}
+.hero .h-sub{font-size:13.5px;opacity:.82;margin-top:6px;font-weight:500}
+.hero .h-meta{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.hero .h-chip{background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.2);color:#fff;
+  border-radius:999px;padding:4px 12px;font-size:12.5px;font-weight:700}
+.hero-id{display:flex;gap:16px;align-items:center;min-width:0}
+.hero-id h3{font-size:21px;letter-spacing:-.5px}
+.hero-id .sb{font-size:13.5px;opacity:.8;margin-top:2px}
+@media(max-width:640px){.hero{gap:16px}.hero .donut{margin-left:auto}}
+
+/* ================= QUICK ACTIONS ================= */
+.qa-row{display:flex;gap:18px;flex-wrap:wrap;align-items:flex-start}
+.qa{background:none;border:none;display:flex;flex-direction:column;align-items:center;gap:8px;cursor:pointer;padding:0;width:78px}
+.qa-ico{width:56px;height:56px;border-radius:50%;display:grid;place-items:center;font-size:22px;line-height:1;
+  background:#fff;border:1px solid var(--line);box-shadow:var(--sh-sm);transition:.16s}
+.qa:hover .qa-ico{transform:translateY(-4px)}
+.qa:active .qa-ico{transform:translateY(-1px)}
+.qa-ico.green{background:var(--grad-brand);color:#fff;border-color:transparent;
+  box-shadow:0 16px 26px -14px rgba(20,83,45,.85)}
+.qa-ico.indigo{background:#eef0ff;color:var(--violet);border-color:#dfe2ff}
+.qa-ico.amber{background:#fffbeb;color:#b45309;border-color:#fde68a}
+.qa-ico.red{background:#fef2f2;color:var(--danger);border-color:#fde2e2}
+.qa-lbl{font-size:11.5px;font-weight:800;color:var(--muted);text-align:center;line-height:1.25;letter-spacing:-.1px}
+
+/* ================= DONUT ================= */
+.donut{position:relative;width:var(--sz,120px);height:var(--sz,120px);flex:0 0 auto}
+.donut svg{display:block}
+.donut .dc{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
+.donut .dc b{font-size:calc(var(--sz,120px) * .27);font-weight:800;letter-spacing:-1.6px;line-height:1}
+.donut .dc span{font-size:11px;font-weight:700;opacity:.72;margin-top:3px;letter-spacing:.2px}
+
+/* ================= FORM ================= */
+.field{margin-bottom:14px}
+.field label{display:block;font-size:13.5px;font-weight:700;margin-bottom:6px}
+.req{color:var(--danger)}
+input[type=text],input[type=password],input[type=date],input[type=number],input[type=search],select,textarea{
+  width:100%;padding:11px 13px;border:1.5px solid var(--line);border-radius:13px;background:#fff;outline:none;transition:.15s}
+input:focus,select:focus,textarea:focus{border-color:var(--g500);box-shadow:0 0 0 3px rgba(34,163,82,.15)}
+textarea{resize:vertical;min-height:78px}
+.hint{display:block;color:var(--muted);font-size:12.5px;margin-top:5px}
+.f-sec{grid-column:1/-1;font-size:11.5px;font-weight:800;letter-spacing:.8px;text-transform:uppercase;
+  color:var(--g700);background:var(--g050);border:1px solid var(--g100);padding:8px 12px;border-radius:10px;margin:6px 0 2px}
+.searchbar{position:relative;max-width:320px;width:100%}
+.searchbar input{padding-left:36px;border-radius:999px;background:#fff}
+.searchbar::before{content:"🔍";position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:14px;opacity:.7;z-index:1}
+
+/* ================= BADGE / CHIP ================= */
+.badge{display:inline-block;padding:3px 11px;border-radius:999px;font-size:12.5px;font-weight:800;white-space:nowrap}
+.badge.hadir{background:#dcfce7;color:#15803d}
+.badge.izin{background:#fef3c7;color:#b45309}
+.badge.alfa{background:#fee2e2;color:#b91c1c}
+.badge.role{background:rgba(250,204,21,.16);color:#fde68a;border:1px solid rgba(250,204,21,.4)}
+.badge.skor-f{background:#dbeafe;color:#1d4ed8;border:1px solid #bfdbfe}
+.badge.skor-t{background:#ffedd5;color:#c2410c;border:1px solid #fed7aa}
+.chip{display:inline-block;background:var(--g050);border:1px solid var(--g100);color:var(--g800);
+  border-radius:999px;padding:3px 12px;font-size:12.5px;font-weight:800}
+.chip.big{font-size:15px;padding:6px 15px;background:var(--y050);border-color:var(--y400);color:#7a5c00}
+.chip.big.skor-f{background:#eff6ff;border-color:#bfdbfe;color:#1d4ed8}
+.chip.big.skor-t{background:#fff7ed;border-color:#fed7aa;color:#c2410c}
+.badge.kat-baik-sekali{background:#dcfce7;color:#15803d;border:1px solid #bbf7d0}
+.badge.kat-sangat-baik{background:#059669;color:#fff;border:1px solid #047857}
+.badge.kat-baik{background:#e0f2fe;color:#0369a1;border:1px solid #bae6fd}
+.badge.kat-cukup{background:#fef9c3;color:#a16207;border:1px solid #fde68a}
+.badge.kat-kurang{background:#ffedd5;color:#c2410c;border:1px solid #fed7aa}
+.badge.kat-kurang-sekali{background:#fee2e2;color:#b91c1c;border:1px solid #fecaca}
+.badge.kat-lain{background:#f1f5f9;color:#475569;border:1px solid #e2e8f0}
+.badge.gizi-kurus{background:#fffbeb;color:#b45309;border:1px solid #fde68a}
+.badge.gizi-normal{background:#dcfce7;color:#15803d;border:1px solid #bbf7d0}
+.badge.gizi-gemuk{background:#ffedd5;color:#c2410c;border:1px solid #fed7aa}
+.badge.gizi-obesitas{background:#fee2e2;color:#b91c1c;border:1px solid #fecaca}
+.nf-cell{display:flex;flex-direction:column;align-items:flex-start;gap:4px;min-width:0}
+.skor-toggle{background:none;border:none;padding:0;margin:0;cursor:pointer;display:inline-flex;align-items:center;gap:5px;font:inherit}
+.skor-toggle::after{content:"▾";font-size:11px;font-weight:800;color:var(--muted);transition:.15s}
+.skor-toggle[aria-expanded="true"]::after{content:"▴";color:var(--g700)}
+.fisik-rincian{width:100%;min-width:230px;border-top:1px dashed var(--line);padding-top:8px;text-align:left}
+.fr-head{font-size:11px;font-weight:800;letter-spacing:.5px;text-transform:uppercase;color:var(--muted);margin-bottom:5px}
+.fr-row{display:flex;gap:8px;align-items:center;justify-content:space-between;font-size:12.5px;padding:3px 0;flex-wrap:wrap}
+.fr-l{font-weight:700;color:var(--ink);min-width:0}
+.fr-v{color:var(--muted);margin-left:auto;white-space:nowrap}
+.fr-total{margin-top:7px;padding-top:7px;border-top:1px solid var(--line);font-size:12.5px;color:var(--muted)}
+.fr-total b{color:var(--ink)}
+/* Daftar mentah (dipakai sel tabel admin & blok siswa): per baris, bukan baris panjang */
+.fisik-mentah span{display:block;color:var(--muted);font-size:13px;padding:1.5px 0}
+.fisik-mentah b{color:var(--ink);font-weight:700}
+/* Expand Nilai Fisik: daftar rincian (kiri) + chart radar (kanan) dalam satu panel */
+.fisik-rincian .fr-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:4px 24px;align-items:start;margin-top:12px}
+.fisik-rincian .fr-kanan{min-width:0}
+/* Panel rincian 2 item teknik (di bawah rincian fisik pada expand tabel admin) */
+.teknik-rincian{margin-top:16px}
+.rincian-baris>td{background:#fafbff}
+@media(max-width:760px){.fisik-rincian .fr-grid{grid-template-columns:1fr}}
+/* Blok detail Kondisi Fisik sisi siswa + pemilih tanggal 📅 */
+.fisik-detail .fd-head{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;
+  font-weight:800;font-size:14.5px;margin-bottom:10px}
+.radar-tgl{display:flex;flex-wrap:wrap;gap:7px;margin:0 0 12px}
+.radar-tgl button{font:inherit;font-size:12.5px;font-weight:700;color:var(--muted);
+  background:var(--g050);border:1px solid var(--g100);border-radius:999px;padding:6px 13px;cursor:pointer}
+.radar-tgl button:hover{border-color:#cbd5e1;color:var(--g800)}
+.radar-tgl button.aktif{background:#e8f7ee;border-color:#22a352;color:#157f3f}
+.gizi-box{grid-column:1/-1;background:var(--g050);border:1px dashed var(--g100);border-radius:13px;padding:11px 13px;margin-top:4px}
+.gizi-box .k{font-size:11.5px;font-weight:800;letter-spacing:.5px;text-transform:uppercase;color:var(--muted)}
+.gizi-box .v{margin-top:6px;display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-weight:800}
+
+/* Kartu highlight IMT (halaman siswa) — info gizi, bukan skor. */
+.imt-card{background:linear-gradient(135deg,rgba(34,197,94,.12),rgba(56,189,248,.08));border:1px solid rgba(34,197,94,.30)}
+.imt-head{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:11.5px;font-weight:800;
+  letter-spacing:.5px;text-transform:uppercase;opacity:.9}
+.imt-main{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:8px;flex-wrap:wrap}
+.imt-big{font-size:34px;font-weight:900;line-height:1;color:#4ade80}
+.imt-unit{font-size:12.5px;font-weight:800;color:var(--muted);margin-left:5px}
+.imt-meta{margin-top:8px;font-size:12.5px;font-weight:600;color:var(--muted)}
+.imt-note{margin-top:7px;font-size:11.5px;opacity:.8}
+
+/* Kartu IMT per tanggal tes (di dalam kartu hasil tes). */
+.imt-strip{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-top:12px;padding:10px 14px;
+  background:var(--g050);border:1px dashed var(--g100);border-radius:13px}
+.imt-strip .imt-h{font-size:11.5px;font-weight:800;letter-spacing:.5px;text-transform:uppercase;color:var(--g700)}
+.imt-strip .imt-v{font-size:13px;color:var(--muted)}
+.imt-strip .imt-v b{color:var(--ink);font-weight:800}
+
+/* ================= AVATAR ================= */
+.av{width:44px;height:44px;border-radius:50%;overflow:hidden;flex:0 0 auto;display:grid;place-items:center;
+  background:var(--grad-brand);color:#fff;font-weight:800;font-size:15px;letter-spacing:-.4px}
+.av img{width:100%;height:100%;object-fit:cover;display:block}
+.av.sm{width:36px;height:36px;font-size:12.5px}
+.mini-av{width:38px;height:38px;border-radius:50%;overflow:hidden;flex:0 0 auto;display:grid;place-items:center;
+  background:linear-gradient(135deg,#eef1ff,#e6f7ed);border:1px solid var(--line);color:#4c1d95;font-weight:800;font-size:13px}
+.mini-av img{width:100%;height:100%;object-fit:cover;display:block}
+.av.md{width:52px;height:52px;font-size:17px}
+.av.lg{width:78px;height:78px;font-size:27px;border-radius:26px}
+.cell-name{display:flex;align-items:center;gap:10px;min-width:0}
+.cell-name b{font-weight:700}
+
+/* ================= TABEL ================= */
+.tw{overflow-x:auto;border:1px solid var(--line);border-radius:20px;background:#fff}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{padding:12px 14px;text-align:left;vertical-align:middle;border-bottom:1px solid var(--line)}
+th{background:#fafbfe;font-size:11.5px;text-transform:uppercase;letter-spacing:.7px;color:var(--muted);
+  white-space:nowrap;font-weight:800}
+tbody tr:last-child td{border-bottom:none}
+tbody tr:hover{background:#fbfcff}
+td .stack-lines span:not(.badge){display:block;color:var(--muted);font-size:13px}
+td .stack-lines .badge{display:inline-block}
+td .stack-lines b{color:var(--ink);font-weight:700}
+.acts{display:flex;gap:7px;flex-wrap:wrap;align-items:center}
+.ibtn{width:34px;height:34px;border-radius:50%;border:1px solid var(--line);background:#fff;cursor:pointer;
+  display:inline-grid;place-items:center;font-size:14px;transition:.15s}
+.ibtn:hover{border-color:var(--g500);background:var(--g050);transform:translateY(-2px)}
+.ibtn.danger:hover{border-color:#f3c2c2;background:#fef2f2}
+@media(max-width:760px){
+  .stack thead{display:none}
+  .stack,.stack tbody,.stack tr,.stack td{display:block;width:100%}
+  .stack tr{border:1px solid var(--line);border-radius:16px;margin-bottom:11px;padding:8px 13px;background:#fff}
+  .stack tr:hover{background:#fff}
+  .stack td{border-bottom:1px dashed var(--line);padding:9px 0;display:flex;gap:14px;justify-content:space-between;text-align:right}
+  .stack tr td:last-child{border-bottom:none}
+  .stack td::before{content:attr(data-label);font-weight:800;color:var(--muted);text-align:left;flex:0 0 auto}
+  .stack td.no-label::before{content:""}
+}
+
+/* ================= LIST SISWA (mobile) ================= */
+.stu-list{display:none;gap:12px}
+.stu-card{display:flex;gap:13px;align-items:center;background:#fff;border:1px solid var(--line);
+  border-radius:20px;padding:13px 14px;min-width:0;box-shadow:0 10px 24px -22px rgba(2,6,23,.7)}
+.stu-card .meta{flex:1;min-width:0}
+.stu-card .nm{font-weight:800;font-size:15px;letter-spacing:-.2px}
+.stu-card .sb{font-size:12.5px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.stu-card .mt{display:flex;gap:6px;flex-wrap:wrap;margin-top:7px}
+@media(max-width:760px){
+  .desk-table{display:none !important}
+  .stu-list{display:grid;grid-template-columns:minmax(0,1fr)}
+}
+
+/* ================= EMPTY / TOAST ================= */
+.empty{text-align:center;padding:40px 18px;color:var(--muted);border:1.5px dashed var(--line);
+  border-radius:20px;background:#fafbfe}
+.empty .ico{font-size:38px;display:block;margin-bottom:8px}
+.empty b{display:block;color:var(--ink);font-size:16px;margin-bottom:4px}
+#toastWrap{position:fixed;top:78px;right:16px;width:min(340px,calc(100vw - 32px));z-index:9999;display:flex;flex-direction:column;gap:9px}
+.toast{background:#0f172a;color:#fff;padding:13px 16px;border-radius:15px;font-size:14px;font-weight:700;
+  box-shadow:0 18px 40px -18px rgba(0,0,0,.7);animation:slideIn .28s ease;display:flex;gap:9px;align-items:flex-start;
+  border:1px solid rgba(255,255,255,.12)}
+.toast.err{background:#b91c1c}.toast.warn{background:#b45309}
+@keyframes slideIn{from{opacity:0;transform:translateX(30px)}to{opacity:1;transform:none}}
+
+/* ================= AUTH (splash mobile) ================= */
+.auth{min-height:100vh;display:flex;flex-direction:column;background:var(--grad);position:relative;overflow:hidden}
+.auth::after{content:"";position:absolute;width:420px;height:420px;right:-160px;top:-160px;border-radius:50%;
+  background:radial-gradient(circle,rgba(74,222,128,.28),transparent 66%)}
+.auth-hero{position:relative;z-index:1;text-align:center;color:#fff;padding:54px 22px 74px}
+.logo-mark{width:80px;height:80px;border-radius:26px;background:rgba(255,255,255,.12);color:#fff;
+  border:1px solid rgba(255,255,255,.24);display:grid;place-items:center;margin:0 auto 18px;
+  font-weight:900;font-size:28px;letter-spacing:-1.5px;
+  box-shadow:0 22px 44px -22px rgba(0,0,0,.9);backdrop-filter:blur(8px)}
+.logo-mark img{display:block;width:100%;height:100%;object-fit:contain;border-radius:inherit}
+.auth-hero h1{font-size:33px;letter-spacing:-1.1px}
+.auth-hero .tag{font-size:14.5px;opacity:.82;margin-top:8px;font-weight:500}
+.auth-pills{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:20px}
+.auth-pills span{background:rgba(255,255,255,.11);border:1px solid rgba(255,255,255,.18);
+  border-radius:999px;padding:6px 13px;font-size:12.5px;font-weight:700}
+.auth-panel{position:relative;z-index:2;padding:0 16px 44px;margin-top:-38px}
+.auth-card{width:100%;max-width:440px;margin:0 auto;background:#fff;border-radius:28px;padding:24px 22px 26px;
+  box-shadow:0 40px 70px -34px rgba(2,6,23,.95)}
+.auth-card h2{font-size:22px;letter-spacing:-.6px}
+.auth-card .sub{color:var(--muted);font-size:14px;margin:5px 0 18px;font-weight:500}
+.seg-tabs{display:flex;background:var(--tile);border:1px solid var(--line);border-radius:999px;
+  padding:5px;gap:5px;margin-bottom:18px}
+.seg-tabs button{flex:1;border:none;background:transparent;border-radius:999px;padding:10px 6px;
+  font-weight:800;font-size:14px;cursor:pointer;color:var(--muted);transition:.16s;letter-spacing:-.2px}
+.seg-tabs button.on{background:var(--grad-brand);color:#fff;box-shadow:0 12px 20px -12px rgba(20,83,45,.95)}
+.demo{background:var(--y050);border:1px dashed var(--y400);border-radius:14px;padding:11px 13px;font-size:12.8px;
+  color:#7a5c00;margin-top:14px;font-weight:600}
+.demo code{background:#fff;padding:1px 7px;border-radius:7px;border:1px solid var(--y400);font-size:12.4px}
+.switch{text-align:center;font-size:14px;color:var(--muted);margin-top:16px}
+.linkbtn{background:none;border:none;color:var(--g700);font-weight:800;cursor:pointer;text-decoration:underline;padding:0}
+@media(min-width:900px){
+  .auth-hero{padding:70px 22px 78px}
+  .auth-hero h1{font-size:38px}
+}
+
+/* ================= SHELL APLIKASI ================= */
+.topbar{position:sticky;top:0;z-index:60;display:flex;align-items:center;gap:13px;
+  padding:13px 18px;color:#fff;background:linear-gradient(180deg,rgba(11,18,48,.97),rgba(30,27,75,.9));
+  backdrop-filter:blur(14px);border-bottom:1px solid rgba(255,255,255,.1)}
+.brand-sm{display:flex;align-items:center;gap:11px;font-weight:800;font-size:15.5px;letter-spacing:-.3px}
+.brand-sm .mark{width:36px;height:36px;border-radius:12px;background:var(--grad-brand);color:#fff;
+  display:grid;place-items:center;font-size:13px;font-weight:900;letter-spacing:-.6px;
+  box-shadow:0 12px 22px -12px rgba(20,83,45,.9)}
+.brand-sm .mark img{display:block;width:100%;height:100%;object-fit:contain;border-radius:inherit}
+.brand-sm b{color:var(--g400)}
+.spacer{flex:1}
+.who{display:flex;align-items:center;gap:12px}
+.ava-top{width:40px;height:40px;border-radius:50%;overflow:hidden;background:rgba(255,255,255,.14);
+  border:1px solid rgba(255,255,255,.24);display:grid;place-items:center;font-weight:800;font-size:13.5px;color:#fff;flex:0 0 auto}
+.ava-top img{width:100%;height:100%;object-fit:cover;display:block}
+.who-txt{text-align:right;line-height:1.2}
+.who-txt strong{display:block;font-size:14px;max-width:190px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.who-txt .badge{margin-top:3px}
+
+.layout{display:flex;gap:18px;padding:18px;align-items:flex-start;min-height:calc(100vh - 66px)}
+.sidebar{width:252px;flex:0 0 252px;position:sticky;top:84px;background:rgba(255,255,255,.97);
+  border-radius:26px;padding:16px 12px;box-shadow:var(--sh-lg);display:flex;flex-direction:column;gap:5px}
+.nav-cap{font-size:11px;font-weight:800;letter-spacing:.9px;text-transform:uppercase;color:var(--muted);padding:8px 12px 6px}
+.nav-item{display:flex;align-items:center;gap:11px;width:100%;border:1px solid transparent;background:transparent;
+  padding:12px 13px;border-radius:15px;font-weight:700;font-size:14.5px;cursor:pointer;text-align:left;
+  color:#334155;transition:.15s;letter-spacing:-.2px}
+.nav-item .e{font-size:17px}
+.nav-item:hover{background:var(--tile);color:var(--g800)}
+.nav-item.on{background:var(--grad-brand);color:#fff;border-color:transparent;
+  box-shadow:0 16px 26px -16px rgba(20,83,45,.95)}
+.side-foot{margin-top:auto;font-size:12px;color:var(--muted);padding:12px 12px 4px;border-top:1px solid var(--line);line-height:1.5}
+.main{flex:1;min-width:0}
+.page-head{display:flex;flex-wrap:wrap;gap:14px;align-items:center;justify-content:space-between;margin-bottom:4px}
+.page-head h2{font-size:22px;letter-spacing:-.7px}
+.page-head p{color:var(--muted);font-size:14px;margin-top:4px;font-weight:500}
+.toolbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+
+/* Bottom navigation (mobile) */
+.bottomnav{display:none;position:fixed;left:12px;right:12px;bottom:calc(10px + env(safe-area-inset-bottom,0px));
+  z-index:70;background:rgba(255,255,255,.97);backdrop-filter:blur(12px);border-radius:24px;padding:7px;
+  box-shadow:0 26px 50px -24px rgba(2,6,23,.85);border:1px solid rgba(255,255,255,.7);gap:4px}
+.bottomnav nav{display:flex;gap:4px;width:100%}
+.bottomnav .nav-item{flex:1;flex-direction:column;gap:3px;font-size:10.5px;padding:8px 4px;border-radius:16px;
+  text-align:center;justify-content:center;align-items:center;font-weight:800;color:var(--muted)}
+.bottomnav .nav-item .e{font-size:19px}
+.bottomnav .nav-item:hover{background:var(--tile);color:var(--g700)}
+.bottomnav .nav-item.on{background:var(--g050);color:var(--g700);border-color:transparent;box-shadow:none}
+@media(max-width:900px){
+  .sidebar{display:none}
+  .bottomnav{display:block}
+  .layout{padding:12px;gap:0}
+  .main{padding-bottom:104px}
+  .surface{padding:17px 15px;border-radius:24px}
+  .who-txt strong{max-width:112px}
+}
+@media(max-width:430px){.brand-sm span.t{display:none} .hero .h-big{font-size:38px}}
+
+/* ================= DETAIL / KARTU TES ================= */
+.kv{display:grid;grid-template-columns:1fr 1fr;gap:8px 16px}
+@media(max-width:520px){.kv{grid-template-columns:1fr}}
+.kv div{display:flex;justify-content:space-between;gap:10px;font-size:13.6px;border-bottom:1px dashed var(--line);padding-bottom:5px}
+.kv span{color:var(--muted)}
+.kv b{font-weight:700;text-align:right}
+/* Progress bar persentase per item (khusus kartu sisi siswa — tampilan saja). */
+.kv div.kv-item{display:block}
+.kv div.kv-line{border-bottom:0;padding-bottom:0}
+.kv div.kv-bar{border-bottom:0;padding-bottom:0;margin-top:6px;align-items:center;gap:8px}
+.kv .bar-track{display:block;flex:1;height:7px;border-radius:999px;background:rgba(100,116,139,.22);overflow:hidden}
+.kv .bar-track i{display:block;height:100%;border-radius:999px}
+.kv .bar-pct{font-size:11px;font-weight:800;color:var(--muted);min-width:34px;text-align:right}
+.bar-hijau{background:#22c55e}
+.bar-kuning{background:#eab308}
+.bar-merah{background:#ef4444}
+/* Chart radar profil kondisi fisik (Chart.js) */
+.radar-head{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;
+  font-weight:800;font-size:14.5px;margin-bottom:10px}
+.radar-box{position:relative;height:300px}
+.radar-box.lg{height:360px}
+.radar-cap{font-size:12.3px;color:var(--muted);margin-top:10px;line-height:1.5}
+.radar-empty{display:flex;align-items:center;justify-content:center;height:100%;text-align:center;
+  color:var(--muted);font-size:13.5px;padding:0 18px}
+.tes-top{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;
+  padding-bottom:13px;margin-bottom:14px;border-bottom:1px solid var(--line)}
+.tes-top .date{font-weight:800;font-size:16px;letter-spacing:-.3px}
+.tes-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+@media(max-width:700px){.tes-grid{grid-template-columns:1fr}}
+.tes-grid h5{font-size:11.5px;text-transform:uppercase;letter-spacing:.7px;color:var(--g700);margin-bottom:10px;font-weight:800}
+.note{margin-top:15px;background:var(--y050);border:1px solid #f5e3a8;border-radius:14px;padding:11px 14px;font-size:13.5px}
+.note b{color:#8a6d00}
+.profile-id{display:flex;gap:16px;align-items:center;flex-wrap:wrap}
+.info-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(215px,1fr));gap:12px}
+.info{background:#fff;border:1px solid var(--line);border-radius:16px;padding:12px 14px}
+.info .k{font-size:11px;color:var(--muted);font-weight:800;text-transform:uppercase;letter-spacing:.7px}
+.info .v{font-size:15px;font-weight:700;margin-top:3px;word-break:break-word;letter-spacing:-.2px}
+
+/* ================= ABSENSI ================= */
+.checkin{flex-direction:column;align-items:stretch;gap:14px}
+.checkin .ck-head{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between}
+.checkin .ck-title{font-size:17px;font-weight:800;letter-spacing:-.4px}
+.checkin .ck-sub{font-size:13px;opacity:.8;margin-top:3px;font-weight:500}
+.btn-absen{width:100%;padding:17px;border-radius:18px;font-size:17px;font-weight:800;letter-spacing:-.3px;
+  background:var(--g500);color:#06210f;box-shadow:0 20px 34px -18px rgba(34,163,82,.95)}
+.btn-absen:hover{background:var(--g400);transform:translateY(-2px)}
+.btn-absen[disabled]{background:rgba(255,255,255,.14);color:rgba(255,255,255,.72);border:1px dashed rgba(255,255,255,.34);
+  box-shadow:none;transform:none;cursor:not-allowed}
+.ck-note{font-size:13px;opacity:.85;text-align:center;font-weight:600}
+.ck-note b{color:var(--y400)}
+
+.absen-row{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;
+  border:1px solid var(--line);border-radius:18px;padding:12px 14px;margin-bottom:10px;background:#fff}
+.absen-row .who-l{display:flex;gap:11px;align-items:center;min-width:190px}
+.absen-row .nm{font-weight:700;font-size:14.5px;line-height:1.2}
+.absen-row .sb{font-size:12.5px;color:var(--muted)}
+.seg{display:flex;background:var(--tile);border-radius:13px;padding:4px;gap:4px;border:1px solid var(--line)}
+.seg button{border:none;background:transparent;padding:8px 16px;border-radius:10px;font-size:13.5px;font-weight:800;
+  cursor:pointer;color:var(--muted);transition:.14s}
+.seg button.on{background:#fff;box-shadow:0 3px 8px rgba(0,0,0,.1)}
+.seg button[data-status="Hadir"].on{background:#dcfce7;color:#15803d}
+.seg button[data-status="Izin"].on{background:#fef3c7;color:#b45309}
+.seg button[data-status="Alfa"].on{background:#fee2e2;color:#b91c1c}
+@media(max-width:560px){.absen-row{flex-direction:column;align-items:stretch}.seg{justify-content:center}
+  .seg button{flex:1;padding:10px 6px}}
+
+/* ================= FOTO SISWA ================= */
+.photo-box{display:flex;flex-direction:column;align-items:center;gap:9px;margin-bottom:16px;padding:16px 14px;
+  background:var(--tile);border:1.5px dashed var(--line);border-radius:22px}
+.photo-wrap{position:relative;width:106px;height:106px}
+.photo-wrap .av{width:106px;height:106px;font-size:34px;border-radius:50%}
+.photo-btn{position:absolute;left:50%;bottom:-10px;transform:translateX(-50%);background:var(--grad-brand);
+  color:#fff;border:2.5px solid #fff;border-radius:999px;font-size:11px;font-weight:800;padding:5px 12px;
+  cursor:pointer;box-shadow:0 10px 18px -8px rgba(2,6,23,.6);white-space:nowrap;letter-spacing:-.1px}
+.photo-btn:hover{background:linear-gradient(135deg,var(--g700),var(--g900))}
+.photo-label{font-size:13.5px;font-weight:800}
+.photo-label .opt{color:var(--muted);font-weight:600;font-size:12.5px}
+.photo-hint{font-size:12px;color:var(--muted);text-align:center;line-height:1.45}
+#rFoto{position:absolute;width:1px;height:1px;opacity:0;overflow:hidden;clip:rect(0 0 0 0);z-index:-1}
+.av [hidden],.av img[hidden]{display:none !important}
+
+/* ================= MODAL ================= */
+.overlay{position:fixed;inset:0;background:rgba(2,6,23,.62);backdrop-filter:blur(3px);z-index:200;
+  display:flex;align-items:center;justify-content:center;padding:18px;overflow-y:auto;animation:fade .18s ease}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+.modal{background:#fff;border-radius:26px;width:100%;max-width:540px;max-height:92vh;overflow-y:auto;
+  box-shadow:0 40px 80px -30px rgba(2,6,23,.9);animation:pop .2s ease}
+@keyframes pop{from{opacity:0;transform:translateY(16px) scale(.98)}to{opacity:1;transform:none}}
+.modal-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:18px 20px;
+  border-bottom:1px solid var(--line);position:sticky;top:0;background:#fff;z-index:2;border-radius:26px 26px 0 0}
+.modal-head h3{font-size:17.5px;letter-spacing:-.4px}
+.modal-body{padding:18px 20px;display:grid;grid-template-columns:1fr 1fr;gap:0 14px}
+.modal-body .field.full{grid-column:1/-1}
+.modal-body.mb-html{display:block}
+.modal.lebar{max-width:690px}
+@media(max-width:520px){.modal-body{grid-template-columns:1fr}}
+.modal-foot{display:flex;gap:10px;justify-content:flex-end;padding:14px 20px 18px;border-top:1px solid var(--line);
+  position:sticky;bottom:0;background:#fff;border-radius:0 0 26px 26px}
+</style>
+<meta name="theme-color" content="#1e1b4b">
+<meta name="description" content="Monitoring kondisi fisik, teknik, dan kehadiran latihan siswa Tapak Suci Cabang Cerme.">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" type="image/png" href="icons/favicon.png">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="TS Cerme">
+</head>
+<body>
+
+<div id="toastWrap"></div>
+
+<!-- ============ LAYAR AUTH ============ -->
+<div id="authScreen" class="auth">
+  <div class="auth-hero">
+    <div class="logo-mark"><img src="lambangtapaksucidanartinya.jpg" alt="Lambang Tapak Suci"></div>
+    <h1>Tapak Suci Cabang Cerme</h1>
+    <p class="tag">Pantau fisik, teknik, dan kehadiran latihan siswa dalam satu aplikasi.</p>
+    <div class="auth-pills">
+      <span>💪 Fisik &amp; Teknik</span>
+      <span>🗓️ Absensi</span>
+      <span>🔒 Data Lokal</span>
+    </div>
+  </div>
+
+  <div class="auth-panel">
+    <div class="auth-card">
+      <!-- LOGIN -->
+      <div id="loginPane">
+        <h2>Selamat datang 👋</h2>
+        <p class="sub">Masuk untuk melanjutkan ke dashboard.</p>
+
+        <div class="seg-tabs" id="loginTabs">
+          <button type="button" class="on" data-tab="user">Login Siswa</button>
+          <button type="button" data-tab="admin">Login Admin</button>
+        </div>
+
+        <form id="userLoginForm" autocomplete="off">
+          <div class="field">
+            <label for="ulUser">Username</label>
+            <input type="text" id="ulUser" placeholder="username kamu" autocomplete="off">
+          </div>
+          <div class="field">
+            <label for="ulPass">Password</label>
+            <input type="password" id="ulPass" placeholder="••••••••">
+          </div>
+          <button class="btn primary block" type="submit">Masuk sebagai Siswa</button>
+          <div class="demo" id="demoSiswa">Belum ada data siswa — daftar sendiri lewat tombol di bawah, atau minta pelatih menambahkan via menu admin.</div>
+        </form>
+
+        <form id="adminLoginForm" class="hidden" autocomplete="off">
+          <div class="field">
+            <label for="alUser">Username Admin</label>
+            <input type="text" id="alUser" placeholder="admin" autocomplete="off">
+          </div>
+          <div class="field">
+            <label for="alPass">Password</label>
+            <input type="password" id="alPass" placeholder="••••••••">
+          </div>
+          <button class="btn primary block" type="submit">Masuk sebagai Admin</button>
+        </form>
+
+        <p class="switch">Belum punya akun siswa? <button type="button" class="linkbtn" id="toRegister">Daftar di sini</button></p>
+      </div>
+
+      <!-- REGISTER -->
+      <div class="hidden" id="registerPane">
+        <h2>Daftar Akun Siswa 📝</h2>
+        <p class="sub">Isi data diri dengan benar, lalu login menggunakan username &amp; password.</p>
+        <form id="registerForm" autocomplete="off">
+          <div class="photo-box">
+            <div class="photo-wrap">
+              <div class="av" id="regAvatar">
+                <span id="regInitials">?</span>
+                <img id="regPhotoPreview" src="" alt="Preview foto siswa" hidden>
+              </div>
+              <label class="photo-btn" for="rFoto" id="regPhotoBtn">Pilih Foto</label>
+            </div>
+            <label class="photo-label" for="rFoto">Foto Siswa <span class="opt">(opsional)</span></label>
+            <input type="file" id="rFoto" accept="image/*">
+            <div class="photo-hint">Ambil foto dari kamera atau pilih dari galeri.<br>Format gambar, maks 5 MB — otomatis dikecilkan ke 400×400 px.</div>
+          </div>
+          <div class="field"><label for="rNama">Nama Lengkap <span class="req">*</span></label><input type="text" id="rNama" placeholder="Nama lengkap"></div>
+          <div class="field"><label for="rKartu">Nomor Kartu Atlet <span class="req">*</span></label><input type="text" id="rKartu" placeholder="mis. TS-CRM-0012"></div>
+          <div class="grid g2">
+            <div class="field"><label for="rTempat">Tempat Lahir <span class="req">*</span></label><input type="text" id="rTempat" placeholder="mis. Cerme"></div>
+            <div class="field"><label for="rTanggal">Tanggal Lahir <span class="req">*</span></label><input type="date" id="rTanggal"></div>
+          </div>
+          <div class="field"><label for="rSekolah">Asal Sekolah <span class="req">*</span></label><input type="text" id="rSekolah" placeholder="mis. SMP Negeri 1 Cerme"></div>
+          <div class="grid g2">
+            <div class="field"><label for="rUser">Username <span class="req">*</span></label><input type="text" id="rUser" placeholder="untuk login"></div>
+            <div class="field"><label for="rPass">Password <span class="req">*</span></label><input type="password" id="rPass" placeholder="min. 4 karakter"></div>
+          </div>
+          <div class="field"><label for="rPass2">Ulangi Password <span class="req">*</span></label><input type="password" id="rPass2" placeholder="ketik ulang password"></div>
+          <button class="btn primary block" type="submit">Daftar Sekarang</button>
+        </form>
+        <p class="switch">Sudah punya akun? <button type="button" class="linkbtn" id="toLogin">Kembali ke Login</button></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ LAYAR APLIKASI ============ -->
+<div id="appScreen" class="hidden">
+  <header class="topbar">
+    <div class="brand-sm"><span class="mark"><img src="lambangtapaksucidanartinya.jpg" alt="Lambang Tapak Suci"></span><span class="t">Tapak Suci <b>Cerme</b></span></div>
+    <div class="spacer"></div>
+    <div class="who">
+      <div class="ava-top" id="whoAvatar">?</div>
+      <div class="who-txt">
+        <strong id="whoName">—</strong>
+        <span class="badge role" id="whoRole">—</span>
+      </div>
+      <button class="btn glass sm" id="logoutBtn">Keluar</button>
+    </div>
+  </header>
+
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="nav-cap">Menu Utama</div>
+      <nav id="navUser" class="hidden">
+        <button class="nav-item" data-view="user-profil"><span class="e">🧑‍🎓</span> Profil Siswa</button>
+        <button class="nav-item" data-view="user-tes"><span class="e">💪</span> Kondisi Fisik &amp; Teknik</button>
+        <button class="nav-item" data-view="user-absen"><span class="e">🗓️</span> Absensi</button>
+      </nav>
+      <nav id="navAdmin" class="hidden">
+        <button class="nav-item" data-view="admin-siswa"><span class="e">👥</span> Profil Siswa</button>
+        <button class="nav-item" data-view="admin-tes"><span class="e">📊</span> Kondisi Fisik &amp; Teknik</button>
+        <button class="nav-item" data-view="admin-absensi"><span class="e">🗓️</span> Absensi</button>
+      </nav>
+      <div class="side-foot">Data disimpan lokal di browser ini.<br>Gunakan <b>Keluar</b> untuk mengganti akun.</div>
+    </aside>
+
+    <main class="main">
+      <div class="surface">
+        <section id="view-user-profil" class="view hidden"></section>
+        <section id="view-user-tes" class="view hidden"></section>
+        <section id="view-user-absen" class="view hidden"></section>
+        <section id="view-admin-siswa" class="view hidden"></section>
+        <section id="view-admin-tes" class="view hidden"></section>
+        <section id="view-admin-absensi" class="view hidden"></section>
+        <footer class="muted small center">Monitoring Tapak Suci Cabang Cerme — versi lokal (HTML + localStorage).</footer>
+      </div>
+    </main>
+  </div>
+
+  <div class="bottomnav">
+    <nav id="bnavUser" class="hidden">
+      <button class="nav-item" data-view="user-profil"><span class="e">🧑‍🎓</span>Profil Siswa</button>
+      <button class="nav-item" data-view="user-tes"><span class="e">💪</span>Fisik &amp; Teknik</button>
+      <button class="nav-item" data-view="user-absen"><span class="e">🗓️</span>Absensi</button>
+    </nav>
+    <nav id="bnavAdmin" class="hidden">
+      <button class="nav-item" data-view="admin-siswa"><span class="e">👥</span>Profil Siswa</button>
+      <button class="nav-item" data-view="admin-tes"><span class="e">📊</span>Fisik &amp; Teknik</button>
+      <button class="nav-item" data-view="admin-absensi"><span class="e">🗓️</span>Absensi</button>
+    </nav>
+  </div>
+</div>
+
+<div id="modalRoot"></div>
+
+<!-- Chart.js — chart radar profil kondisi fisik (lewat CDN) -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+
+<script>
+/* ==================================================================
+   PENYIMPANAN
+================================================================== */
+const K = {
+  users:'ts_users', tests:'ts_testResults', absen:'ts_absensi',
+  admin:'ts_adminAccount', session:'ts_session'
+};
+
+const store = {
+  get(key, def){
+    try{ const v = localStorage.getItem(key); return v === null ? def : JSON.parse(v); }
+    catch(e){ return def; }
+  },
+  set(key, val){
+    try{ localStorage.setItem(key, JSON.stringify(val)); return true; }
+    catch(e){ toast('Browser tidak mengizinkan penyimpanan lokal.', 'err'); return false; }
+  },
+  del(key){ try{ localStorage.removeItem(key); }catch(e){} }
+};
+
+const uid = p => p + '_' + Date.now().toString(36) + Math.random().toString(36).slice(2,7);
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const todayISO = () => new Date().toISOString().slice(0,10);
+
+const getUsers  = () => store.get(K.users, []);
+const getTests  = () => store.get(K.tests, []);
+const getAbsen  = () => store.get(K.absen, []);
+const getAdmin  = () => store.get(K.admin, {username:'admin', password:'admin123'});
+
+/* ==================================================================
+   DAFTAR AKUN ADMIN / PELATIH (role = admin)
+   ------------------------------------------------------------------
+   Password disimpan plain (apa adanya) — sama persis dengan standar
+   akun siswa pada sistem ini (login membandingkan teks langsung),
+   jadi tidak ada hash di satu sisi saja.
+   getAdmin() tetap dipakai sebagai akun bawaan lama (admin/admin123)
+   agar alur login lama tidak putus.
+================================================================== */
+const ADMIN_ACCOUNTS = [
+  {username:'ratih',  password:'ratih123'},
+  {username:'yusuf',  password:'yusuf123'},
+  {username:'rozaq',  password:'rozaq123'}
+];
+
+const findAdmin = (un, pw) => {
+  const hit = ADMIN_ACCOUNTS.find(a => a.username === un && a.password === pw);
+  if(hit) return hit;
+  const legacy = getAdmin();
+  return (un === legacy.username && pw === legacy.password) ? legacy : null;
+};
+const setUsers  = v => store.set(K.users, v);
+const setTests  = v => store.set(K.tests, v);
+const setAbsen  = v => store.set(K.absen, v);
+
+const getUser = id => getUsers().find(u => u.id === id);
+
+/* ==================================================================
+   TABEL NORMA & RUMUS NILAI FISIK (HITUNG OTOMATIS)
+   ------------------------------------------------------------------
+   NORMA_FISIK adalah objek terpisah yang MUDAH DIEDIT ADMIN.
+   ⚠️ ANGKA DI BAWAH INI MASIH CONTOH / PLACEHOLDER — bukan angka
+      final. Ganti dengan rata-rata dan standar deviasi dari DATA
+      NORMA YANG VALID milik cabang, jangan dipakai apa adanya.
+   Struktur : NORMA_FISIK[nama item]['L'|'P'] = {rataRata, stdDev}
+              'L' = Laki-laki, 'P' = Perempuan
+   Arah item: kelentukan, pushUp, sitUp, powerTungkai, bleepTest
+              -> makin BESAR makin baik (tentukanKategoriNorma)
+   kecepatan, kelincahan
+              -> makin KECIL makin baik (tentukanKategoriNormaTerbalik)
+   ⚠️ bleepTest berSatuan VO2max ml/kg/min (hasil rumus Ramsbottom,
+      bukan level lagi) — batas: L >=50 Baik Sekali / >=43 Baik /
+      >=36 Cukup / >=29 Kurang.
+   Cara baca: batasBaikSekali = rataRata + 1.5·stdDev dst., lihat
+   tentukanKategoriNorma() / tentukanKategoriNormaTerbalik().
+================================================================= */
+const NORMA_FISIK = {
+  /* 1. Kelentukan — Sit & Reach (cm)  |  makin BESAR makin baik */
+  kelentukan:   { L:{rataRata:14,   stdDev:4},    P:{rataRata:16,    stdDev:4} },   /* PLACEHOLDER */
+  /* 2a. Kekuatan — Push Up 1 menit (reps) | makin BESAR makin baik */
+  pushUp:       { L:{rataRata:24,   stdDev:7},    P:{rataRata:16,    stdDev:5} },   /* PLACEHOLDER */
+  /* 2b. Kekuatan — Sit Up 1 menit (reps)  | makin BESAR makin baik */
+  sitUp:        { L:{rataRata:24,   stdDev:7},    P:{rataRata:18,    stdDev:5} },   /* PLACEHOLDER */
+  /* 3. Power Tungkai — Standing Broad Jump (m) | makin BESAR makin baik */
+  powerTungkai: { L:{rataRata:1.9,  stdDev:0.3},  P:{rataRata:1.6,   stdDev:0.25} },/* PLACEHOLDER */
+  /* 4. Kecepatan — Sprint 20m (detik)  |  makin KECIL makin baik */
+  kecepatan:    { L:{rataRata:3.9,  stdDev:0.4},  P:{rataRata:4.3,   stdDev:0.4} },  /* PLACEHOLDER */
+  /* 5. Kelincahan — Shuttle Run 4x5m (detik) | makin KECIL makin baik */
+  kelincahan:   { L:{rataRata:16,   stdDev:1.5},  P:{rataRata:17.2,  stdDev:1.5} },  /* PLACEHOLDER */
+  /* 6. Daya Tahan Kardio — Bleep Test (VO2max ml/kg/min) | makin BESAR makin baik */
+  bleepTest:    { L:{rataRata:39.5, stdDev:7},    P:{rataRata:35.5,  stdDev:7} }     /* PLACEHOLDER */
+};
+
+/* ==================================================================
+   BLEEP TEST — Level + Shuttle -> VO2max (Ramsbottom et al., 1988)
+   ------------------------------------------------------------------
+   Smax = jumlah shuttle maksimal tiap level (dipakai validasi input
+   & rumus) — JANGAN diubah angkanya.
+   skor = Level + (Shuttle / Smax)
+   VO2max = 3.46 * skor + 12.2   (dibulatkan 1 desimal, ml/kg/min)
+   Contoh: Level 10 + Shuttle 5 (Smax 11) -> 10.4545 -> 48.4
+================================================================= */
+const beepShuttlesPerLevel = {
+  1: 7,  2: 8,  3: 8,  4: 9,  5: 9,  6: 10, 7: 10,
+  8: 11, 9: 11, 10: 11, 11: 12, 12: 12, 13: 13, 14: 13,
+  15: 13, 16: 14, 17: 14, 18: 15, 19: 15, 20: 16, 21: 16
+};
+
+function hitungVO2maxBleep(level, shuttle){
+  const smax = beepShuttlesPerLevel[level];
+  if(!smax) return '';
+  const continuousScore = level + (shuttle / smax);
+  return Math.round((3.46 * continuousScore + 12.2) * 10) / 10;
+}
+
+/* IMT -> kategori status gizi.
+   ------------------------------------------------------------------
+   Untuk remaja 10-19 tahun memakai IMT/U (BMI-for-age) yang BATASNYA
+   BERBEDA antara laki-laki dan perempuan serta berubah tiap umur:
+   Sumber : WHO Growth Reference 2007 — BMI-for-age 5-19 tahun,
+            baris umur tepat di hari ulang tahun ke-N.
+   Kolom  : [batas bawah Normal (-2SD), batas atas Normal (+1SD),
+            batas atas Gemuk (+2SD)] — dibulatkan 1 desimal.
+   Validasi: umur 19 th -> +1SD 25.4 (L) / 25.0 (P), +2SD 29.7 (keduanya),
+            sesuai Onis dkk, Bull WHO 2007;85:660-667.
+   Kategori dipakai 4 label: Kurus < -2SD, Normal -2..+1SD,
+   Gemuk +1..+2SD, Obesitas > +2SD.
+   Di luar umur 10-19 (dewasa / TGL lahir kosong) -> ambang Kemenkes
+   dewasa 18.5/25/27 yang memang sama untuk L & P. */
+const IMT_U = {
+  L: {
+    10: [13.7, 18.5, 21.4],
+    11: [14.1, 19.2, 22.5],
+    12: [14.5, 19.9, 23.6],
+    13: [14.9, 20.8, 24.8],
+    14: [15.5, 21.8, 25.9],
+    15: [16.0, 22.7, 27.0],
+    16: [16.5, 23.5, 27.9],
+    17: [16.9, 24.3, 28.6],
+    18: [17.3, 24.9, 29.2],
+    19: [17.6, 25.4, 29.7]
+  },
+  P: {
+    10: [13.5, 19.0, 22.6],
+    11: [13.9, 19.9, 23.7],
+    12: [14.4, 20.8, 25.0],
+    13: [14.9, 21.8, 26.2],
+    14: [15.4, 22.7, 27.3],
+    15: [15.9, 23.5, 28.2],
+    16: [16.2, 24.1, 28.9],
+    17: [16.4, 24.5, 29.3],
+    18: [16.4, 24.8, 29.5],
+    19: [16.5, 25.0, 29.7]
+  }
+};
+
+/* imt: angka hasil hitungIMT.
+   tanggalLahir + asOf (ISO, opsional; default hari ini) -> umur saat
+   penilaian; dipakai untuk memilih baris IMT_U per jenis kelamin. */
+function tentukanNormaIMT(imt, jenisKelamin, tanggalLahir, asOf) {
+  if (!imt || imt <= 0) return "";
+  const jk = String(jenisKelamin || "").toUpperCase();
+  const k = jk === "LAKI-LAKI" ? "L" : jk === "PEREMPUAN" ? "P" : jk;
+  if (k !== "L" && k !== "P") return "Data tidak valid";
+  const usia = umurTahun(tanggalLahir, asOf);
+  const b = (usia !== null && usia >= 10 && usia <= 19) ? IMT_U[k][usia] : null;
+  if (b) {
+    if (imt < b[0]) return "Kurus";
+    if (imt <= b[1]) return "Normal";
+    if (imt <= b[2]) return "Gemuk";
+    return "Obesitas";
+  }
+  /* Ambang dewasa Kemenkes (>= 20 th / tanpa umur) — sama utk L & P. */
+  if (imt < 18.5) return "Kurus";
+  if (imt <= 25.0) return "Normal";
+  if (imt <= 27.0) return "Gemuk";
+  return "Obesitas";
+}
+
+/* Kategori norma — asumsi makin BESAR nilai makin baik. */
+function tentukanKategoriNorma(nilai, rataRata, stdDev) {
+    if (nilai === null || nilai === "") return "";
+    const batasBaikSekali = rataRata + (1.5 * stdDev);
+    const batasBaik       = rataRata + (0.5 * stdDev);
+    const batasCukup      = rataRata - (0.5 * stdDev);
+    const batasKurang     = rataRata - (1.5 * stdDev);
+    if (nilai >= batasBaikSekali) return "Baik Sekali";
+    else if (nilai >= batasBaik) return "Baik";
+    else if (nilai >= batasCukup) return "Cukup";
+    else if (nilai >= batasKurang) return "Kurang";
+    else return "Kurang Sekali";
+}
+
+/* Versi TERBALIK khusus item yang makin KECIL makin baik
+   (Sprint 20 m & Shuttle Run). Batasnya dibalik dan memakai <=,
+   setara dengan memanggil tentukanKategoriNorma(-nilai, -rataRata, stdDev).
+   Tanpa versi ini arah kedua item tersebut justru terbalik. */
+function tentukanKategoriNormaTerbalik(nilai, rataRata, stdDev) {
+    if (nilai === null || nilai === "") return "";
+    const batasBaikSekali = rataRata - (1.5 * stdDev);
+    const batasBaik       = rataRata - (0.5 * stdDev);
+    const batasCukup      = rataRata + (0.5 * stdDev);
+    const batasKurang     = rataRata + (1.5 * stdDev);
+    if (nilai <= batasBaikSekali) return "Baik Sekali";
+    else if (nilai <= batasBaik) return "Baik";
+    else if (nilai <= batasCukup) return "Cukup";
+    else if (nilai <= batasKurang) return "Kurang";
+    else return "Kurang Sekali";
+}
+
+/* ==================================================================
+   NORMA KATEGORI KHUSUS KEMAMPUAN TEKNIK (bukan norma Kondisi Fisik)
+   ------------------------------------------------------------------
+   Dipakai hanya untuk 2 item tes teknik baru: Tendangan Sambaran dan
+   Agility Kick, dihitung dari JUMLAH tendangan dalam 10 detik.
+   Gaya seperti tentukanNormaIMT: batas angka langsung (tanpa
+   rata-rata/standar deviasi) — sengaja terpisah dari NORMA_FISIK
+   supaya tidak bercampur dengan skor Kondisi Fisik.
+   CATATAN: batas terendah "Kurang Sekali" tidak disebut eksplisit di
+   spesifikasi (di bawah 10 utk Sambaran, di bawah 5 utk Agility) —
+   asumsi mengikuti pola batas terendah yang sudah ada. Ubah angka di
+   sini bila batasnya ternyata berbeda.
+================================================================== */
+function kategoriTendanganSambaran(jumlah) {
+  if (jumlah === null || jumlah === "" || jumlah < 0) return "";
+  if (jumlah >= 25) return "Sangat Baik";
+  if (jumlah >= 20) return "Baik";        // 20 - 25
+  if (jumlah >= 15) return "Cukup";       // 15 - 20
+  if (jumlah >= 10) return "Kurang";      // 10 - 15
+  return "Kurang Sekali";                 // di bawah 10 (asumsi — lihat catatan di atas)
+}
+
+function kategoriAgilityKick(jumlah) {
+  if (jumlah === null || jumlah === "" || jumlah < 0) return "";
+  if (jumlah >= 20) return "Sangat Baik";
+  if (jumlah >= 15) return "Baik";        // 15 - 20
+  if (jumlah >= 10) return "Cukup";       // 10 - 15
+  if (jumlah >= 5) return "Kurang";       // 5 - 10
+  return "Kurang Sekali";                 // di bawah 5 (asumsi — lihat catatan di atas)
+}
+
+/* Poin per kategori: Baik Sekali=5 ... Kurang Sekali=1. */
+const POIN_KATEGORI = {'Baik Sekali':5, 'Sangat Baik':5, 'Baik':4, 'Cukup':3, 'Kurang':2, 'Kurang Sekali':1};
+
+const FISIK_ITEMS = [
+  ['kelentukan',   'Kelentukan — Sit & Reach (cm)'],
+  ['pushUp',       'Kekuatan — Push Up 1 menit (reps)'],
+  ['sitUp',        'Kekuatan — Sit Up 1 menit (reps)'],
+  ['powerTungkai', 'Power Tungkai — Standing Broad Jump (m)'],
+  ['kecepatan',    'Kecepatan — Sprint 20m (detik)'],
+  ['kelincahan',   'Kelincahan — Shuttle Run 4x5m (detik)'],
+  ['bleepTest',    'Daya Tahan Kardio — Bleep Test (VO2max)']
+];
+const FISIK_PENDEK = {
+  kelentukan:'Sit & Reach', pushUp:'Push Up', sitUp:'Sit Up', powerTungkai:'SBJ',
+  kecepatan:'Sprint 20m', kelincahan:'Shuttle Run', bleepTest:'Bleep Test'
+};
+
+/* 4 input teknik baru: frekuensi tendangan dalam 10 detik. */
+const TEKNIK_ITEMS = [
+  ['sambaranKanan', 'Tendangan Sambaran Kanan (10 detik)'],
+  ['sambaranKiri',  'Tendangan Sambaran Kiri (10 detik)'],
+  ['agilityKanan',  'Agility Kick Kanan (10 detik)'],
+  ['agilityKiri',   'Agility Kick Kiri (10 detik)']
+];
+
+/* 2 item tes TEKNIK tambahan — JUMLAH tendangan dalam 10 detik hasil
+   penjumlahan sisi Kanan + Kiri (bukan input terpisah, tidak dobel),
+   dinilai norma kategori khusus teknik. TIDAK masuk hitungan Nilai
+   Fisik; menjadi SATU-SATUNYA dasar hitungan Nilai Teknik otomatis. */
+const TEKNIK_NORMA_ITEMS = [
+  {key:'tendanganSambaran', label:'Tendangan Sambaran (10 detik)', sisi:['sambaranKanan','sambaranKiri'], hitung: kategoriTendanganSambaran},
+  {key:'agilityKick',       label:'Agility Kick (10 detik)',       sisi:['agilityKanan','agilityKiri'],  hitung: kategoriAgilityKick}
+];
+
+/* Jumlah = Kanan + Kiri (kedua sisi harus terisi angka).
+   Cadangan: nilai tersimpan di record (data lama sempat diinput manual). */
+function jumlahTeknikNorma(t, item){
+  const k = (t && t.teknik) || {};
+  const a = angkaDari(k[item.sisi[0]]);
+  const b = angkaDari(k[item.sisi[1]]);
+  if(a !== null && b !== null) return a + b;
+  return angkaDari(k[item.key]);
+}
+
+/* Jumlah dua sisi (untuk simpan/pratinjau): '' bila salah satu belum diisi. */
+function jumlahDuaSisi(a, b){
+  const x = angkaDari(a), y = angkaDari(b);
+  if(x === null || y === null) return '';
+  return String(x + y);
+}
+
+/* Nilai + kategori 1 item teknik norma; null = belum diisi (tidak ditampilkan). */
+function teknikNormaHasil(t, item){
+  const n = jumlahTeknikNorma(t, item);
+  if(n === null) return null;
+  return {nilai: String(n), kategori: item.hitung(n)};
+}
+
+/* Hitung Nilai Teknik (0–100) dari data teknik mentah — SAMA POLANYA
+   dengan hitungNilaiFisik:
+   1. Total per item = Kanan + Kiri (jumlahDuaSisi / cadangan jumlah tersimpan)
+   2. kategoriTendanganSambaran(total) & kategoriAgilityKick(total)
+   3. kategori -> poin (Sangat Baik 5, Baik 4, Cukup 3, Kurang 2,
+      Kurang Sekali 1)
+   4. Nilai Teknik = (rata-rata poin 2 item / 5) x 100, dibulatkan bulat.
+   Tidak ada input manual — lihat tesFormFields & openTesModal. */
+function hitungNilaiTeknik(raw){
+  raw = raw || {};
+  const rincian = TEKNIK_NORMA_ITEMS.map(item => {
+    const n = jumlahTeknikNorma({teknik: raw}, item);
+    const kategori = n === null ? '' : item.hitung(n);
+    return {key:item.key, label:item.label,
+      nilai: n === null ? '' : String(n), kategori,
+      poin: kategori ? POIN_KATEGORI[kategori] : null};
+  });
+  const semua = rincian.map(r => r.poin).filter(p => p != null);
+  const nilai = semua.length
+    ? Math.round((semua.reduce((a,b) => a + b, 0) / semua.length) / 5 * 100)
+    : '';
+  return {nilai, rincian};
+}
+
+/* Rincian untuk ditampilkan: pakai yang tersimpan saat Simpan, atau
+   hitung ulang dari data mentah (data lama belum punya rincian). */
+function rincianTeknik(t){
+  const k = (t && t.teknik) || {};
+  if(Array.isArray(k.rincian) && k.rincian.length) return k.rincian;
+  return hitungNilaiTeknik(k).rincian;
+}
+/* true = Nilai Teknik sudah dihitung rumus norma (punya rincian tersimpan);
+   false = Nilai Teknik masih angka manual lama -> tampilkan catatan. */
+function teknikTerhitung(t){
+  const k = (t && t.teknik) || {};
+  return Array.isArray(k.rincian) && k.rincian.length > 0;
+}
+
+/* 6 item penilaian Nilai Fisik. "Kekuatan" adalah rata-rata poin
+   Push Up + Sit Up. parts[].terbalik = makin kecil makin baik. */
+const SKOR_FISIK_ITEMS = [
+  {label:'Kelentukan (Sit & Reach)',            parts:[{key:'kelentukan'}]},
+  {label:'Kekuatan (Push Up & Sit Up)',         parts:[{key:'pushUp'}, {key:'sitUp'}]},
+  {label:'Power Tungkai (Standing Broad Jump)', parts:[{key:'powerTungkai'}]},
+  {label:'Kecepatan (Sprint 20 m)',             parts:[{key:'kecepatan', terbalik:true}]},
+  {label:'Kelincahan (Shuttle Run 4x5 m)',      parts:[{key:'kelincahan', terbalik:true}]},
+  {label:'Daya Tahan Kardio (Bleep Test)',      parts:[{key:'bleepTest'}]}
+];
+
+/* Ambil angka murni dari value yang mungkin masih membawa satuan
+   (mis. "15 cm", "Level 8.4", "9,2 detik") — data lama tetap terbaca. */
+function angkaDari(val){
+  if(val === '' || val == null) return null;
+  const m = String(val).replace(',', '.').match(/-?\d+(?:\.\d+)?/);
+  if(!m) return null;
+  const n = Number(m[0]);
+  return isFinite(n) ? n : null;
+}
+
+function genderOf(u){
+  const jk = String((u && u.jenisKelamin) || '').toUpperCase().replace(/[^A-Z]/g, '');
+  if(jk === 'L' || jk.indexOf('LAKI') === 0) return 'L';
+  if(jk === 'P' || jk.indexOf('PEREMPUAN') === 0) return 'P';
+  return '';
+}
+
+function kategoriNormaItem(key, nilai, u, terbalik){
+  const s = (NORMA_FISIK[key] || {})[genderOf(u)];
+  if(!s || nilai === null || nilai === '') return '';
+  return terbalik ? tentukanKategoriNormaTerbalik(nilai, s.rataRata, s.stdDev)
+                  : tentukanKategoriNorma(nilai, s.rataRata, s.stdDev);
+}
+
+/* Teks tampilan item Bleep Test: Level + Shuttle mentah + VO2max +
+   kategorinya. Data lama yang belum punya Level/Shuttle tampil apa adanya. */
+function bleepTextOf(t){
+  const f = (t && t.fisik) || {};
+  const lvl = angkaDari(f.bleepLevel);
+  if(lvl === null){
+    if(f.bleepTest === undefined || f.bleepTest === null) return '';
+    return f.bleepTest === '' ? '' : String(f.bleepTest);
+  }
+  const shl = angkaDari(f.bleepShuttle);
+  const vo2 = (f.bleepVo2max !== undefined && f.bleepVo2max !== null && f.bleepVo2max !== '')
+    ? Number(f.bleepVo2max) : angkaDari(f.bleepTest);
+  const kat = (vo2 === null || !t) ? '' : kategoriNormaItem('bleepTest', vo2, getUser(t.userId));
+  return 'Level ' + lvl + ' (Shuttle ' + (shl === null ? 0 : shl) + ')' +
+    (vo2 === null ? '' : ' — VO2max ' + vo2 + ' ml/kg/min' + (kat ? ' — ' + kat : ''));
+}
+
+function katDariPoin(poin){
+  const r = Math.round(poin);
+  if(r >= 5) return 'Baik Sekali';
+  if(r >= 4) return 'Baik';
+  if(r >= 3) return 'Cukup';
+  if(r >= 2) return 'Kurang';
+  return 'Kurang Sekali';
+}
+
+/* Hitung Nilai Fisik (0–100) dari hasil tes mentah:
+   kategori per item -> poin (5..1) -> rata-rata 6 item -> skala 0–100. */
+function hitungNilaiFisik(raw, u){
+  raw = raw || {};
+  const rincian = SKOR_FISIK_ITEMS.map(item => {
+    const parts = item.parts.map(p => {
+      const nilai = angkaDari(raw[p.key]);
+      const kategori = nilai === null ? '' : kategoriNormaItem(p.key, nilai, u, !!p.terbalik);
+      return {key:p.key, nilai, kategori, poin: kategori ? POIN_KATEGORI[kategori] : null};
+    });
+    const nilaiTampil = parts.length === 1
+      ? (parts[0].nilai === null ? '' : parts[0].nilai)
+      : parts.map(p => FISIK_PENDEK[p.key] + ' ' + (p.nilai === null ? '—' : p.nilai)).join(' · ');
+    const poinArr = parts.map(p => p.poin).filter(p => p != null);
+    const poin = poinArr.length ? poinArr.reduce((a,b) => a + b, 0) / poinArr.length : null;
+    return {label:item.label, nilai:nilaiTampil, kategori: poin === null ? '' : katDariPoin(poin), poin};
+  });
+  const semua = rincian.map(r => r.poin).filter(p => p != null);
+  const nilai = semua.length
+    ? Math.round((semua.reduce((a,b) => a + b, 0) / semua.length) / 5 * 100)
+    : '';
+  return {nilai, rincian};
+}
+
+/* Rincian untuk ditampilkan: pakai yang tersimpan, atau hitung ulang
+   dari data mentah (data lama belum punya rincian tersimpan). */
+function rincianFisik(t){
+  const f = (t && t.fisik) || {};
+  if(Array.isArray(f.rincian) && f.rincian.length) return f.rincian;
+  return hitungNilaiFisik(f, t ? getUser(t.userId) : null).rincian;
+}
+
+/* ==================================================================
+   HITUNG ULANG NILAI FISIK MENGIKUTI NORMA_FISIK TERKINI
+   ------------------------------------------------------------------
+   Dipanggil saat aplikasi dibuka. Jadi admin yang mengedit angka
+   rataRata/stdDev di NORMA_FISIK cukup memuat ulang halaman —
+   seluruh data tes lama ikut dihitung ulang, tidak perlu input ulang.
+   - HANYA record format TERPISAH (punya fisik.nilai) yang dihitung.
+   - Data lama (nilai gabungan tersimpan di teknik.nilai) TIDAK
+     disentuh, Nilai Teknik pun tidak pernah diubah di sini.
+   - Bila norma/gender belum lengkap (hasil kopolong), data dibiarkan.
+================================================================= */
+function hitungUlangNorma(){
+  const tests = getTests();
+  let changed = false;
+  tests.forEach(t => {
+    if(!isSplitNilai(t)) return;                       /* data lama -> biarkan */
+    const hasil = hitungNilaiFisik(t.fisik || {}, getUser(t.userId));
+    if(hasil.nilai === '') return;                     /* norma/gender belum siap */
+    const f = t.fisik;
+    if(f.nilai === hasil.nilai && JSON.stringify(f.rincian) === JSON.stringify(hasil.rincian)) return;
+    f.nilai = hasil.nilai;
+    f.rincian = hasil.rincian;
+    changed = true;
+  });
+  if(changed) setTests(tests);
+}
+
+function hitungIMT(tinggiCm, beratKg){
+  const t = Number(tinggiCm), b = Number(beratKg);
+  if(!isFinite(t) || !isFinite(b) || t <= 0 || b <= 0) return '';
+  const imt = (b * 10000) / (t * t); /* = berat / (tinggi/100)^2, bebas galat biner */
+  return Math.round(imt * 10) / 10;
+}
+
+function statusGiziOf(u){
+  if(!u) return {imt:'', status:''};
+  const imt = hitungIMT(u.tinggiBadan, u.beratBadan);
+  if(imt === '') return {imt:'', status:''};
+  const jk = genderOf(u);
+  return {imt, status: jk ? tentukanNormaIMT(imt, u.jenisKelamin, u.tanggalLahir) : ''};
+}
+
+const KAT_CSS = {
+  'Baik Sekali':'kat-baik-sekali', 'Baik':'kat-baik', 'Cukup':'kat-cukup',
+  'Kurang':'kat-kurang', 'Kurang Sekali':'kat-kurang-sekali',
+  'Sangat Baik':'kat-sangat-baik',
+  'Kurus':'gizi-kurus', 'Normal':'gizi-normal', 'Gemuk':'gizi-gemuk', 'Obesitas':'gizi-obesitas'
+};
+function kategoriBadge(kat){
+  if(!kat) return '<span class="muted">—</span>';
+  return '<span class="badge ' + (KAT_CSS[kat] || 'kat-lain') + '">' + esc(kat) + '</span>';
+}
+
+/* Persentase tampil di badge rincian 6 item — pemetaan SAMA dengan
+   skor chart radar: poin kategori x 20
+   (Baik Sekali 5→100%, Baik 4→80%, Cukup 3→60%, Kurang 2→40%, Kurang Sekali 1→20%). */
+function pctKategori(kat){
+  const p = POIN_KATEGORI[kat];
+  return p ? p * 20 : null;
+}
+/* Badge kategori + persentase dalam satu badge: "Cukup · 60%". */
+function kategoriBadgePct(kat){
+  if(!kat) return '<span class="muted">—</span>';
+  const pct = pctKategori(kat);
+  const teks = pct == null ? kat : kat + ' · ' + pct + '%';
+  return '<span class="badge ' + (KAT_CSS[kat] || 'kat-lain') + '">' + esc(teks) + '</span>';
+}
+
+/* Ringkas status gizi untuk tabel/kartu Profil Siswa (bukan skor). */
+function giziLine(u){
+  const g = statusGiziOf(u);
+  if(!g.imt && !g.status) return '—';
+  return esc(g.status || '—') + (g.imt ? ' (IMT ' + g.imt + ')' : '');
+}
+
+/* Antropometri milik SATU hasil tes (tersimpan di fisik.*),
+   fallback ke data Profil Siswa bila tes lama belum menyimpan.
+   Kategori dihitung ULANG dengan IMT/U memakai umur saat TES
+   (tanggalLahir + t.tanggal) — nilai tersimpan lama (norma dewasa)
+   otomatis tergantikan; bila gagal hitung baru, pakai yang tersimpan. */
+function antropometriOf(t){
+  if(!t) return null;
+  const f = t.fisik || {};
+  const u = getUser(t.userId);
+  const ambil = (a, b) => (a !== undefined && a !== null && a !== '') ? a : (b || '');
+  const tinggi = ambil(f.tinggiBadan, u ? u.tinggiBadan : '');
+  const berat  = ambil(f.beratBadan,  u ? u.beratBadan  : '');
+  if(!tinggi || !berat) return null;
+  const imt = (f.imt !== undefined && f.imt !== null && f.imt !== '') ? f.imt : hitungIMT(tinggi, berat);
+  let kategori = '';
+  if(imt !== '' && imt !== null && genderOf(u)) kategori = tentukanNormaIMT(Number(imt), u.jenisKelamin, u.tanggalLahir, t.tanggal);
+  if(!kategori) kategori = f.imtKategori || '';
+  return {tinggi, berat, imt, kategori, tersimpan: f.tinggiBadan !== undefined && f.tinggiBadan !== ''};
+}
+
+function antropometriText(a){
+  if(!a) return '';
+  return a.tinggi + ' cm / ' + a.berat + ' kg (IMT: ' +
+    (a.imt === '' || a.imt == null ? '—' : a.imt) + (a.kategori ? ' - ' + a.kategori : '') + ')';
+}
+
+/* Daftar mentah item Kondisi Fisik milik SATU hasil tes — SATU sumber
+   render untuk kolom "Fisik" tabel admin DAN blok detail sisi siswa,
+   supaya tampilannya selalu sinkron. */
+function fisikMentahHtml(t){
+  const f = (t && t.fisik) || {};
+  const line = (label, val) => val ? '<span><b>' + esc(label) + ':</b> ' + esc(val) + '</span>' : '';
+  return '<div class="stack-lines fisik-mentah">' +
+    line('Antropometri', antropometriText(antropometriOf(t))) +
+    FISIK_ITEMS.map(i => line(i[1], i[0] === 'bleepTest' ? bleepTextOf(t) : f[i[0]])).join('') +
+    '</div>';
+}
+
+/* Daftar mentah item Kemampuan Teknik milik SATU hasil tes — SATU sumber
+   render (frekuensi 4 sisi + 2 jumlah norma dengan badge kategorinya). */
+function teknikMentahHtml(t){
+  const k = (t && t.teknik) || {};
+  const line = (label, val) => val ? '<span><b>' + esc(label) + ':</b> ' + esc(val) + '</span>' : '';
+  const lineKat = (label, hasil) => hasil
+    ? '<span><b>' + esc(label) + ':</b> ' + esc(hasil.nilai) +
+      (hasil.kategori ? ' ' + kategoriBadge(hasil.kategori) : '') + '</span>'
+    : '';
+  return '<div class="stack-lines fisik-mentah teknik-mentah">' +
+    TEKNIK_ITEMS.map(([key, lbl]) => line(lbl, k[key])).join('') +
+    TEKNIK_NORMA_ITEMS.map(it => lineKat(it.label, teknikNormaHasil(t, it))).join('') +
+    '</div>';
+}
+
+function rincianFisikHtml(t){
+  const f = (t && t.fisik) || {};
+  const terhitung = Array.isArray(f.rincian) && f.rincian.length > 0;
+  const rinc = rincianFisik(t);
+  const total = nilaiFisikOf(t);
+  const poinArr = rinc.map(r => r.poin).filter(p => p != null);
+  const rata = poinArr.length ? poinArr.reduce((a,b) => a + b, 0) / poinArr.length : null;
+  /* Kiri: daftar 6 item (nilai + badge kategori). Kanan: chart radar 6 sumbu
+     dari skor item yang sama. Total poin & catatan tetap di bawah keduanya. */
+  const daftar = '<div class="fr-head">Rincian 6 item (norma)</div>' +
+    (rinc.length
+      ? rinc.map(r => '<div class="fr-row"><span class="fr-l">' + esc(r.label) + '</span>' +
+          '<span class="fr-v">' + esc(r.nilai === '' || r.nilai == null ? '—' : r.nilai) + '</span>' +
+          kategoriBadgePct(r.kategori) + '</div>').join('')
+      : '<div class="muted small">Belum ada data tes fisik.</div>');
+  const grafik = '<div class="fr-head">📊 Profil Kondisi Fisik — 📅 ' + esc(fmtDate(t.tanggal)) + '</div>' +
+    '<div class="radar-box"><canvas id="radar_rinc_' + esc(String(t.id).replace(/[^\w-]/g, '')) +
+      '" data-radar-tes="' + esc(t.id) + '"></canvas></div>' +
+    '<div class="radar-cap">6 sumbu Kondisi Fisik dari kategori norma (Baik Sekali 100 · Baik 80 · Cukup 60 · ' +
+      'Kurang 40 · Kurang Sekali 20). Kekuatan = rata-rata skor Push Up &amp; Sit Up. ' +
+      'Nilai Kemampuan Teknik tidak masuk grafik ini.</div>';
+  return '<div class="fr-grid"><div class="fr-kiri">' + daftar + '</div>' +
+    '<div class="fr-kanan">' + grafik + '</div></div>' +
+    '<div class="fr-total">Poin rata-rata <b>' + (rata != null ? rata.toFixed(2) : '—') + ' / 5</b>' +
+    ' → Nilai Fisik <b>' + (total === '' || total == null ? '—' : total) + '</b>' +
+    (terhitung ? '' : '<br><span class="muted">Nilai lama (belum dihitung rumus norma). ' +
+      'Buka ✏️ lalu Simpan untuk menghitung ulang otomatis.</span>') + '</div>';
+}
+
+/* Rincian 2 item teknik norma + total poin — DIPAKAI BERSAMA admin
+   (panel expand kolom Nilai Teknik) dan siswa (blok rincian per tanggal).
+   Gaya & struktur meniru rincianFisikHtml: daftar item + badge kategori
+   di kiri, 4 frekuensi mentah di kanan, baris "Poin rata-rata X / 5 →
+   Nilai Teknik Y" di bawah, plus catatan bila nilainya masih manual lama. */
+function rincianTeknikHtml(t){
+  const k = (t && t.teknik) || {};
+  const terhitung = teknikTerhitung(t);
+  const rinc = rincianTeknik(t);
+  const total = nilaiTeknikOf(t);
+  const poinArr = rinc.map(r => r.poin).filter(p => p != null);
+  const rata = poinArr.length ? poinArr.reduce((a,b) => a + b, 0) / poinArr.length : null;
+  const adaData = rinc.some(r => r.nilai !== '' && r.nilai != null);
+  const daftar = '<div class="fr-head">Rincian 2 item (norma)</div>' +
+    (adaData
+      ? rinc.map(r => '<div class="fr-row"><span class="fr-l">' + esc(r.label) + '</span>' +
+          '<span class="fr-v">' + esc(r.nilai === '' || r.nilai == null ? '—' : r.nilai) + '</span>' +
+          kategoriBadgePct(r.kategori) + '</div>').join('')
+      : '<div class="muted small">Belum ada data tes teknik.</div>');
+  const line = (label, val) => val ? '<span><b>' + esc(label) + ':</b> ' + esc(val) + '</span>' : '';
+  const frekuensi = '<div class="fr-head">4 frekuensi tendangan (10 detik)</div>' +
+    '<div class="stack-lines fisik-mentah">' +
+    TEKNIK_ITEMS.map(([key, lbl]) => line(lbl, k[key])).join('') +
+    '</div>';
+  return '<div class="fr-grid"><div class="fr-kiri">' + daftar + '</div>' +
+    '<div class="fr-kanan">' + frekuensi + '</div></div>' +
+    '<div class="fr-total">Poin rata-rata <b>' + (rata != null ? rata.toFixed(2) : '—') + ' / 5</b>' +
+    ' → Nilai Teknik <b>' + (total === '' || total == null ? '—' : total) + '</b>' +
+    (terhitung ? '' : '<br><span class="muted">Nilai lama (belum dihitung rumus norma). ' +
+      'Buka ✏️ lalu Simpan untuk menghitung ulang otomatis.</span>') + '</div>';
+}
+
+const initials = n => String(n||'?').trim().split(/\s+/).slice(0,2).map(w=>w[0]).join('').toUpperCase();
+
+function fmtDate(iso){
+  if(!iso) return '—';
+  const d = new Date(iso + 'T00:00:00');
+  if(isNaN(d)) return iso;
+  return d.toLocaleDateString('id-ID', {day:'numeric', month:'short', year:'numeric'});
+}
+/* Umur dalam TAHUN selesai (angka) — untuk IMT/U; null bila data tak
+   valid. asOf (ISO, opsional) = tanggal penilaian; default hari ini. */
+function umurTahun(tglLahir, asOf){
+  if(!tglLahir) return null;
+  const b = new Date(tglLahir + 'T00:00:00'); if(isNaN(b)) return null;
+  const n = asOf ? new Date(asOf + 'T00:00:00') : new Date();
+  if(isNaN(n)) return null;
+  let a = n.getFullYear() - b.getFullYear();
+  const m = n.getMonth() - b.getMonth();
+  if(m < 0 || (m === 0 && n.getDate() < b.getDate())) a--;
+  return a >= 0 ? a : null;
+}
+function umur(tglLahir){
+  if(!tglLahir) return '—';
+  const b = new Date(tglLahir + 'T00:00:00'); if(isNaN(b)) return '—';
+  const n = new Date();
+  let a = n.getFullYear() - b.getFullYear();
+  const m = n.getMonth() - b.getMonth();
+  if(m < 0 || (m === 0 && n.getDate() < b.getDate())) a--;
+  return a >= 0 ? a + ' tahun' : '—';
+}
+function pct(hadir, total){ return total ? Math.round(hadir / total * 100) : 0; }
+
+function toast(msg, type){
+  const wrap = document.getElementById('toastWrap');
+  const el = document.createElement('div');
+  el.className = 'toast' + (type ? ' ' + type : '');
+  const ico = type === 'err' ? '⚠️' : (type === 'warn' ? 'ℹ️' : '✅');
+  el.innerHTML = '<span>' + ico + '</span><span>' + esc(msg) + '</span>';
+  wrap.appendChild(el);
+  setTimeout(()=>{ el.style.opacity='0'; el.style.transition='.3s'; setTimeout(()=>el.remove(),320); }, 3200);
+}
+
+/* ==================================================================
+   DATA CONTOH (SEED)
+================================================================== */
+function seed(force){
+  const acc = getAdmin();
+  if(!store.get(K.admin, null)) store.set(K.admin, acc);
+
+  /* Data contoh TIDAK dimuat otomatis — aplikasi mulai KOSONG supaya
+     pelatih bisa mengisi data sendiri. Data dummy hanya dimuat saat
+     diminta eksplisit (tombol "Data Contoh" / seed(true)). */
+  if(!force) return;
+
+  const users = [
+    {id:'u1', namaLengkap:'Bagus Ramadhan', kartuAtlet:'TS-CRM-0001', tempatLahir:'Cerme', tanggalLahir:'2010-04-18', username:'bagus',   password:'siswa123', asalSekolah:'SMP Negeri 1 Cerme', tinggiBadan:'165', beratBadan:'57', jenisKelamin:'L'},
+    {id:'u2', namaLengkap:'Fajar Nur Hidayat', kartuAtlet:'TS-CRM-0002', tempatLahir:'Cerme', tanggalLahir:'2009-09-11', username:'fajar',  password:'siswa123', asalSekolah:'SMA Negeri 1 Cerme', tinggiBadan:'174', beratBadan:'78', jenisKelamin:'L'},
+    {id:'u3', namaLengkap:'Ayu Lestari', kartuAtlet:'TS-CRM-0003', tempatLahir:'Bayumas', tanggalLahir:'2011-02-14', username:'ayu',     password:'siswa123', asalSekolah:'SMP Muhammadiyah 3 Cerme', tinggiBadan:'156', beratBadan:'47', jenisKelamin:'P'},
+    {id:'u4', namaLengkap:'Intan Permata Sari', kartuAtlet:'TS-CRM-0004', tempatLahir:'Ajibarang', tanggalLahir:'2012-07-30', username:'intan', password:'siswa123', asalSekolah:'SMP Negeri 2 Cerme', tinggiBadan:'150', beratBadan:'39', jenisKelamin:'P'}
+  ];
+
+  /* Data contoh memakai format terpisah: Nilai Fisik dihitung dari
+     NORMA_FISIK (rincian 6 item ikut disimpan), Nilai Teknik dihitung
+     otomatis dari rumus norma teknik (rincian 2 item ikut disimpan).
+     2 item norma teknik = jumlah Kanan + Kiri (otomatis, bukan input). */
+  const mk = (userId, tanggal, fisik, sambaranKanan, sambaranKiri, agilityKanan, agilityKiri, catatan) => {
+    const siswa = users.find(x => x.id === userId);
+    const h = hitungNilaiFisik(fisik, siswa);
+    const teknik = {
+      sambaranKanan:String(sambaranKanan), sambaranKiri:String(sambaranKiri),
+      agilityKanan:String(agilityKanan), agilityKiri:String(agilityKiri),
+      tendanganSambaran: jumlahDuaSisi(sambaranKanan, sambaranKiri),
+      agilityKick: jumlahDuaSisi(agilityKanan, agilityKiri)
+    };
+    const ht = hitungNilaiTeknik(teknik);
+    teknik.nilai = ht.nilai;
+    teknik.rincian = ht.rincian;
+    return {
+      id: uid('t'), userId, tanggal,
+      fisik: Object.assign({}, fisik, {nilai: h.nilai, rincian: h.rincian}),
+      teknik,
+      catatan
+    };
+  };
+
+  /* 4 kolom teknik = frekuensi tendangan dalam 10 detik per sisi.
+     Bleep test disimpan Level + Shuttle mentah + VO2max hasil rumus. */
+  const bleep = (level, shuttle) => {
+    const vo2 = hitungVO2maxBleep(level, shuttle);
+    return {bleepLevel:String(level), bleepShuttle:String(shuttle),
+            bleepVo2max:vo2, bleepTest:String(vo2)};
+  };
+  const tests = [
+    /* u1 — Bagus Ramadhan (L): progres dari "Kurang" ke "Baik" */
+    mk('u1','2026-06-14',
+      {kelentukan:'13 cm', pushUp:'19 reps', sitUp:'18 reps', powerTungkai:'1.7 m', kecepatan:'4.2 sec', kelincahan:'17.0 sec', ...bleep(6, 2)},
+      '10','9','7','6','Kekuatan masih kurang, tambah latihan push up & sit up.'),
+    mk('u1','2026-08-23',
+      {kelentukan:'17 cm', pushUp:'28 reps', sitUp:'26 reps', powerTungkai:'2.1 m', kecepatan:'3.7 sec', kelincahan:'15.0 sec', ...bleep(9, 5)},
+      '12','11','9','8','Kemajuan bagus, pertahankan frekuensi tendangan kiri.'),
+    /* u2 — Fajar Nur Hidayat (L): level tertinggi, mantap */
+    mk('u2','2026-06-14',
+      {kelentukan:'21 cm', pushUp:'36 reps', sitUp:'30 reps', powerTungkai:'2.4 m', kecepatan:'3.25 sec', kelincahan:'13.5 sec', ...bleep(12, 6)},
+      '14','13','11','10','Performa terbaik, siapkan untuk kejuaraan cabang.'),
+    mk('u2','2026-08-23',
+      {kelentukan:'18 cm', pushUp:'30 reps', sitUp:'28 reps', powerTungkai:'2.15 m', kecepatan:'3.6 sec', kelincahan:'15.1 sec', ...bleep(10, 4)},
+      '13','11','10','9','Sedikit turun, tingkatkan lagi daya tahan lari.'),
+    /* u3 — Ayu Lestari (P): progres dari "Kurang" ke "Baik" */
+    mk('u3','2026-06-14',
+      {kelentukan:'15 cm', pushUp:'12 reps', sitUp:'14 reps', powerTungkai:'1.4 m', kecepatan:'4.6 sec', kelincahan:'18.5 sec', ...bleep(5, 7)},
+      '8','7','5','4','Kelentukan lumayan, power tungkai & sprint perlu ditingkatkan.'),
+    mk('u3','2026-08-23',
+      {kelentukan:'19 cm', pushUp:'19 reps', sitUp:'21 reps', powerTungkai:'1.75 m', kecepatan:'4.05 sec', kelincahan:'16.3 sec', ...bleep(7, 8)},
+      '10','9','7','6','Bagus, kecepatan & kelincahan sudah masuk kategori Baik.'),
+    /* u4 — Intan Permata Sari (P): mulai dari kategori TERENDAH —
+       tes pertama sengaja memuat KASUS BATAS: Sambaran 9 (<10) &
+       Agility 3 (<5) -> "Kurang Sekali"; tes kedua tepat di batas
+       minimal lolos: Sambaran 10 (>=10 "Kurang") & Agility 10 (>=10
+       "Cukup") — memperlihatkan seluruh 5 cabang kategori rumus. */
+    mk('u4','2026-06-14',
+      {kelentukan:'11 cm', pushUp:'7 reps', sitUp:'9 reps', powerTungkai:'1.1 m', kecepatan:'5.0 sec', kelincahan:'19.6 sec', ...bleep(4, 6)},
+      '4','5','2','1','Fondasi lemah — naikkan porsi latihan bertahap & pola makan.'),
+    mk('u4','2026-08-23',
+      {kelentukan:'14 cm', pushUp:'14 reps', sitUp:'16 reps', powerTungkai:'1.5 m', kecepatan:'4.5 sec', kelincahan:'17.9 sec', ...bleep(6, 4)},
+      '6','4','4','6','Kemajuan nyata di semua item, pertahankan pola latihan.')
+  ];
+
+  const sessions = ['2026-07-25','2026-08-01','2026-08-08','2026-08-15','2026-08-22','2026-08-29','2026-09-05','2026-09-12','2026-09-19'];
+  const patterns = [
+    ['Hadir','Hadir','Hadir','Hadir','Izin','Hadir','Hadir','Hadir','Hadir'],
+    ['Hadir','Hadir','Alfa','Hadir','Hadir','Hadir','Izin','Hadir','Hadir'],
+    ['Izin','Hadir','Hadir','Hadir','Hadir','Izin','Hadir','Hadir','Hadir'],
+    ['Hadir','Hadir','Hadir','Hadir','Hadir','Hadir','Hadir','Hadir','Hadir']
+  ];
+  const absensi = [];
+  users.forEach((u, ui) => {
+    sessions.forEach((s, si) => absensi.push({id:uid('a'), userId:u.id, tanggal:s, status:patterns[ui][si]}));
+  });
+
+  setUsers(users); setTests(tests); setAbsen(absensi);
+}
+
+/* Sekali jalan: hapus data dummy hasil auto-seed VERSI LAMA yang masih
+   tersimpan di browser pelatih (siswa u1–u4 + tes & absensinya) supaya
+   aplikasi benar-benar mulai kosong. Siswa buatan sendiri tidak tersentuh
+   (id baru selalu format uid, bukan 'u1'–'u4'). */
+function bersihkanDummyLama(){
+  if(store.get('ts_dummyV1', false)) return;
+  const DEMO = {u1:'bagus', u2:'fajar', u3:'ayu', u4:'intan'};
+  const users = getUsers();
+  const buang = users.filter(u => DEMO[u.id] === u.username).map(u => u.id);
+  if(buang.length){
+    setUsers(users.filter(u => buang.indexOf(u.id) === -1));
+    setTests(getTests().filter(t => buang.indexOf(t.userId) === -1));
+    setAbsen(getAbsen().filter(a => buang.indexOf(a.userId) === -1));
+    if(session && session.userId && buang.indexOf(session.userId) > -1){
+      session = null; store.del(K.session);
+    }
+  }
+  store.set('ts_dummyV1', true);
+}
+
+/* Konversi data tes format lama (kekuatan/kelenturan/dayaTahan)
+   ke struktur baru KONDISI FISIK. Aman dijalankan berulang. */
+function migrateTes(){
+  const tests = getTests();
+  let changed = false;
+  const toReps = v => {
+    const s = String(v || '');
+    if(!s) return '';
+    const m = s.match(/\d+/);
+    return m ? m[0] + ' reps' : s;
+  };
+  tests.forEach(t => {
+    const f = t.fisik || {};
+    if(f.kelentukan !== undefined || f.pushUp !== undefined || f.bleepTest !== undefined) return;
+    t.fisik = {
+      kelentukan: f.kelenturan || '',
+      pushUp: toReps(f.kekuatan),
+      sitUp: '',
+      powerTungkai: '',
+      kecepatan: '',
+      kelincahan: f.kelincahan ? String(f.kelincahan).replace(/detik/g, 'sec') : '',
+      bleepTest: ''
+    };
+    changed = true;
+  });
+
+  /* Bleep test lama (satu angka level, mis. "Level 6.2" / "8.4")
+     -> diuraikan jadi Level + Shuttle + VO2max (Ramsbottom 1988).
+     Aman dijalankan berulang: record yang sudah punya bleepLevel dilewati.
+     Angka di luar rentang level (<= 21) BUKAN level, melainkan VO2max
+     yang sudah tersimpan — jangan diuraikan agar tidak salah ubah. */
+  tests.forEach(t => {
+    const f = t.fisik;
+    if(!f || f.bleepLevel !== undefined) return;
+    const n = angkaDari(f.bleepTest);
+    if(n === null || n <= 0 || n > 21) return;
+    const lvl = Math.min(21, Math.max(1, Math.floor(n)));
+    const smax = beepShuttlesPerLevel[lvl];
+    const shuttle = Math.min(smax, Math.max(0, Math.round((n - lvl) * smax)));
+    const vo2 = hitungVO2maxBleep(lvl, shuttle);
+    f.bleepLevel = String(lvl);
+    f.bleepShuttle = String(shuttle);
+    f.bleepVo2max = vo2;
+    f.bleepTest = String(vo2);
+    changed = true;
+  });
+
+  if(changed) setTests(tests);
+}
+
+/* ==================================================================
+   MODAL GENERIK
+================================================================== */
+let modalOnSubmit = null;
+
+function openModal(opts){
+  const fields = opts.fields || [];
+  const root = document.getElementById('modalRoot');
+
+  /* Modal khusus konten HTML (tanpa form) — dipakai chart radar. */
+  if(opts.html){
+    root.innerHTML = '<div class="overlay" data-overlay><div class="modal' + (opts.wide ? ' lebar' : '') +
+      '" role="dialog" aria-modal="true">' +
+      '<div class="modal-head"><h3>' + esc(opts.title || '') + '</h3>' +
+      '<button type="button" class="icon-btn" data-close aria-label="Tutup">&#10005;</button></div>' +
+      '<div class="modal-body mb-html">' + opts.html + '</div>' +
+      '<div class="modal-foot"><button type="button" class="btn ghost" data-close>Tutup</button></div>' +
+      '</div></div>';
+    const closeHtml = () => { buangRadar(root); root.innerHTML = ''; };
+    root.querySelectorAll('[data-close]').forEach(b => b.addEventListener('click', closeHtml));
+    root.querySelector('[data-overlay]').addEventListener('mousedown', e => {
+      if(e.target.hasAttribute('data-overlay')) closeHtml();
+    });
+    return;
+  }
+
+  let html = '<div class="overlay" data-overlay><div class="modal" role="dialog" aria-modal="true">' +
+    '<div class="modal-head"><h3>' + esc(opts.title) + '</h3>' +
+    '<button type="button" class="icon-btn" data-close aria-label="Tutup">&#10005;</button></div>' +
+    '<form novalidate><div class="modal-body">';
+
+  fields.forEach(f => {
+    if(f.type === 'header'){ html += '<div class="f-sec">' + esc(f.label) + '</div>'; return; }
+    const id = 'mf_' + f.name;
+    const req = f.required ? ' <span class="req">*</span>' : '';
+    const ph = f.placeholder ? ' placeholder="' + esc(f.placeholder) + '"' : '';
+    const val = f.value != null ? esc(f.value) : '';
+    const full = (f.type === 'textarea' || f.full || f.type === 'header') ? ' full' : '';
+    html += '<div class="field' + full + '"><label for="' + id + '">' + esc(f.label) + req + '</label>';
+    if(f.type === 'textarea'){
+      html += '<textarea id="' + id + '" name="' + f.name + '" rows="3"' + ph + '>' + val + '</textarea>';
+    }else if(f.type === 'select'){
+      html += '<select id="' + id + '" name="' + f.name + '">';
+      (f.options || []).forEach(o => {
+        const sel = String(o.value) === String(f.value) ? ' selected' : '';
+        html += '<option value="' + esc(o.value) + '"' + sel + '>' + esc(o.label) + '</option>';
+      });
+      html += '</select>';
+    }else{
+      const extra = (f.min != null ? ' min="' + f.min + '"' : '') + (f.max != null ? ' max="' + f.max + '"' : '') +
+        (f.step != null ? ' step="' + f.step + '"' : '');
+      html += '<input id="' + id + '" name="' + f.name + '" type="' + (f.type || 'text') + '" value="' + val + '"' + ph + extra + '>';
+    }
+    if(f.hint) html += '<small class="hint">' + esc(f.hint) + '</small>';
+    html += '</div>';
+  });
+
+  html += '</div><div class="modal-foot"><button type="button" class="btn ghost" data-close>Batal</button>' +
+    '<button type="submit" class="btn primary">' + esc(opts.submitLabel || 'Simpan') + '</button>' +
+    '</div></form></div></div>';
+
+  root.innerHTML = html;
+  modalOnSubmit = opts.onSubmit;
+
+  const close = () => { root.innerHTML = ''; modalOnSubmit = null; };
+  root.querySelectorAll('[data-close]').forEach(b => b.addEventListener('click', close));
+  root.querySelector('[data-overlay]').addEventListener('mousedown', e => { if(e.target.hasAttribute('data-overlay')) close(); });
+  root.querySelector('form').addEventListener('submit', e => {
+    e.preventDefault();
+    const data = {};
+    fields.forEach(f => {
+      if(f.type === 'header') return;
+      const el = root.querySelector('[name="' + f.name + '"]');
+      data[f.name] = el ? el.value.trim() : '';
+    });
+    for(const f of fields){
+      if(f.type === 'header' || !f.required) continue;
+      if(!data[f.name]){
+        const el = root.querySelector('[name="' + f.name + '"]');
+        if(el){ el.focus(); el.style.borderColor = 'var(--danger)'; }
+        toast('Lengkapi field wajib: ' + f.label, 'err');
+        return;
+      }
+    }
+    const fn = modalOnSubmit;
+    if(fn) fn(data, close);
+  });
+  const first = root.querySelector('input,select,textarea');
+  if(first) setTimeout(()=>first.focus(), 60);
+}
+
+document.addEventListener('keydown', e => {
+  if(e.key === 'Escape'){
+    const root = document.getElementById('modalRoot');
+    if(root.innerHTML){ buangRadar(root); root.innerHTML = ''; }
+  }
+});
+
+/* ==================================================================
+   AUTENTIKASI
+================================================================== */
+let session = store.get(K.session, null);
+let currentView = '';
+
+function sessionValid(){
+  if(!session || !session.role) return false;
+  if(session.role === 'admin') return !!store.get(K.admin, null);
+  return !!getUser(session.userId);
+}
+
+function showAuth(){
+  document.getElementById('appScreen').classList.add('hidden');
+  document.getElementById('authScreen').classList.remove('hidden');
+  switchAuthPane('login');
+  switchLoginTab('user');
+}
+function showApp(){
+  document.getElementById('authScreen').classList.add('hidden');
+  document.getElementById('appScreen').classList.remove('hidden');
+  const isAdmin = session.role === 'admin';
+  const u = isAdmin ? null : getUser(session.userId);
+  /* Nama yang tampil = admin yang SEDANG login (ratih/yusuf/rozaq),
+     fallback ke akun bawaan bila sesi lama tidak menyimpan username. */
+  const namaAdmin = isAdmin ? (session.username || getAdmin().username) : '';
+  document.getElementById('whoName').textContent = isAdmin ? namaAdmin : u.namaLengkap;
+  document.getElementById('whoRole').textContent = isAdmin ? 'Admin / Pelatih' : 'Siswa';
+  document.getElementById('whoAvatar').innerHTML = isAdmin
+    ? esc(initials(namaAdmin))
+    : (u.foto ? '<img src="' + esc(u.foto) + '" alt="' + esc(u.namaLengkap) + '">' : esc(initials(u.namaLengkap)));
+  document.getElementById('navAdmin').classList.toggle('hidden', !isAdmin);
+  document.getElementById('navUser').classList.toggle('hidden', isAdmin);
+  document.getElementById('bnavAdmin').classList.toggle('hidden', !isAdmin);
+  document.getElementById('bnavUser').classList.toggle('hidden', isAdmin);
+  const allowed = isAdmin ? ['admin-siswa','admin-tes','admin-absensi'] : ['user-profil','user-tes','user-absen'];
+  const req = new URLSearchParams(location.search).get('view');
+  go(req && allowed.indexOf(req) > -1 ? req : (isAdmin ? 'admin-siswa' : 'user-profil'));
+}
+function logout(){
+  session = null; store.del(K.session);
+  currentView = '';
+  document.querySelectorAll('.view').forEach(v => v.classList.add('hidden'));
+  showAuth();
+  toast('Kamu sudah keluar. Sampai jumpa! 👋');
+}
+
+function switchAuthPane(which){
+  document.getElementById('loginPane').classList.toggle('hidden', which !== 'login');
+  document.getElementById('registerPane').classList.toggle('hidden', which !== 'register');
+}
+function switchLoginTab(tab){
+  document.querySelectorAll('#loginTabs button').forEach(b => b.classList.toggle('on', b.dataset.tab === tab));
+  document.getElementById('userLoginForm').classList.toggle('hidden', tab !== 'user');
+  document.getElementById('adminLoginForm').classList.toggle('hidden', tab !== 'admin');
+}
+
+document.querySelectorAll('#loginTabs button').forEach(b => b.addEventListener('click', () => switchLoginTab(b.dataset.tab)));
+document.getElementById('toRegister').addEventListener('click', () => switchAuthPane('register'));
+document.getElementById('toLogin').addEventListener('click', () => switchAuthPane('login'));
+
+document.getElementById('userLoginForm').addEventListener('submit', e => {
+  e.preventDefault();
+  const un = document.getElementById('ulUser').value.trim();
+  const pw = document.getElementById('ulPass').value;
+  if(!un || !pw){ toast('Username dan password wajib diisi.', 'err'); return; }
+  const u = getUsers().find(x => x.username.toLowerCase() === un.toLowerCase());
+  if(!u){ toast('Username tidak ditemukan. Periksa lagi atau daftar dulu.', 'err'); return; }
+  if(u.password !== pw){ toast('Password salah. Coba lagi.', 'err'); return; }
+  session = {role:'user', userId:u.id};
+  store.set(K.session, session);
+  e.target.reset();
+  showApp();
+  toast('Halo, ' + u.namaLengkap.split(' ')[0] + '! 👋');
+});
+
+document.getElementById('adminLoginForm').addEventListener('submit', e => {
+  e.preventDefault();
+  const un = document.getElementById('alUser').value.trim();
+  const pw = document.getElementById('alPass').value;
+  const acc = findAdmin(un, pw);
+  if(acc){
+    session = {role:'admin', username:acc.username};
+    store.set(K.session, session);
+    e.target.reset();
+    showApp();
+    toast('Selamat datang, Pelatih! 💪');
+  }else{
+    toast('Username atau password admin salah.', 'err');
+  }
+});
+
+/* ---- Foto profil saat registrasi (opsional) ---- */
+let regFotoData = '';
+
+function setRegPhotoPreview(){
+  const img = document.getElementById('regPhotoPreview');
+  const ini = document.getElementById('regInitials');
+  if(!img) return;
+  if(regFotoData){
+    img.src = regFotoData;
+    img.hidden = false;
+    if(ini) ini.style.display = 'none';
+  }else{
+    img.removeAttribute('src');
+    img.hidden = true;
+    if(ini) ini.style.display = '';
+  }
+}
+
+function handleFotoFile(file){
+  const inp = document.getElementById('rFoto');
+  if(!file) return;
+  if(!file.type || file.type.indexOf('image/') !== 0){
+    toast('File harus berupa gambar.', 'err');
+    if(inp) inp.value = '';
+    return;
+  }
+  if(file.size > 5 * 1024 * 1024){
+    toast('Ukuran foto maksimal 5 MB.', 'err');
+    if(inp) inp.value = '';
+    return;
+  }
+  const reader = new FileReader();
+  reader.onload = ev => {
+    const img = new Image();
+    img.onload = () => {
+      const s = Math.min(img.width, img.height);
+      const c = document.createElement('canvas');
+      c.width = 400;
+      c.height = 400;
+      c.getContext('2d').drawImage(img, (img.width - s) / 2, (img.height - s) / 2, s, s, 0, 0, 400, 400);
+      regFotoData = c.toDataURL('image/jpeg', 0.7);
+      setRegPhotoPreview();
+      toast('Foto profil siap digunakan.');
+    };
+    img.onerror = () => toast('Gambar tidak bisa dibaca.', 'err');
+    img.src = ev.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+function resetRegPhoto(){
+  regFotoData = '';
+  const inp = document.getElementById('rFoto');
+  if(inp) inp.value = '';
+  setRegPhotoPreview();
+}
+
+document.getElementById('rFoto').addEventListener('change', e => {
+  handleFotoFile(e.target.files && e.target.files[0]);
+});
+
+const rNamaInput = document.getElementById('rNama');
+if(rNamaInput) rNamaInput.addEventListener('input', () => {
+  const ini = document.getElementById('regInitials');
+  if(ini && !regFotoData) ini.textContent = initials(rNamaInput.value) || '?';
+});
+
+document.getElementById('registerForm').addEventListener('submit', e => {
+  e.preventDefault();
+  const g = id => document.getElementById(id).value.trim();
+  const data = {
+    namaLengkap:g('rNama'), kartuAtlet:g('rKartu'), tempatLahir:g('rTempat'),
+    tanggalLahir:g('rTanggal'), asalSekolah:g('rSekolah'),
+    username:g('rUser'), password:g('rPass'), password2:g('rPass2')
+  };
+  const missing = [
+    ['Nama Lengkap', data.namaLengkap], ['Nomor Kartu Atlet', data.kartuAtlet],
+    ['Tempat Lahir', data.tempatLahir], ['Tanggal Lahir', data.tanggalLahir],
+    ['Asal Sekolah', data.asalSekolah], ['Username', data.username],
+    ['Password', data.password], ['Ulangi Password', data.password2]
+  ].filter(p => !p[1]).map(p => p[0]);
+  if(missing.length){ toast('Field wajib diisi: ' + missing.join(', '), 'err'); return; }
+  if(data.password.length < 4){ toast('Password minimal 4 karakter.', 'err'); return; }
+  if(data.password !== data.password2){ toast('Konfirmasi password tidak sama.', 'err'); return; }
+  if(data.username.toLowerCase() === 'admin'){ toast('Username "admin" tidak diperbolehkan.', 'err'); return; }
+
+  const users = getUsers();
+  if(users.some(u => u.username.toLowerCase() === data.username.toLowerCase())){
+    toast('Username sudah dipakai siswa lain. Pilih yang lain.', 'err'); return;
+  }
+  const newUser = {
+    id:uid('u'), namaLengkap:data.namaLengkap, kartuAtlet:data.kartuAtlet,
+    tempatLahir:data.tempatLahir, tanggalLahir:data.tanggalLahir,
+    username:data.username, password:data.password, asalSekolah:data.asalSekolah,
+    foto:regFotoData
+  };
+  users.push(newUser);
+  setUsers(users);
+  e.target.reset();
+  resetRegPhoto();
+  switchAuthPane('login');
+  switchLoginTab('user');
+  document.getElementById('ulUser').value = newUser.username;
+  toast('Pendaftaran berhasil! Silakan login, ' + newUser.namaLengkap.split(' ')[0] + '. 🎉');
+});
+
+document.getElementById('logoutBtn').addEventListener('click', logout);
+
+/* ==================================================================
+   NAVIGASI
+================================================================== */
+const renderers = {
+  'user-profil': renderUserProfil,
+  'user-tes': renderUserTes,
+  'user-absen': renderUserAbsen,
+  'admin-siswa': renderAdminSiswa,
+  'admin-tes': renderAdminTes,
+  'admin-absensi': renderAdminAbsensi
+};
+
+function go(view){
+  currentView = view;
+  document.querySelectorAll('.view').forEach(v => v.classList.toggle('hidden', v.id !== 'view-' + view));
+  document.querySelectorAll('.nav-item').forEach(b => b.classList.toggle('on', b.dataset.view === view));
+  if(renderers[view]) renderers[view]();
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+document.querySelectorAll('.nav-item').forEach(b => b.addEventListener('click', () => go(b.dataset.view)));
+
+function pageHead(title, sub, right){
+  return '<div class="page-head"><div><h2>' + esc(title) + '</h2><p>' + esc(sub) + '</p></div>' +
+    (right ? '<div class="toolbar">' + right + '</div>' : '') + '</div>';
+}
+function emptyState(ico, title, sub){
+  return '<div class="empty"><span class="ico">' + ico + '</span><b>' + esc(title) + '</b>' + esc(sub) + '</div>';
+}
+
+/* ==================================================================
+   RINGKASAN
+================================================================== */
+function absenStats(userId){
+  const rows = getAbsen().filter(a => a.userId === userId);
+  const hadir = rows.filter(a => a.status === 'Hadir').length;
+  const izin  = rows.filter(a => a.status === 'Izin').length;
+  const alfa  = rows.filter(a => a.status === 'Alfa').length;
+  return {total:rows.length, hadir, izin, alfa, persen:pct(hadir, rows.length), rows};
+}
+
+/* ==================================================================
+   KOMPONEN UI — hero, donut, quick actions, avatar
+================================================================== */
+function avatarHTML(u, cls){
+  const ini = initials(u ? u.namaLengkap : '?');
+  return '<div class="av ' + (cls || '') + '">' +
+    (u && u.foto ? '<img src="' + esc(u.foto) + '" alt="' + esc(u.namaLengkap || 'Foto') + '">' : esc(ini)) + '</div>';
+}
+
+function donut(value, opts){
+  opts = opts || {};
+  const size = opts.size || 118;
+  const stroke = opts.stroke || 11;
+  const r = (size - stroke) / 2;
+  const c = 2 * Math.PI * r;
+  const v = Math.max(0, Math.min(100, Math.round(Number(value) || 0)));
+  const off = c - c * v / 100;
+  const color = opts.color || '#22a352';
+  const track = opts.track || '#e8ebf5';
+  const val = opts.text != null ? String(opts.text) : (v + '%');
+  return '<div class="donut" style="--sz:' + size + 'px">' +
+    '<svg width="' + size + '" height="' + size + '" viewBox="0 0 ' + size + ' ' + size + '" role="img" aria-label="' + esc(val) + '">' +
+      '<circle cx="' + (size/2) + '" cy="' + (size/2) + '" r="' + r + '" fill="none" stroke="' + track + '" stroke-width="' + stroke + '"></circle>' +
+      '<circle cx="' + (size/2) + '" cy="' + (size/2) + '" r="' + r + '" fill="none" stroke="' + color + '" stroke-width="' + stroke +
+        '" stroke-linecap="round" stroke-dasharray="' + c.toFixed(2) + '" stroke-dashoffset="' + off.toFixed(2) +
+        '" transform="rotate(-90 ' + (size/2) + ' ' + (size/2) + ')"></circle>' +
+    '</svg>' +
+    '<div class="dc"><b>' + esc(val) + '</b>' + (opts.label ? '<span>' + esc(opts.label) + '</span>' : '') + '</div></div>';
+}
+
+function donutStat(value, label, opts){
+  opts = Object.assign({size:74, stroke:8}, opts || {});
+  return '<div class="stat stat-donut">' + donut(value, opts) + '<div class="lbl">' + esc(label) + '</div></div>';
+}
+
+function hero(inner, cls){
+  return '<div class="hero ' + (cls || '') + '">' + inner + '</div>';
+}
+
+function qaRow(items){
+  return '<div class="qa-row">' + items.map(i =>
+    '<button type="button" class="qa"' + (i.id ? ' id="' + i.id + '"' : '') + '>' +
+      '<span class="qa-ico ' + (i.tone || 'green') + '">' + i.icon + '</span>' +
+      '<span class="qa-lbl">' + esc(i.label) + '</span>' +
+    '</button>').join('') + '</div>';
+}
+
+function avgNilai(list){
+  const vals = list.map(t => (t.teknik || {}).nilai)
+    .filter(v => v !== '' && v != null)
+    .map(Number).filter(n => !isNaN(n));
+  return {n:vals.length, avg:vals.length ? Math.round(vals.reduce((a,b) => a + b, 0) / vals.length) : 0};
+}
+
+/* ==================================================================
+   DASHBOARD SISWA
+================================================================== */
+function renderUserProfil(){
+  const u = getUser(session.userId);
+  if(!u){ go('user-profil'); return; }
+  const s = absenStats(u.id);
+  const nTes = getTests().filter(t => t.userId === u.id).length;
+
+  const gz = statusGiziOf(u);
+  const info = [
+    ['Nomor Kartu Atlet', u.kartuAtlet],
+    ['Tempat Lahir', u.tempatLahir],
+    ['Tanggal Lahir', fmtDate(u.tanggalLahir) + ' (' + umur(u.tanggalLahir) + ')'],
+    ['Asal Sekolah', u.asalSekolah],
+    ['Username', u.username],
+    ['Tinggi Badan', u.tinggiBadan ? u.tinggiBadan + ' cm' : '—'],
+    ['Berat Badan', u.beratBadan ? u.beratBadan + ' kg' : '—'],
+    ['Jenis Kelamin', u.jenisKelamin === 'L' ? 'Laki-laki (L)' : u.jenisKelamin === 'P' ? 'Perempuan (P)' : '—'],
+    ['IMT', gz.imt ? gz.imt + ' kg/m²' : '—'],
+    ['Status Gizi', kategoriBadge(gz.status) + '<span class="muted small"> (info tambahan, bukan skor)</span>', true],
+    ['Jumlah Hasil Tes', nTes + ' kali tes'],
+    ['Kehadiran Latihan', s.persen + '% dari ' + s.total + ' sesi'],
+    ['Status Terakhir', s.rows.length ? s.rows.slice().sort((a,b)=>b.tanggal.localeCompare(a.tanggal))[0].status : 'Belum ada data']
+  ];
+
+  document.getElementById('view-user-profil').innerHTML =
+    pageHead('Profil Siswa', 'Data dirimu. Perubahan hanya dapat dilakukan oleh pelatih/admin.') +
+    hero(
+      '<div class="hero-id">' + avatarHTML(u, 'lg') +
+        '<div><div class="h-lbl">Kartu Atlet</div>' +
+        '<h3>' + esc(u.namaLengkap) + '</h3>' +
+        '<div class="sb">' + esc(u.asalSekolah) + '</div>' +
+        '<div class="h-meta"><span class="h-chip">' + esc(u.kartuAtlet) + '</span>' +
+        '<span class="h-chip">@' + esc(u.username) + '</span></div></div>' +
+      '</div>' +
+      donut(s.persen, {color:'#facc15', track:'rgba(255,255,255,.22)', label:'Kehadiran'})
+    ) +
+    '<div class="grid g4">' +
+      statCard('Total Sesi', s.total, 'sesi latihan') +
+      statCard('Hadir', s.hadir, 'sesi') +
+      statCard('Izin / Alfa', s.izin + ' / ' + s.alfa, 'sesi') +
+      statCard('Hasil Tes', nTes, 'kali tes') +
+    '</div>' +
+    '<div class="card"><div class="info-grid">' + info.map(i =>
+      '<div class="info"><div class="k">' + esc(i[0]) + '</div><div class="v">' + (i[2] ? i[1] : esc(i[1])) + '</div></div>').join('') +
+    '</div></div>';
+}
+function statCard(lbl, val, sub){
+  return '<div class="stat"><div class="lbl">' + esc(lbl) + '</div><div class="val">' + esc(String(val)) + '</div><div class="sub">' + esc(sub) + '</div></div>';
+}
+
+/* Nilai terpisah (Fisik & Teknik).
+   Data lama hanya punya SATU nilai gabungan di teknik.nilai:
+   -> tampil di kolom Nilai Fisik, kolom Nilai Teknik tampil "-". */
+function isSplitNilai(t){
+  const f = t && t.fisik;
+  return !!f && f.nilai !== undefined && f.nilai !== null && f.nilai !== '';
+}
+function nilaiFisikOf(t){
+  if(isSplitNilai(t)) return t.fisik.nilai;
+  const legacy = t && t.teknik ? t.teknik.nilai : '';
+  return (legacy === undefined || legacy === null) ? '' : legacy;
+}
+function nilaiTeknikOf(t){
+  if(!isSplitNilai(t)) return '';
+  const k = t.teknik || {};
+  return (k.nilai === undefined || k.nilai === null) ? '' : k.nilai;
+}
+function skorBadge(v, jenis){
+  if(v === '' || v == null) return '<span class="muted">—</span>';
+  return '<span class="badge skor-' + jenis + '">' + esc(v) + '</span>';
+}
+
+/* ==================================================================
+   PROGRESS BAR PER ITEM (SISI SISWA — MURNI TAMPILAN)
+   ------------------------------------------------------------------
+   Persentase dihitung saat halaman dibuka; TIDAK ada field baru di
+   localStorage dan tidak memengaruhi Nilai Fisik/Nilai Teknik.
+   Pemetaan: Baik Sekali/Sangat Baik 100%, Baik 80%, Cukup 60%,
+   Kurang 40%, Kurang Sekali 20%. Warna: hijau (100/80), kuning (60),
+   merah (40/20). Status gizi IMT memakai skala yang sama:
+   Normal 100, Kurus 60, Gemuk 40, Obesitas 20.
+================================================================= */
+const PCT_KATEGORI = {
+  'Baik Sekali':100, 'Sangat Baik':100, 'Baik':80, 'Cukup':60,
+  'Kurang':40, 'Kurang Sekali':20,
+  'Normal':100, 'Kurus':60, 'Gemuk':40, 'Obesitas':20
+};
+function pctWarna(pct){
+  return pct >= 80 ? 'bar-hijau' : (pct >= 60 ? 'bar-kuning' : 'bar-merah');
+}
+function barHtml(pct){
+  if(pct == null || pct === '') return '';
+  return '<div class="kv-bar"><span class="bar-track"><i class="' + pctWarna(pct) +
+    '" style="width:' + pct + '%"></i></span><span class="bar-pct">' + pct + '%</span></div>';
+}
+
+/* Kategori norma SATU baris fisik (Push Up & Sit Up terpisah, bukan
+   gabungan "Kekuatan"), termasuk arah terbalik Sprint/Shuttle Run. */
+function kategoriBarisFisik(key, raw, u){
+  const item = SKOR_FISIK_ITEMS.find(x => x.parts.some(p => p.key === key));
+  const part = item ? item.parts.find(p => p.key === key) : null;
+  return kategoriNormaItem(key, angkaDari(raw), u, part ? !!part.terbalik : false);
+}
+
+/* Persentase item Kemampuan Teknik dari nilai pelatih:
+   1) label penilaian (teks utuh atau kata di dalam kurung) -> pakai
+      labelnya; 2) angka frekuensi gerakan -> skala 0-20 per 10 detik;
+   3) tidak dikenali -> null (bar tidak ditampilkan, teks tetap tampil). */
+function pctDariNilaiTeknik(val){
+  if(val === '' || val == null) return null;
+  const s = String(val).trim();
+  const norm = x => String(x).toLowerCase().replace(/[^a-z]+/g, ' ').replace(/\s+/g, ' ').trim();
+  const drLabel = x => {
+    const n = norm(x);
+    if(n === 'sangat baik' || n === 'baik sekali') return 100;
+    if(n === 'baik') return 80;
+    if(n === 'cukup') return 60;
+    if(n === 'kurang sekali') return 20;
+    if(n === 'kurang') return 40;
+    return null;
+  };
+  const langsung = drLabel(s);
+  if(langsung !== null) return langsung;
+  const dlmKurung = s.match(/\(([^)]+)\)/); /* mis. "Kuda-kuda samping (baik)" */
+  if(dlmKurung){
+    const d = drLabel(dlmKurung[1]);
+    if(d !== null) return d;
+  }
+  if(/^\d+([.,]\d+)?$/.test(s)){ /* frekuensi gerakan dalam 10 detik */
+    const n = angkaDari(s);
+    if(n === null) return null;
+    return Math.max(0, Math.min(100, Math.round(n / 20 * 100)));
+  }
+  return null;
+}
+
+function tesCard(t, opts){
+  opts = opts || {};
+  const f = t.fisik || {}, k = t.teknik || {};
+  const nf = nilaiFisikOf(t), nt = nilaiTeknikOf(t);
+  /* Semua item SELALU tampil. Item yang belum diisi admin diberi tanda "—",
+     hanya daftar yang benar-benar tidak punya baris -> "Belum ada data".
+     Kartu tanggal tidak pernah disembunyikan karena ada field kosong.
+     Elemen ke-3 baris (opsional) = progress bar persentase di bawah item. */
+  const kv = rows => {
+    if(!rows.length) return '<div class="kv"><div class="muted small">Belum ada data</div></div>';
+    return '<div class="kv">' + rows.map(r => {
+      const kosong = r[1] === '' || r[1] == null;
+      /* Elemen ke-4 (opsional) = HTML siap pakai untuk kolom nilai
+         (dipakai badge kategori item teknik norma — tidak di-escape). */
+      const isi = (r.length > 3) ? r[3]
+        : (kosong ? '<span class="muted">—</span>' : esc(r[1]));
+      const garis = '<div class="kv-line"><span>' + esc(r[0]) + '</span><b>' + isi + '</b></div>';
+      const bar = r[2] || '';
+      return bar ? '<div class="kv-item">' + garis + bar + '</div>' : garis;
+    }).join('') + '</div>';
+  };
+
+  let head = '<div class="tes-top"><div>' +
+    '<div class="date">📅 ' + esc(fmtDate(t.tanggal)) + '</div>' +
+    (opts.showName ? '<div class="muted small">' + esc(opts.showName) + '</div>' : '') +
+    '</div>' +
+    '<span class="chip big skor-f">Nilai Fisik: ' + esc(nf === '' || nf == null ? '—' : nf) + '</span>' +
+    (nt !== '' ? '<span class="chip big skor-t">Nilai Teknik: ' + esc(nt) + '</span>' : '') +
+    (opts.actions || '') + '</div>';
+
+  /* Kartu IMT per tanggal tes — membaca fisik.* milik tes tsb (fallback profil).
+     Terpisah dari Nilai Fisik: IMT tidak dihitung ke skor. */
+  const anti = antropometriOf(t);
+  const imtKartu = '<div class="imt-strip">' +
+    '<span class="imt-h">📏 IMT</span>' +
+    (anti
+      ? '<span class="imt-v">Tinggi <b>' + esc(anti.tinggi) + ' cm</b></span>' +
+        '<span class="imt-v">Berat <b>' + esc(anti.berat) + ' kg</b></span>' +
+        '<span class="imt-v">IMT <b>' + esc(anti.imt === '' || anti.imt == null ? '—' : anti.imt) + ' kg/m²</b></span>' +
+        kategoriBadge(anti.kategori)
+      : '<span class="muted small">Belum ada data</span>') +
+    '</div>';
+
+  /* Progress bar per item — dihitung dari data yang sama (localStorage),
+     langsung berubah bila pelatih menambah/mengedit hasil tes. */
+  const u = getUser(t.userId);
+  const barGizi = barHtml(PCT_KATEGORI[anti ? anti.kategori : '']);
+  const barFisik = FISIK_ITEMS.map(i => {
+    const raw = i[0] === 'bleepTest'
+      ? ((f.bleepVo2max !== undefined && f.bleepVo2max !== null && f.bleepVo2max !== '') ? f.bleepVo2max : f.bleepTest)
+      : f[i[0]];
+    return barHtml(PCT_KATEGORI[kategoriBarisFisik(i[0], raw, u)]);
+  });
+
+  /* Kolom KEMAMPUAN TEKNIK hanya tampil bila record INI punya data teknik
+     (frekuensi terisi / jumlah tersimpan / nilai). Bila kosong total, kolom
+     dihapus — jangan menampilkan 6 baris "—" yang kosong. */
+  const adaTeknik = nt !== '' ||
+    TEKNIK_ITEMS.some(([key]) => String(k[key] == null ? '' : k[key]).trim() !== '') ||
+    TEKNIK_NORMA_ITEMS.some(it => teknikNormaHasil(t, it));
+
+  return '<div class="card">' + head +
+    imtKartu +
+    '<div class="tes-grid">' +
+      '<div' + (adaTeknik ? '' : ' style="grid-column:1 / -1"') + '><h5>💪 Kondisi Fisik</h5>' +
+        kv([['Antropometri', antropometriText(anti), barGizi]]
+          .concat(FISIK_ITEMS.map((i, idx) =>
+            [i[1], i[0] === 'bleepTest' ? bleepTextOf(t) : f[i[0]], barFisik[idx]]))) + '</div>' +
+      (adaTeknik
+        ? '<div><h5>🥋 Kemampuan Teknik</h5>' +
+          kv(TEKNIK_ITEMS.map(([key, lbl]) =>
+              [lbl, k[key], barHtml(pctDariNilaiTeknik(k[key]))])
+            .concat(TEKNIK_NORMA_ITEMS.map(it => {
+              const h = teknikNormaHasil(t, it);
+              /* Sudah terisi -> jumlah + badge kategori; kosong -> "—". */
+              return h ? [it.label, h.nilai, '', esc(h.nilai) +
+                (h.kategori ? ' ' + kategoriBadge(h.kategori) : '')]
+                : [it.label, '', ''];
+            }))) + '</div>'
+        : '') +
+    '</div>' +
+    (t.catatan ? '<div class="note"><b>Catatan pelatih:</b> ' + esc(t.catatan) + '</div>' : '') +
+    '</div>';
+}
+
+/* Kartu highlight IMT untuk halaman siswa (satu baris angka + kategori). */
+function imtHighlightCard(list){
+  const terakhir = (list || []).filter(x => antropometriOf(x))
+    .sort((a,b) => b.tanggal.localeCompare(a.tanggal))[0];
+  /* Bila belum ada tes, tetap tampilkan dari Profil Siswa. */
+  const a = antropometriOf(terakhir || {userId: session.userId, fisik:{}});
+  if(!a) return '';
+  const imtTxt = a.imt === '' || a.imt == null ? '—' : a.imt;
+  return '<div class="card imt-card">' +
+    '<div class="imt-head"><span>📏 IMT — Indeks Massa Tubuh</span>' +
+      (a.tersimpan ? '' : '<span class="muted small">dari Profil Siswa</span>') + '</div>' +
+    '<div class="imt-main"><div class="imt-big">' + imtTxt + '<span class="imt-unit"> kg/m²</span></div>' +
+      '<div class="imt-right">' + kategoriBadge(a.kategori) + '</div></div>' +
+    '<div class="imt-meta">Tinggi ' + esc(a.tinggi) + ' cm · Berat ' + esc(a.berat) + ' kg' +
+      (terakhir ? ' · tes ' + esc(fmtDate(terakhir.tanggal)) : '') + '</div>' +
+    '<div class="imt-note">IMT adalah indikator status gizi — bukan bagian dari Nilai Fisik.</div>' +
+    '</div>';
+}
+
+/* ==================================================================
+   CHART RADAR — PROFIL KONDISI FISIK (Chart.js lewat CDN)
+   ------------------------------------------------------------------
+   • 6 sumbu, skor 0-100 dari kategori norma yang SUDAH ada:
+     Baik Sekali=100, Baik=80, Cukup=60, Kurang=40, Kurang Sekali=20
+   • Sumber: hasil tes FISIK terbaru milik siswa (teknik tidak dipakai)
+   • Murni pembacaan — tidak mengubah data maupun cara hitung
+     Nilai Fisik/Nilai Teknik.
+================================================================= */
+const RADAR_SUMBU = ['Kelentukan', 'Kekuatan', 'Power Tungkai',
+                     'Kecepatan', 'Kelincahan', 'Daya Tahan Kardio'];
+
+function radarSkor(t){
+  const f = (t && t.fisik) || {};
+  const u = t ? getUser(t.userId) : null;
+  const skor = key => {
+    const kat = kategoriBarisFisik(key, f[key], u);
+    return kat ? PCT_KATEGORI[kat] : 0;
+  };
+  /* Kekuatan = rata-rata skor Push Up dan skor Sit Up. */
+  const ktk = ['pushUp', 'sitUp']
+    .map(k => { const kat = kategoriBarisFisik(k, f[k], u); return kat ? PCT_KATEGORI[kat] : null; })
+    .filter(x => x != null);
+  const bleepRaw = (f.bleepVo2max !== undefined && f.bleepVo2max !== null && f.bleepVo2max !== '')
+    ? f.bleepVo2max : f.bleepTest;
+  const katBleep = kategoriBarisFisik('bleepTest', bleepRaw, u);
+  return [
+    skor('kelentukan'),
+    ktk.length ? Math.round(ktk.reduce((a,b) => a + b, 0) / ktk.length) : 0,
+    skor('powerTungkai'),
+    skor('kecepatan'),
+    skor('kelincahan'),
+    katBleep ? PCT_KATEGORI[katBleep] : 0
+  ];
+}
+
+function radarConfig(t, opts){
+  opts = opts || {};
+  /* Label sumbu dibuat lebih kecil pada kotak sempit (ponsel/modal)
+     agar teks panjang seperti "Daya Tahan Kardio" tidak terpotong. */
+  const fontLabel = opts.labelFont || 11;
+  return {
+    type: 'radar',
+    data: {
+      labels: RADAR_SUMBU,
+      datasets: [{
+        label: 'Skor kategori norma',
+        data: radarSkor(t),
+        borderColor: '#22a352',                    /* hijau brand Tapak Suci */
+        backgroundColor: 'rgba(34,163,82,.16)',    /* isi area transparan */
+        borderWidth: 2,
+        fill: true,
+        pointBackgroundColor: '#22a352',
+        pointBorderColor: '#ffffff',
+        pointRadius: 3.5,
+        pointHoverRadius: 5
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      layout: { padding: { left: 18, right: 18, top: 8, bottom: 8 } },
+      scales: {
+        r: {
+          min: 0, max: 100,
+          ticks: { stepSize: 20, color: '#64748b', backdropColor: 'transparent', font: {size: 11} },
+          grid:  { color: 'rgba(15,23,42,.12)' },
+          angleLines: { color: 'rgba(15,23,42,.12)' },
+          pointLabels: { color: '#0f172a', font: {size: fontLabel, weight: '600'} }
+        }
+      },
+      plugins: { legend: { display: false } }
+    }
+  };
+}
+
+/* Chart yang sedang tampil: canvas -> instance Chart. */
+const radarDipasang = new Map();
+function buangRadar(scope){
+  radarDipasang.forEach((chart, cv) => {
+    const lepas = !cv.isConnected || (scope && scope.contains(cv));
+    if(lepas){ try{ chart.destroy(); }catch(e){} radarDipasang.delete(cv); }
+  });
+}
+function pasangRadar(root){
+  const scope = root || document;
+  buangRadar(null); /* buang chart yang kanvasnya sudah terlepas dari DOM */
+  if(typeof Chart === 'undefined'){
+    scope.querySelectorAll('canvas[data-radar-tes]').forEach(cv => {
+      if(cv.getAttribute('data-radar-pesan')) return;
+      cv.style.display = 'none';
+      cv.insertAdjacentHTML('afterend', '<div class="radar-empty" data-radar-pesan>' +
+        'Grafik belum dapat dimuat — pustaka Chart.js (CDN) belum termuat.</div>');
+    });
+    return;
+  }
+  scope.querySelectorAll('canvas[data-radar-tes]').forEach(cv => {
+    if(radarDipasang.has(cv)) return;
+    pasangChartRadar(cv);
+  });
+}
+
+/* (Pasang ulang) chart pada satu kanvas sesuai data-radar-tes-nya. */
+function pasangChartRadar(cv){
+  if(typeof Chart === 'undefined') return null;
+  const lama = radarDipasang.get(cv);
+  if(lama){ try{ lama.destroy(); }catch(e){} radarDipasang.delete(cv); }
+  const t = getTests().find(x => x.id === cv.getAttribute('data-radar-tes'));
+  if(!t) return null;
+  const lebar = cv.clientWidth || (cv.parentNode ? cv.parentNode.clientWidth : 0);
+  const chart = new Chart(cv.getContext('2d'),
+    radarConfig(t, { labelFont: (lebar && lebar < 430) ? 9 : 11 }));
+  radarDipasang.set(cv, chart);
+  return chart;
+}
+
+/* Hasil tes fisik terbaru milik satu siswa. */
+function tesFisikTerbaru(userId){
+  return getTests().filter(t => t.userId === userId && t.fisik)
+    .sort((a,b) => b.tanggal.localeCompare(a.tanggal))[0] || null;
+}
+
+/* ==================================================================
+   BLOK DETAIL KONDISI FISIK — DIPAKAI BERSAMA ADMIN & SISWA
+   ------------------------------------------------------------------
+   Isi blok = daftar mentah + "Rincian 6 item (norma)" + chart radar,
+   semuanya dari fungsi YANG SAMA seperti expand tabel admin
+   (fisikMentahHtml + rincianFisikHtml) — satu perubahan otomatis
+   sinkron di kedua sisi.
+   Di sisi siswa blok ini punya pemilih tanggal 📅: klik tanggal lain
+   -> seluruh isi blok (mentah, rincian, badge %, chart) ikut berganti
+   tanpa reload halaman. Tanpa pill bila siswa hanya punya 1 tes.
+================================================================== */
+function isiBlokFisik(t){
+  return '<div class="fr-head">Data Mentah Kondisi Fisik</div>' +
+    fisikMentahHtml(t) + rincianFisikHtml(t);
+}
+
+function blokFisikHtml(t, daftar){
+  if(!t) return '';
+  const pilih = (daftar && daftar.length > 1)
+    ? '<div class="radar-tgl" data-fisik-pilih aria-label="Pilih tanggal tes">' +
+      daftar.map(x => '<button type="button" data-tes="' + esc(x.id) + '"' +
+        ' aria-pressed="' + (x.id === t.id ? 'true' : 'false') + '"' +
+        (x.id === t.id ? ' class="aktif"' : '') + '>📅 ' + esc(fmtDate(x.tanggal)) +
+        '</button>').join('') + '</div>'
+    : '';
+  return '<div class="card fisik-detail">' +
+    '<div class="fd-head"><span>💪 Kondisi Fisik — Rincian &amp; Grafik</span>' +
+      '<span class="muted small" data-fisik-tanggal>tes 📅 ' + esc(fmtDate(t.tanggal)) + '</span></div>' +
+    pilih +
+    '<div class="fisik-rincian" data-fisik-isi>' + isiBlokFisik(t) + '</div>' +
+    '</div>';
+}
+
+/* Pemilih tanggal pada blok detail sisi siswa (satu klik -> redraw
+   isi blok + chart tanpa reload). */
+function pasangPilihFisik(root){
+  const scope = root || document;
+  scope.querySelectorAll('[data-fisik-pilih]').forEach(grp => {
+    if(grp.getAttribute('data-siap') === '1') return;
+    grp.setAttribute('data-siap', '1');
+    grp.querySelectorAll('button[data-tes]').forEach(btn => btn.addEventListener('click', () => {
+      const t = getTests().find(x => x.id === btn.getAttribute('data-tes'));
+      if(!t) return;
+      const kartu = grp.closest('.fisik-detail');
+      const isi = kartu && kartu.querySelector('[data-fisik-isi]');
+      if(!isi) return;
+      grp.querySelectorAll('button[data-tes]').forEach(b => {
+        const aktif = b === btn;
+        b.classList.toggle('aktif', aktif);
+        b.setAttribute('aria-pressed', aktif ? 'true' : 'false');
+      });
+      const lab = kartu.querySelector('[data-fisik-tanggal]');
+      if(lab) lab.textContent = 'tes 📅 ' + fmtDate(t.tanggal);
+      isi.innerHTML = isiBlokFisik(t);
+      pasangRadar(isi);
+    }));
+  });
+}
+
+/* ==================================================================
+   BLOK DETAIL NILAI TEKNIK — SISI SISWA (struktur meniru blok fisik)
+   ------------------------------------------------------------------
+   Isi blok = data mentah teknik + "Rincian 2 item (norma)" + baris
+   "Poin rata-rata X/5 → Nilai Teknik Y" — semuanya dari fungsi YANG
+   SAMA seperti panel expand sisi admin (teknikMentahHtml +
+   rincianTeknikHtml), jadi satu perubahan otomatis sinkron dua sisi.
+   Punya pemilih tanggal 📅 per kartu (rincian per tanggal tes).
+================================================================= */
+function isiBlokTeknik(t){
+  return '<div class="fr-head">Data Mentah Kemampuan Teknik</div>' +
+    teknikMentahHtml(t) + rincianTeknikHtml(t);
+}
+
+function blokTeknikHtml(t, daftar){
+  if(!t) return '';
+  const pilih = (daftar && daftar.length > 1)
+    ? '<div class="radar-tgl" data-teknik-pilih aria-label="Pilih tanggal tes">' +
+      daftar.map(x => '<button type="button" data-tes="' + esc(x.id) + '"' +
+        ' aria-pressed="' + (x.id === t.id ? 'true' : 'false') + '"' +
+        (x.id === t.id ? ' class="aktif"' : '') + '>📅 ' + esc(fmtDate(x.tanggal)) +
+        '</button>').join('') + '</div>'
+    : '';
+  return '<div class="card fisik-detail teknik-detail">' +
+    '<div class="fd-head"><span>🥋 Kemampuan Teknik — Rincian per Tanggal</span>' +
+      '<span class="muted small" data-teknik-tanggal>tes 📅 ' + esc(fmtDate(t.tanggal)) + '</span></div>' +
+    pilih +
+    '<div class="fisik-rincian" data-teknik-isi>' + isiBlokTeknik(t) + '</div>' +
+    '</div>';
+}
+
+/* Pemilih tanggal blok teknik (satu klik -> redraw isi blok tanpa reload). */
+function pasangPilihTeknik(root){
+  const scope = root || document;
+  scope.querySelectorAll('[data-teknik-pilih]').forEach(grp => {
+    if(grp.getAttribute('data-siap') === '1') return;
+    grp.setAttribute('data-siap', '1');
+    grp.querySelectorAll('button[data-tes]').forEach(btn => btn.addEventListener('click', () => {
+      const t = getTests().find(x => x.id === btn.getAttribute('data-tes'));
+      if(!t) return;
+      const kartu = grp.closest('.teknik-detail');
+      const isi = kartu && kartu.querySelector('[data-teknik-isi]');
+      if(!isi) return;
+      grp.querySelectorAll('button[data-tes]').forEach(b => {
+        const aktif = b === btn;
+        b.classList.toggle('aktif', aktif);
+        b.setAttribute('aria-pressed', aktif ? 'true' : 'false');
+      });
+      const lab = kartu.querySelector('[data-teknik-tanggal]');
+      if(lab) lab.textContent = 'tes 📅 ' + fmtDate(t.tanggal);
+      isi.innerHTML = isiBlokTeknik(t);
+    }));
+  });
+}
+
+function renderUserTes(){
+  const list = getTests().filter(t => t.userId === session.userId)
+    .sort((a,b) => b.tanggal.localeCompare(a.tanggal));
+  const a = avgNilai(list);
+  const el = document.getElementById('view-user-tes');
+  el.innerHTML = pageHead('Kondisi Fisik dan Teknik', 'Riwayat hasil tes milikmu. Data hanya dapat diubah oleh pelatih.') +
+    /* Hero PRIBADI: hanya rata-rata Nilai Teknik milik siswa yang login
+       (dari riwayat tesnya sendiri) — tanpa jumlah siswa lain, tanpa
+       pemilih siswa. Donut & gaya hero tetap seperti sebelumnya. */
+    hero(
+      '<div><div class="h-lbl">Rata-rata Nilai Teknik kamu</div>' +
+      '<div class="h-big">' + (list.length ? a.avg : '—') + '</div>' +
+      '<div class="h-sub">' + (list.length ? 'dari ' + list.length + ' hasil tes' : 'belum ada hasil tes') + '</div></div>' +
+      donut(a.avg, {color:'#facc15', track:'rgba(255,255,255,.22)',
+        label:'Skala 0–100', text:(list.length ? a.avg : '—')})
+    ) +
+    imtHighlightCard(list) +
+    /* Blok detail Kondisi Fisik — komponen yang sama dengan sisi admin
+       (daftar mentah + rincian 6 item + chart radar), default tes terbaru,
+       bisa dipilih per tanggal lewat pill 📅. */
+    (list.length ? blokFisikHtml(list[0], list) : '') +
+    /* Blok detail Nilai Teknik — struktur sama dengan blok fisik di
+       atasnya (pill per tanggal), berisi rincian Tendangan Sambaran &
+       Agility Kick + poin rata-rata -> Nilai Teknik per tanggal tes. */
+    (list.length ? blokTeknikHtml(list[0], list) : '') +
+    /* Kartu ringkasan KONDISI FISIK + KEMAMPUAN TEKNIK disembunyikan bagi
+       role user/siswa — datanya sudah tampil di blok detail di atas,
+       jadi tidak dobel. Admin tetap melihat kartu seperti biasa. */
+    (list.length
+      ? ((session && session.role === 'user') ? '' :
+        '<div style="display:flex;flex-direction:column;gap:16px">' + list.map(t => tesCard(t)).join('') + '</div>')
+      : emptyState('📊', 'Belum ada hasil tes', 'Hasil tes fisik dan teknik akan muncul di sini setelah pelatih menginput data.'));
+  pasangRadar(el);
+  pasangPilihFisik(el);
+  pasangPilihTeknik(el);
+}
+
+/* ---- Self check-in siswa (hanya role siswa) ---- */
+const JAM_LATIHAN = {mulai:15, selesai:18}; /* 15.00 – 18.00 */
+
+function checkinState(userId){
+  const today = todayISO();
+  const rec = getAbsen().find(a => a.userId === userId && a.tanggal === today) || null;
+  const jam = new Date().getHours();
+  const inWindow = jam >= JAM_LATIHAN.mulai && jam < JAM_LATIHAN.selesai;
+  return {today, rec, already:!!rec, inWindow, can:(!rec && inWindow)};
+}
+
+function checkinCard(userId){
+  const st = checkinState(userId);
+  let btn, note;
+  if(st.already){
+    btn = '<button type="button" class="btn btn-absen" id="btnAbsen" disabled>Sudah Absen Hari Ini ✓</button>';
+    note = st.rec.status === 'Hadir'
+      ? 'Kehadiranmu hari ini sudah tercatat. Terima kasih! 🎉'
+      : 'Status hari ini <b>' + esc(st.rec.status) + '</b> (diinput pelatih).';
+  }else if(!st.inWindow){
+    btn = '<button type="button" class="btn btn-absen" id="btnAbsen" disabled>Absen Sekarang</button>';
+    note = 'Absensi hanya bisa dilakukan saat jam latihan (15.00–18.00).';
+  }else{
+    btn = '<button type="button" class="btn btn-absen" id="btnAbsen">Absen Sekarang</button>';
+    note = 'Ketuk tombol untuk mencatat kehadiranmu hari ini.';
+  }
+  return hero(
+    '<div class="ck-head"><div>' +
+      '<div class="ck-title">Absensi Hari Ini</div>' +
+      '<div class="ck-sub">📅 ' + esc(fmtDate(st.today)) + ' · jam latihan 15.00–18.00</div>' +
+    '</div><span class="h-chip">' + (st.already ? 'Sudah terabsen' : (st.inWindow ? 'Sesi dibuka' : 'Sesi ditutup')) + '</span></div>' +
+    btn + '<div class="ck-note">' + note + '</div>', 'checkin');
+}
+
+function doCheckin(){
+  const st = checkinState(session.userId);
+  if(st.already){ toast('Kamu sudah absen hari ini.', 'warn'); renderUserAbsen(); return; }
+  if(!st.inWindow){ toast('Absensi hanya bisa dilakukan saat jam latihan (15.00–18.00).', 'warn'); return; }
+  const all = getAbsen();
+  all.push({id:uid('a'), userId:session.userId, tanggal:st.today, status:'Hadir'});
+  setAbsen(all);
+  toast('Absensi berhasil dicatat!');
+  renderUserAbsen();
+}
+
+function renderUserAbsen(){
+  const s = absenStats(session.userId);
+  const rows = s.rows.slice().sort((a,b) => b.tanggal.localeCompare(a.tanggal));
+  const badge = st => '<span class="badge ' + st.toLowerCase() + '">' + esc(st) + '</span>';
+
+  const el = document.getElementById('view-user-absen');
+  el.innerHTML =
+    pageHead('Absensi Latihan', 'Rekap kehadiranmu di setiap sesi latihan.') +
+    checkinCard(session.userId) +
+    '<div class="grid g4">' +
+      statCard('Total Sesi', s.total, 'sesi latihan') +
+      statCard('Hadir', s.hadir, 'sesi') +
+      statCard('Izin / Alfa', s.izin + ' / ' + s.alfa, 'sesi') +
+      donutStat(s.persen, 'Kehadiran', {color:'#22a352', label:(s.persen >= 80 ? 'Mantap 👍' : 'Ayo kejar!')}) +
+    '</div>' +
+    (rows.length
+      ? '<div class="tw"><table class="stack"><thead><tr><th>Tanggal</th><th>Status</th></tr></thead><tbody>' +
+        rows.map(a => '<tr><td data-label="Tanggal">📅 ' + esc(fmtDate(a.tanggal)) + '</td>' +
+                      '<td data-label="Status">' + badge(a.status) + '</td></tr>').join('') +
+        '</tbody></table></div>'
+      : emptyState('🗓️', 'Belum ada data absensi', 'Kehadiranmu akan tercatat oleh pelatih setiap sesi latihan.'));
+
+  const b = el.querySelector('#btnAbsen');
+  if(b && !b.disabled) b.addEventListener('click', doCheckin);
+}
+
+/* ==================================================================
+   DASHBOARD ADMIN — PROFIL SISWA
+================================================================== */
+function siswaFormFields(u){
+  return [
+    {name:'namaLengkap', label:'Nama Lengkap', required:true, value:u ? u.namaLengkap : '', placeholder:'Nama lengkap siswa'},
+    {name:'kartuAtlet', label:'Nomor Kartu Atlet', required:true, value:u ? u.kartuAtlet : '', placeholder:'mis. TS-CRM-0012'},
+    {name:'tempatLahir', label:'Tempat Lahir', required:true, value:u ? u.tempatLahir : '', placeholder:'mis. Cerme'},
+    {name:'tanggalLahir', label:'Tanggal Lahir', type:'date', required:true, value:u ? u.tanggalLahir : ''},
+    {name:'asalSekolah', label:'Asal Sekolah', required:true, value:u ? u.asalSekolah : '', placeholder:'mis. SMP Negeri 1 Cerme'},
+    {name:'username', label:'Username Login', required:true, value:u ? u.username : '', placeholder:'unik untuk login'},
+    {name:'password', label:'Password', type:'text', required:true, value:u ? u.password : '', placeholder:'min. 4 karakter'},
+    {type:'header', label:'Data Fisik (untuk IMT & Norma)'},
+    {name:'tinggiBadan', label:'Tinggi Badan (cm)', type:'number', step:'any', required:true,
+      value:u ? u.tinggiBadan : '', placeholder:'mis. 160'},
+    {name:'beratBadan', label:'Berat Badan (kg)', type:'number', step:'any', required:true,
+      value:u ? u.beratBadan : '', placeholder:'mis. 48'},
+    {name:'jenisKelamin', label:'Jenis Kelamin', type:'select', required:true,
+      value:u ? (u.jenisKelamin || '') : '',
+      options:[{value:'', label:'— Pilih —'}, {value:'L', label:'Laki-laki (L)'}, {value:'P', label:'Perempuan (P)'}]}
+  ];
+}
+
+function openSiswaModal(u){
+  openModal({
+    title: u ? 'Edit Data Siswa' : 'Tambah Siswa Baru',
+    fields: siswaFormFields(u),
+    submitLabel: u ? 'Simpan Perubahan' : 'Tambah Siswa',
+    onSubmit(v, close){
+      if(v.password.length < 4){ toast('Password minimal 4 karakter.', 'err'); return; }
+      const users = getUsers();
+      const dup = users.some(x => x.username.toLowerCase() === v.username.toLowerCase() && (!u || x.id !== u.id));
+      if(dup){ toast('Username sudah dipakai siswa lain.', 'err'); return; }
+      if(u){
+        const target = users.find(x => x.id === u.id);
+        Object.assign(target, {
+          namaLengkap:v.namaLengkap, kartuAtlet:v.kartuAtlet, tempatLahir:v.tempatLahir,
+          tanggalLahir:v.tanggalLahir, asalSekolah:v.asalSekolah, username:v.username, password:v.password,
+          tinggiBadan:v.tinggiBadan, beratBadan:v.beratBadan, jenisKelamin:v.jenisKelamin
+        });
+        setUsers(users); toast('Data siswa diperbarui.');
+      }else{
+        users.push({
+          id:uid('u'), namaLengkap:v.namaLengkap, kartuAtlet:v.kartuAtlet, tempatLahir:v.tempatLahir,
+          tanggalLahir:v.tanggalLahir, asalSekolah:v.asalSekolah, username:v.username, password:v.password,
+          tinggiBadan:v.tinggiBadan, beratBadan:v.beratBadan, jenisKelamin:v.jenisKelamin
+        });
+        setUsers(users); toast('Siswa baru berhasil ditambahkan. 🎉');
+      }
+      close(); renderAdminSiswa();
+    }
+  });
+
+  /* Pratinjau IMT & status gizi (tidak ikut dihitung ke Nilai Fisik). */
+  const mBody = document.querySelector('#modalRoot .modal-body');
+  if(mBody){
+    mBody.insertAdjacentHTML('beforeend',
+      '<div class="gizi-box"><div class="k">Ringkasan IMT / Status Gizi (info tambahan)</div>' +
+      '<div class="v" id="giziVal">—</div></div>');
+    const inp = id => { const el = mBody.querySelector('#' + id); return el ? el.value.trim() : ''; };
+    const upd = () => {
+      const g = statusGiziOf({tinggiBadan:inp('mf_tinggiBadan'), beratBadan:inp('mf_beratBadan'),
+        jenisKelamin:inp('mf_jenisKelamin'), tanggalLahir:inp('mf_tanggalLahir')});
+      const el = mBody.querySelector('#giziVal');
+      if(!el) return;
+      el.innerHTML = g.imt
+        ? 'IMT <b>' + g.imt + '</b> kg/m²' + (g.status ? ' ' + kategoriBadge(g.status) : '')
+        : '<span class="muted">Isi tinggi, berat, dan jenis kelamin untuk melihat IMT.</span>';
+    };
+    ['mf_tinggiBadan', 'mf_beratBadan', 'mf_jenisKelamin'].forEach(id => {
+      const el = mBody.querySelector('#' + id);
+      if(el){ el.addEventListener('input', upd); el.addEventListener('change', upd); }
+    });
+    upd();
+  }
+}
+
+function renderAdminSiswa(){
+  const users = getUsers();
+  const totalTes = getTests().length;
+  const totalAbsen = getAbsen().length;
+  const top80 = users.filter(u => absenStats(u.id).persen >= 80).length;
+
+  const rows = users.map((u, i) => {
+    const s = absenStats(u.id);
+    const nTes = getTests().filter(t => t.userId === u.id).length;
+    return '<tr>' +
+      '<td data-label="No" class="muted">' + (i + 1) + '</td>' +
+      '<td data-label="Nama"><div class="cell-name">' + avatarHTML(u, 'sm') +
+        '<div><b>' + esc(u.namaLengkap) + '</b><div class="muted small">@' + esc(u.username) + '</div></div></div></td>' +
+      '<td data-label="Kartu Atlet">' + esc(u.kartuAtlet) + '</td>' +
+      '<td data-label="Sekolah">' + esc(u.asalSekolah) + '</td>' +
+      '<td data-label="TTL"><div class="stack-lines"><span>' + esc(u.tempatLahir) + ', ' + esc(fmtDate(u.tanggalLahir)) + '</span>' +
+        '<span>' + esc(umur(u.tanggalLahir)) + '</span></div></td>' +
+      '<td data-label="Login"><div class="stack-lines"><span>user: <b>' + esc(u.username) + '</b></span><span>pass: <b>' + esc(u.password) + '</b></span></div></td>' +
+      '<td data-label="Data"><div class="stack-lines"><span>Tes: <b>' + nTes + '</b></span>' +
+        '<span>Hadir: <b>' + s.persen + '%</b></span>' +
+        '<span>Gizi: <b>' + giziLine(u) + '</b></span></div></td>' +
+      '<td data-label="Aksi"><div class="acts">' +
+        '<button class="ibtn" data-act="edit" data-id="' + u.id + '" title="Edit">✏️</button>' +
+        '<button class="ibtn danger" data-act="del" data-id="' + u.id + '" title="Hapus">🗑️</button>' +
+      '</div></td></tr>';
+  }).join('');
+
+  const cards = users.map(u => {
+    const s = absenStats(u.id);
+    const nTes = getTests().filter(t => t.userId === u.id).length;
+    const tone = s.persen >= 80 ? 'hadir' : (s.persen >= 50 ? 'izin' : 'alfa');
+    const gz = statusGiziOf(u);
+    return '<div class="stu-card">' + avatarHTML(u, 'md') +
+      '<div class="meta">' +
+        '<div class="nm">' + esc(u.namaLengkap) + '</div>' +
+        '<div class="sb">' + esc(u.asalSekolah) + ' · @' + esc(u.username) + '</div>' +
+        '<div class="mt"><span class="chip">' + esc(u.kartuAtlet) + '</span>' +
+          '<span class="chip">' + nTes + ' tes</span>' +
+          (gz.status ? '<span class="badge ' + (KAT_CSS[gz.status] || 'kat-lain') + '">' + esc(gz.status) + '</span>' : '') +
+          '<span class="badge ' + tone + '">' + s.persen + '% hadir</span></div>' +
+      '</div>' +
+      '<div class="acts">' +
+        '<button class="ibtn" data-act="edit" data-id="' + u.id + '" title="Edit">✏️</button>' +
+        '<button class="ibtn danger" data-act="del" data-id="' + u.id + '" title="Hapus">🗑️</button>' +
+      '</div></div>';
+  }).join('');
+
+  document.getElementById('view-admin-siswa').innerHTML =
+    pageHead('Profil Siswa', 'Kelola seluruh data siswa yang terdaftar.',
+      '<div class="searchbar"><input type="search" id="siswaSearch" placeholder="Cari nama / sekolah / kartu..."></div>') +
+    hero(
+      '<div><div class="h-lbl">Siswa Terdaftar</div>' +
+      '<div class="h-big">' + users.length + '</div>' +
+      '<div class="h-sub">' + totalTes + ' hasil tes · ' + totalAbsen + ' catatan absensi</div>' +
+      '<div class="h-meta"><span class="h-chip">👥 Siswa</span><span class="h-chip">📊 Data</span></div></div>' +
+      donut(users.length ? pct(top80, users.length) : 0,
+        {color:'#facc15', track:'rgba(255,255,255,.22)', label:'Hadir ≥ 80%'})
+    ) +
+    qaRow([
+      {id:'addSiswa',  icon:'＋', label:'Tambah Siswa', tone:'green'},
+      {id:'clearAll',  icon:'🗑',  label:'Hapus Semua',  tone:'red'}
+    ]) +
+    (users.length
+      ? '<div class="tw desk-table"><table id="siswaTable"><thead><tr>' +
+        '<th>No</th><th>Nama</th><th>Kartu Atlet</th><th>Sekolah</th><th>Tempat, Tgl Lahir</th><th>Login</th><th>Data</th><th>Aksi</th>' +
+        '</tr></thead><tbody>' + rows + '</tbody></table></div>' +
+        '<div class="stu-list">' + cards + '</div>'
+      : emptyState('👥', 'Belum ada siswa', 'Gunakan aksi "Tambah Siswa" untuk mendaftarkan siswa pertama.')) +
+    '<p class="muted small center">🗑 "Hapus Semua" mengosongkan seluruh data.</p>';
+
+  const el = document.getElementById('view-admin-siswa');
+
+  const search = el.querySelector('#siswaSearch');
+  if(search) search.addEventListener('input', () => {
+    const q = search.value.toLowerCase();
+    const cocok = txt => txt.toLowerCase().indexOf(q) > -1;
+    el.querySelectorAll('#siswaTable tbody tr').forEach(tr => {
+      tr.style.display = cocok(tr.textContent) ? '' : 'none';
+    });
+    el.querySelectorAll('.stu-card').forEach(c => {
+      c.style.display = cocok(c.textContent) ? '' : 'none';
+    });
+  });
+
+  const add = el.querySelector('#addSiswa');
+  if(add) add.addEventListener('click', () => openSiswaModal(null));
+
+  el.querySelectorAll('[data-act]').forEach(b => b.addEventListener('click', () => {
+    const u = getUser(b.dataset.id);
+    if(!u) return;
+    if(b.dataset.act === 'edit'){ openSiswaModal(u); return; }
+    if(confirm('Hapus siswa "' + u.namaLengkap + '" beserta semua hasil tes dan absensinya?')){
+      setUsers(getUsers().filter(x => x.id !== u.id));
+      setTests(getTests().filter(x => x.userId !== u.id));
+      setAbsen(getAbsen().filter(x => x.userId !== u.id));
+      toast('Siswa dan datanya dihapus.');
+      renderAdminSiswa();
+    }
+  }));
+
+  const ca = el.querySelector('#clearAll');
+  if(ca) ca.addEventListener('click', () => {
+    if(confirm('HAPUS SEMUA data siswa, hasil tes, dan absensi? Tindakan ini tidak bisa dibatalkan.')){
+      setUsers([]); setTests([]); setAbsen([]);
+      toast('Semua data dihapus.', 'warn'); renderAdminSiswa();
+    }
+  });
+}
+
+/* ==================================================================
+   DASHBOARD ADMIN — KONDISI FISIK & TEKNIK
+================================================================== */
+let adminTesUserId = '';
+
+function tesFormFields(t){
+  const isiAngka = key => {
+    const n = angkaDari(t ? (t.fisik || {})[key] : '');
+    return n === null ? '' : n;
+  };
+  /* Nilai frekuensi tendangan 10 detik (teknik baru). */
+  const isiTek = key => {
+    const v = t ? (t.teknik || {})[key] : '';
+    return (v === undefined || v === null) ? '' : v;
+  };
+  /* Prefill Bleep Test: pakai Level/Shuttle tersimpan; bila record lama
+     belum termigrasi, uraikan dari satu angka level (mis. 8.4 -> level 8). */
+  const fT = t ? (t.fisik || {}) : {};
+  const isiBleepLevel = () => {
+    const lvl = angkaDari(fT.bleepLevel);
+    if(lvl !== null) return lvl;
+    const n = angkaDari(fT.bleepTest);
+    return n === null ? '' : Math.min(21, Math.max(1, Math.floor(n)));
+  };
+  const isiBleepShuttle = () => angkaDari(fT.bleepShuttle);
+  /* Antropometri: pakai data tes bila ada, kalau tidak dari Profil Siswa. */
+  const idAwal = t ? t.userId : (adminTesUserId || (getUsers()[0] || {}).id || '');
+  const anti = antropometriOf({userId:idAwal, fisik: t ? (t.fisik || {}) : {}});
+  return [
+    {type:'header', label:'Data Tes'},
+    {name:'userId', label:'Siswa', type:'select', required:true, value:t ? t.userId : adminTesUserId,
+      options:getUsers().map(u => ({value:u.id, label:u.namaLengkap + ' (' + u.kartuAtlet + ')'}))},
+    {name:'tanggal', label:'Tanggal Tes', type:'date', required:true, value:t ? t.tanggal : todayISO()},
+    {type:'header', label:'Kondisi Fisik — Nilai Fisik dihitung otomatis dari norma'},
+    {name:'tinggiBadan', label:'Tinggi Badan (cm)', type:'number', step:'any', required:true,
+      value:anti ? anti.tinggi : '', placeholder:'mis. 170'},
+    {name:'beratBadan', label:'Berat Badan (kg)', type:'number', step:'any', required:true,
+      value:anti ? anti.berat : '', placeholder:'mis. 65'},
+    {name:'kelentukan', label:'Kelentukan — Sit & Reach (cm)', type:'number', step:'any', required:true,
+      value:isiAngka('kelentukan'), placeholder:'mis. 15'},
+    {name:'pushUp', label:'Kekuatan — Push Up 1 menit (reps)', type:'number', required:true,
+      value:isiAngka('pushUp'), placeholder:'mis. 30'},
+    {name:'sitUp', label:'Kekuatan — Sit Up 1 menit (reps)', type:'number', required:true,
+      value:isiAngka('sitUp'), placeholder:'mis. 30'},
+    {name:'powerTungkai', label:'Power Tungkai — Standing Broad Jump (m)', type:'number', step:'any', required:true,
+      value:isiAngka('powerTungkai'), placeholder:'mis. 2.1'},
+    {name:'kecepatan', label:'Kecepatan — Sprint 20m (detik)', type:'number', step:'any', required:true,
+      value:isiAngka('kecepatan'), placeholder:'mis. 3.2'},
+    {name:'kelincahan', label:'Kelincahan — Shuttle Run 4x5m (detik)', type:'number', step:'any', required:true,
+      value:isiAngka('kelincahan'), placeholder:'mis. 15.5'},
+    /* Bleep Test: Level Tercapai + Shuttle -> VO2max (bukan angka level lagi).
+       Data lama yang belum termigrasi diuraikan dari satu angka "8.4". */
+    {name:'bleepLevel', label:'Daya Tahan Kardio — Bleep Test: Level Tercapai', type:'number',
+      required:true, min:1, max:21, step:1, value:isiBleepLevel(), placeholder:'mis. 10'},
+    {name:'bleepShuttle', label:'Jumlah Shuttle di Level Tersebut', type:'number',
+      required:true, min:0, step:1, value:isiBleepShuttle(), placeholder:'mis. 5'},
+    {type:'header', label:'Kemampuan Teknik'},
+    ...TEKNIK_ITEMS.map(([k, lbl]) => ({
+      name:k, label:lbl, type:'number', value:isiTek(k), placeholder:'mis. 15'
+    })),
+    /* 2 item norma teknik TIDAK diinput manual: jumlah = Kanan + Kiri.
+       Nilai Teknik juga TIDAK diinput manual — dihitung rumus norma
+       (hitungNilaiTeknik) saat disimpan; pratinjau otomatis muncul di
+       bawah field frekuensi (openTesModal). */
+    {type:'header', label:'Catatan Pelatih'},
+    {name:'catatan', label:'Catatan', type:'textarea', full:true, value:t ? t.catatan : '', placeholder:'Catatan untuk siswa (opsional)'}
+  ];
+}
+
+function openTesModal(t){
+  if(!getUsers().length){ toast('Tambahkan siswa terlebih dahulu.', 'warn'); return; }
+  openModal({
+    title: t ? 'Edit Hasil Tes' : 'Input Hasil Tes Baru',
+    fields: tesFormFields(t),
+    submitLabel: t ? 'Simpan Perubahan' : 'Simpan Hasil Tes',
+    onSubmit(v, close){
+      if(!v.userId){ toast('Pilih siswa terlebih dahulu.', 'err'); return; }
+      const siswa = getUser(v.userId);
+      if(!siswa){ toast('Siswa tidak ditemukan.', 'err'); return; }
+
+      /* Hasil tes mentah — wajib angka, dipakai hitung Nilai Fisik. */
+      const LABEL_MENTAH = {
+        kelentukan:'Kelentukan', pushUp:'Push Up 1 menit', sitUp:'Sit Up 1 menit',
+        powerTungkai:'Power Tungkai (SBJ)', kecepatan:'Sprint 20 m',
+        kelincahan:'Shuttle Run 4x5 m'
+      };
+      const mentah = {};
+      for(const k in LABEL_MENTAH){
+        const n = angkaDari(v[k]);
+        if(n === null){
+          toast(LABEL_MENTAH[k] + ' harus berupa angka.', 'err');
+          return;
+        }
+        mentah[k] = n;
+      }
+      /* Bleep Test: Level Tercapai + Shuttle -> VO2max (Ramsbottom 1988). */
+      const bleepLevel = angkaDari(v.bleepLevel);
+      if(bleepLevel === null || !Number.isInteger(bleepLevel) || bleepLevel < 1 || bleepLevel > 21){
+        toast('Level Tercapai harus berupa angka bulat 1–21.', 'err');
+        return;
+      }
+      const smax = beepShuttlesPerLevel[bleepLevel];
+      const bleepShuttle = angkaDari(v.bleepShuttle);
+      if(bleepShuttle === null || !Number.isInteger(bleepShuttle) || bleepShuttle < 0){
+        toast('Jumlah Shuttle harus berupa angka bulat 0 atau lebih.', 'err');
+        return;
+      }
+      if(bleepShuttle > smax){
+        toast('Jumlah Shuttle melebihi maksimal level ' + bleepLevel + ' (' + smax + ' shuttle).', 'err');
+        return;
+      }
+      const bleepVo2max = hitungVO2maxBleep(bleepLevel, bleepShuttle);
+      /* VO2max inilah yang dipakai kategori norma & hitung Nilai Fisik
+         (arah penilaian makin besar makin baik — tidak dibalik). */
+      mentah.bleepTest = bleepVo2max;
+      /* Antropometri -> IMT (rumus berat / tinggi(m)^2) + kategori norma lama. */
+      const tinggi = angkaDari(v.tinggiBadan);
+      if(tinggi === null || tinggi <= 0){ toast('Tinggi Badan harus berupa angka (cm).', 'err'); return; }
+      const berat = angkaDari(v.beratBadan);
+      if(berat === null || berat <= 0){ toast('Berat Badan harus berupa angka (kg).', 'err'); return; }
+      if(!genderOf(siswa)){
+        toast('Isi Jenis Kelamin siswa dulu di menu Profil Siswa (dipakai norma Nilai Fisik).', 'err');
+        return;
+      }
+      const imt = hitungIMT(tinggi, berat);
+      const imtKategori = imt !== '' ? tentukanNormaIMT(imt, siswa.jenisKelamin, siswa.tanggalLahir, v.tanggal || todayISO()) : '';
+      const hasil = hitungNilaiFisik(mentah, siswa);
+      if(hasil.nilai === ''){
+        toast('Nilai Fisik belum bisa dihitung — periksa tabel NORMA_FISIK.', 'err');
+        return;
+      }
+      const teknikBaru = {
+        sambaranKanan:String(v.sambaranKanan || '').trim(), sambaranKiri:String(v.sambaranKiri || '').trim(),
+        agilityKanan:String(v.agilityKanan || '').trim(), agilityKiri:String(v.agilityKiri || '').trim(),
+        /* 2 item norma teknik = jumlah Kanan + Kiri (terhitung otomatis). */
+        tendanganSambaran: jumlahDuaSisi(v.sambaranKanan, v.sambaranKiri),
+        agilityKick: jumlahDuaSisi(v.agilityKanan, v.agilityKiri)
+      };
+      /* Nilai Teknik (0–100) dihitung otomatis dari 2 item norma teknik —
+         TIDAK lagi diinput manual (lihat hitungNilaiTeknik). */
+      const hasilTek = hitungNilaiTeknik(teknikBaru);
+      teknikBaru.nilai = hasilTek.nilai;
+      teknikBaru.rincian = hasilTek.rincian;
+
+      const tests = getTests();
+      const payload = {
+        userId:v.userId, tanggal:v.tanggal || todayISO(),
+        fisik:{
+          tinggiBadan:String(tinggi), beratBadan:String(berat), imt:imt, imtKategori:imtKategori,
+          kelentukan:String(mentah.kelentukan), pushUp:String(mentah.pushUp), sitUp:String(mentah.sitUp),
+          powerTungkai:String(mentah.powerTungkai), kecepatan:String(mentah.kecepatan),
+          kelincahan:String(mentah.kelincahan),
+          bleepLevel:String(bleepLevel), bleepShuttle:String(bleepShuttle), bleepVo2max:bleepVo2max,
+          bleepTest:String(mentah.bleepTest),
+          nilai:hasil.nilai, rincian:hasil.rincian
+        },
+        teknik:teknikBaru,
+        catatan:v.catatan
+      };
+      if(t){
+        const target = tests.find(x => x.id === t.id);
+        Object.assign(target, payload);
+        toast('Hasil tes diperbarui.');
+      }else{
+        payload.id = uid('t');
+        tests.push(payload);
+        toast('Hasil tes tersimpan. 🎉');
+      }
+      setTests(tests);
+      adminTesUserId = v.userId;
+      close(); renderAdminTes();
+    }
+  });
+
+  /* --- IMT langsung terhitung saat Tinggi/Berat diisi (pakai norma lama) --- */
+  const mBody = document.querySelector('#modalRoot .modal-body');
+  if(mBody){
+    const fBerat = mBody.querySelector('#mf_beratBadan');
+    if(fBerat && fBerat.closest('.field')){
+      fBerat.closest('.field').insertAdjacentHTML('afterend',
+        '<div class="gizi-box" id="tesImtBox"><div class="k">IMT (terhitung otomatis)</div>' +
+        '<div class="v" id="tesImtVal">—</div></div>');
+    }
+    const val = id => { const el = mBody.querySelector('#' + id); return el ? el.value.trim() : ''; };
+    const hitungIMTForm = () => {
+      const el = mBody.querySelector('#tesImtVal');
+      if(!el) return;
+      const imt = hitungIMT(val('mf_tinggiBadan'), val('mf_beratBadan'));
+      if(imt === ''){ el.innerHTML = '<span class="muted">Isi tinggi & berat badan untuk menghitung IMT.</span>'; return; }
+      const u = getUser(val('mf_userId'));
+      const kat = u && genderOf(u) ? tentukanNormaIMT(imt, u.jenisKelamin, u.tanggalLahir, val('mf_tanggal') || todayISO()) : '';
+      el.innerHTML = 'IMT <b>' + imt + '</b> kg/m²' +
+        (kat ? ' ' + kategoriBadge(kat)
+             : ' <span class="muted">jenis kelamin siswa belum diisi</span>');
+    };
+    const selU = mBody.querySelector('#mf_userId');
+    let idSiswa = t ? t.userId : (adminTesUserId || (getUsers()[0] || {}).id || '');
+    if(selU){
+      /* Ganti siswa -> isi ulang tinggi/berat dari profil siswa baru. */
+      selU.addEventListener('change', () => {
+        const lama = idSiswa ? getUser(idSiswa) : null;
+        const baru = getUser(selU.value);
+        const fT = mBody.querySelector('#mf_tinggiBadan'), fB = mBody.querySelector('#mf_beratBadan');
+        const auto = (el, key) => {
+          if(!el) return;
+          const vNow = el.value.trim();
+          if(vNow === '' || (lama && vNow === String(lama[key] || ''))) el.value = baru ? (baru[key] || '') : '';
+        };
+        auto(fT, 'tinggiBadan');
+        auto(fB, 'beratBadan');
+        idSiswa = selU.value;
+        hitungIMTForm();
+      });
+    }
+    ['mf_tinggiBadan', 'mf_beratBadan'].forEach(id => {
+      const el = mBody.querySelector('#' + id);
+      if(el){ el.addEventListener('input', hitungIMTForm); el.addEventListener('change', hitungIMTForm); }
+    });
+    hitungIMTForm();
+
+    /* --- Bleep Test: batas shuttle per level + pratinjau VO2max --- */
+    const elLvl = mBody.querySelector('#mf_bleepLevel');
+    const elShl = mBody.querySelector('#mf_bleepShuttle');
+    if(elLvl && elLvl.closest('.field')){
+      const box = document.createElement('div');
+      box.className = 'gizi-box';
+      box.id = 'tesBleepBox';
+      box.innerHTML = '<div class="k">VO2max Bleep Test (terhitung otomatis)</div><div class="v" id="tesBleepVal">—</div>';
+      (elShl && elShl.closest('.field') ? elShl.closest('.field') : elLvl.closest('.field'))
+        .insertAdjacentElement('afterend', box);
+      const elV = box.querySelector('#tesBleepVal');
+      const hitungBleepForm = () => {
+        const lvl = angkaDari(elLvl.value);
+        const smax = lvl === null ? null : beepShuttlesPerLevel[lvl];
+        if(lvl === null){
+          if(elShl) elShl.removeAttribute('max');
+          elV.innerHTML = '<span class="muted">Isi Level Tercapai (1–21) untuk menghitung VO2max.</span>';
+          return;
+        }
+        if(!smax){
+          if(elShl) elShl.removeAttribute('max');
+          elV.innerHTML = '<span class="muted">Level harus berupa angka bulat 1–21.</span>';
+          return;
+        }
+        if(elShl) elShl.max = String(smax);
+        const shl = angkaDari(elShl ? elShl.value : '');
+        if(shl === null || !Number.isInteger(shl) || shl < 0 || shl > smax){
+          elV.innerHTML = '<span class="muted">Maksimal shuttle di level ' + lvl + ' = ' + smax + '.</span>';
+          return;
+        }
+        const vo2 = hitungVO2maxBleep(lvl, shl);
+        const u = getUser(val('mf_userId'));
+        const kat = u && genderOf(u) ? kategoriNormaItem('bleepTest', vo2, u) : '';
+        elV.innerHTML = 'VO2max <b>' + vo2 + '</b> ml/kg/min' +
+          ' <span class="muted small">(Level ' + lvl + ' · Shuttle ' + shl + ' · Smax ' + smax + ')</span>' +
+          (kat ? ' ' + kategoriBadge(kat) : '');
+      };
+      [elLvl, elShl].forEach(el => {
+        if(!el) return;
+        el.addEventListener('input', hitungBleepForm);
+        el.addEventListener('change', hitungBleepForm);
+      });
+      if(selU) selU.addEventListener('change', hitungBleepForm);
+      hitungBleepForm();
+    }
+
+    /* --- Jumlah tendangan 10 detik = Kanan + Kiri -> norma teknik --- */
+    const elKanS = mBody.querySelector('#mf_sambaranKanan');
+    const elKirS = mBody.querySelector('#mf_sambaranKiri');
+    const elKanA = mBody.querySelector('#mf_agilityKanan');
+    const elKirA = mBody.querySelector('#mf_agilityKiri');
+    const tumpuJml = elKirA || elKanA || elKirS || elKanS;
+    if(tumpuJml && tumpuJml.closest('.field')){
+      const boxJ = document.createElement('div');
+      boxJ.className = 'gizi-box';
+      boxJ.id = 'tesJumlahTeknikBox';
+      boxJ.innerHTML = '<div class="k">Jumlah Tendangan 10 detik &amp; Nilai Teknik (terhitung otomatis = Kanan + Kiri)</div>' +
+        '<div class="v" id="tesJumlahTeknikVal">—</div>';
+      tumpuJml.closest('.field').insertAdjacentElement('afterend', boxJ);
+      const elJ = boxJ.querySelector('#tesJumlahTeknikVal');
+      const barisJml = (lbl, a, b, fn) => {
+        const x = angkaDari(a ? a.value : ''), y = angkaDari(b ? b.value : '');
+        if(x === null || y === null)
+          return '<span class="muted small">' + esc(lbl) + ': isi frekuensi kanan &amp; kiri</span>';
+        const j = x + y;
+        return esc(lbl) + ' <b>' + j + '</b> ' + kategoriBadge(fn(j));
+      };
+      const hitungJumlah = () => {
+        let html = barisJml('Tendangan Sambaran', elKanS, elKirS, kategoriTendanganSambaran) +
+          '<br>' + barisJml('Agility Kick', elKanA, elKirA, kategoriAgilityKick);
+        /* Pratinjau Nilai Teknik otomatis (rumus yang sama dengan saat disimpan). */
+        const hasil = hitungNilaiTeknik({
+          sambaranKanan: elKanS ? elKanS.value : '', sambaranKiri: elKirS ? elKirS.value : '',
+          agilityKanan: elKanA ? elKanA.value : '', agilityKiri: elKirA ? elKirA.value : ''
+        });
+        const poinArr = hasil.rincian.map(r => r.poin).filter(p => p != null);
+        const rata = poinArr.length ? poinArr.reduce((a,b) => a + b, 0) / poinArr.length : null;
+        html += '<br><span class="muted small">Nilai Teknik (otomatis): </span>' +
+          (hasil.nilai === ''
+            ? '<b>—</b> <span class="muted small">(isi kedua item untuk menghitung)</span>'
+            : '<b>' + hasil.nilai + '</b> <span class="muted small">(poin rata-rata ' +
+              (rata != null ? rata.toFixed(2) : '—') + '/5)</span>');
+        elJ.innerHTML = html;
+      };
+      [elKanS, elKirS, elKanA, elKirA].forEach(el => {
+        if(!el) return;
+        el.addEventListener('input', hitungJumlah);
+        el.addEventListener('change', hitungJumlah);
+      });
+      hitungJumlah();
+    }
+  }
+}
+
+function renderAdminTes(){
+  const users = getUsers();
+  const all = getTests().slice().sort((a,b) => b.tanggal.localeCompare(a.tanggal));
+  const list = adminTesUserId ? all.filter(t => t.userId === adminTesUserId) : all;
+  const nameOf = id => { const u = getUser(id); return u ? u.namaLengkap : '(siswa terhapus)'; };
+
+  const opts = '<option value=""' + (adminTesUserId ? '' : ' selected') + '>— Semua Siswa —</option>' +
+    users.map(u => '<option value="' + u.id + '"' + (adminTesUserId === u.id ? ' selected' : '') + '>' + esc(u.namaLengkap) + '</option>').join('');
+
+  const nKol = (adminTesUserId ? 0 : 1) + 7; /* Siswa (opsional) + 7 kolom lain */
+
+  const rows = list.map(t => {
+    const k = t.teknik || {};
+    const line = (label, val) => val ? '<span><b>' + esc(label) + ':</b> ' + esc(val) + '</span>' : '';
+    /* Item teknik norma: tampilkan jumlah + badge kategori hasil rumusnya. */
+    const lineKat = (label, hasil) => hasil
+      ? '<span><b>' + esc(label) + ':</b> ' + esc(hasil.nilai) +
+        (hasil.kategori ? ' ' + kategoriBadge(hasil.kategori) : '') + '</span>'
+      : '';
+    const acts = '<div class="acts">' +
+      '<button class="ibtn" data-tact="edit" data-id="' + t.id + '" title="Edit">✏️</button>' +
+      '<button class="ibtn danger" data-tact="del" data-id="' + t.id + '" title="Hapus">🗑️</button></div>';
+    return '<tr class="tes-baris">' +
+      (adminTesUserId ? '' : '<td data-label="Siswa"><b>' + esc(nameOf(t.userId)) + '</b></td>') +
+      '<td data-label="Tanggal">📅 ' + esc(fmtDate(t.tanggal)) + '</td>' +
+      '<td data-label="Fisik">' + fisikMentahHtml(t) + '</td>' +
+      '<td data-label="Nilai Fisik"><div class="nf-cell">' +
+        '<button type="button" class="skor-toggle" data-tact="rincian" data-id="' + t.id +
+          '" aria-expanded="false" title="Lihat rincian 6 item + grafik profil">' + skorBadge(nilaiFisikOf(t), 'f') + '</button>' +
+      '</div></td>' +
+      '<td data-label="Teknik"><div class="stack-lines">' +
+        TEKNIK_ITEMS.map(([key, lbl]) => line(lbl, k[key])).join('') +
+        TEKNIK_NORMA_ITEMS.map(it => lineKat(it.label, teknikNormaHasil(t, it))).join('') + '</div></td>' +
+      '<td data-label="Nilai Teknik"><div class="nf-cell">' +
+        '<button type="button" class="skor-toggle" data-tact="rincian" data-id="' + t.id +
+          '" aria-expanded="false" title="Lihat rincian 2 item teknik (otomatis)">' +
+          skorBadge(nilaiTeknikOf(t), 't') + '</button>' +
+      '</div></td>' +
+      '<td data-label="Catatan">' + (t.catatan ? esc(t.catatan) : '<span class="muted">—</span>') + '</td>' +
+      '<td data-label="Aksi">' + acts + '</td></tr>' +
+      /* Baris expand: rincian 6 item + chart radar (kiri panel) DAN
+         rincian 2 item teknik + poin rata-rata (bawahnya), dalam satu
+         panel selebar tabel — diisi saat badge ditekan. */
+      '<tr class="rincian-baris hidden"><td colspan="' + nKol + '" class="no-label">' +
+        '<div class="fisik-rincian" data-box="' + t.id + '"></div>' +
+        '<div class="fisik-rincian teknik-rincian" data-box-teknik="' + t.id + '"></div>' +
+      '</td></tr>';
+  }).join('');
+
+  const a = avgNilai(list);
+  document.getElementById('view-admin-tes').innerHTML =
+    pageHead('Kondisi Fisik dan Teknik', 'Input dan kelola hasil tes fisik serta teknik per siswa.',
+      '<select id="tesSiswa" style="min-width:230px">' + opts + '</select>') +
+    hero(
+      '<div><div class="h-lbl">Rata-rata Nilai Teknik</div>' +
+      '<div class="h-big">' + (list.length ? a.avg : '—') + '</div>' +
+      '<div class="h-sub">' + list.length + ' hasil tes · ' + users.length + ' siswa terdaftar</div>' +
+      '<div class="h-meta"><span class="h-chip">📊 ' + esc(adminTesUserId ? nameOf(adminTesUserId) : 'Semua siswa') + '</span></div></div>' +
+      donut(a.avg, {color:'#facc15', track:'rgba(255,255,255,.22)', label:'Skala 0–100', text:(list.length ? a.avg : '—')})
+    ) +
+    qaRow([{id:'addTes', icon:'＋', label:'Input Hasil Tes', tone:'green'}]) +
+    (list.length
+      ? '<div class="tw"><table class="stack"><thead><tr>' +
+        (adminTesUserId ? '' : '<th>Siswa</th>') +
+        '<th>Tanggal</th><th>Fisik</th><th>Nilai Fisik</th><th>Teknik</th><th>Nilai Teknik</th><th>Catatan</th><th>Aksi</th>' +
+        '</tr></thead><tbody>' + rows + '</tbody></table></div>'
+      : emptyState('📊', 'Belum ada hasil tes',
+          users.length ? 'Gunakan aksi "Input Hasil Tes" untuk menambahkan data tes pertama.' : 'Tambahkan siswa terlebih dahulu menuju Profil Siswa.'));
+
+  const el = document.getElementById('view-admin-tes');
+  const sel = el.querySelector('#tesSiswa');
+  if(sel) sel.addEventListener('change', () => { adminTesUserId = sel.value; renderAdminTes(); });
+
+  const add = el.querySelector('#addTes');
+  if(add) add.addEventListener('click', () => openTesModal(null));
+
+  /* Expand: SATU klik badge (Nilai Fisik ATAU Nilai Teknik) -> panel
+     berisi rincian 6 item + chart radar, lalu rincian 2 item teknik +
+     poin rata-rata di bawahnya. Kedua badge ikut menandai aria-expanded. */
+  el.querySelectorAll('[data-tact="rincian"]').forEach(b => b.addEventListener('click', () => {
+    const baris = b.closest('tr');
+    const rowExp = baris && baris.nextElementSibling;
+    const box = rowExp && rowExp.querySelector('[data-box]');
+    const boxT = rowExp && rowExp.querySelector('[data-box-teknik]');
+    const t = getTests().find(x => x.id === b.dataset.id);
+    if(!box || !t) return;
+    const buka = rowExp.classList.contains('hidden');
+    rowExp.classList.toggle('hidden', !buka);
+    baris.querySelectorAll('[data-tact="rincian"]').forEach(bt =>
+      bt.setAttribute('aria-expanded', buka ? 'true' : 'false'));
+    if(buka){
+      box.innerHTML = rincianFisikHtml(t);
+      pasangRadar(box); /* gambar chart radar setelah panel terlihat */
+      if(boxT) boxT.innerHTML = rincianTeknikHtml(t);
+    }
+  }));
+
+  el.querySelectorAll('[data-tact="edit"],[data-tact="del"]').forEach(b => b.addEventListener('click', () => {
+    const t = getTests().find(x => x.id === b.dataset.id);
+    if(!t) return;
+    if(b.dataset.tact === 'edit'){ openTesModal(t); return; }
+    if(confirm('Hapus hasil tes tanggal ' + fmtDate(t.tanggal) + ' ini?')){
+      setTests(getTests().filter(x => x.id !== t.id));
+      toast('Hasil tes dihapus.'); renderAdminTes();
+    }
+  }));
+}
+
+/* ==================================================================
+   DASHBOARD ADMIN — ABSENSI
+================================================================== */
+let absensiDate = todayISO();
+let absensiRekapUserId = '';
+
+function renderAdminAbsensi(){
+  if(!getUsers().length){
+    document.getElementById('view-admin-absensi').innerHTML =
+      pageHead('Absensi', 'Catat kehadiran siswa setiap sesi latihan.') +
+      emptyState('🗓️', 'Belum ada siswa', 'Tambahkan siswa terlebih dahulu menuju Profil Siswa.');
+    return;
+  }
+  const users = getUsers();
+  const opts = '<option value=""' + (absensiRekapUserId ? '' : ' selected') + '>— Semua Siswa —</option>' +
+    users.map(u => '<option value="' + u.id + '"' + (absensiRekapUserId === u.id ? ' selected' : '') + '>' + esc(u.namaLengkap) + '</option>').join('');
+
+  const all = getAbsen();
+  const nHadir = all.filter(a => a.status === 'Hadir').length;
+  const nIzin = all.filter(a => a.status === 'Izin').length;
+  const nAlfa = all.filter(a => a.status === 'Alfa').length;
+
+  document.getElementById('view-admin-absensi').innerHTML =
+    pageHead('Absensi Latihan', 'Catat kehadiran tiap sesi latihan, lalu lihat rekapnya.') +
+    hero(
+      '<div><div class="h-lbl">Total Catatan Kehadiran</div>' +
+      '<div class="h-big">' + all.length + '</div>' +
+      '<div class="h-sub">' + nHadir + ' hadir · ' + nIzin + ' izin · ' + nAlfa + ' alfa</div>' +
+      '<div class="h-meta"><span class="h-chip">🗓️ ' + esc(fmtDate(absensiDate)) + '</span>' +
+      '<span class="h-chip">👥 ' + users.length + ' siswa</span></div></div>' +
+      donut(all.length ? pct(nHadir, all.length) : 0, {color:'#22a352', label:'Hadir'})
+    ) +
+    '<div class="card">' +
+      '<div class="card-head"><div><h3>✏️ Catat Kehadiran Sesi</h3><p>Pilih tanggal sesi, atur status tiap siswa, lalu simpan sekaligus.</p></div>' +
+      '<div class="toolbar"><label class="small muted" for="absenDate" style="font-weight:600">Tanggal sesi</label>' +
+      '<input type="date" id="absenDate" value="' + esc(absensiDate) + '" style="max-width:170px">' +
+      '<button class="btn primary" id="saveAbsen">💾 Simpan Semua</button></div></div>' +
+      '<div id="absenFormList"></div>' +
+      '<p class="muted small">Menyimpan akan menimpa data absensi pada tanggal tersebut.</p>' +
+    '</div>' +
+    '<div class="card">' +
+      '<div class="card-head"><div><h3>📈 Rekap Kehadiran</h3><p>Ringkasan kehadiran seluruh sesi latihan.</p></div>' +
+      '<div class="toolbar"><select id="rekapSiswa" style="min-width:220px">' + opts + '</select></div></div>' +
+      '<div id="absenRekap"></div>' +
+    '</div>';
+
+  const el = document.getElementById('view-admin-absensi');
+  el.querySelector('#absenDate').addEventListener('change', e => {
+    absensiDate = e.target.value || todayISO();
+    renderAbsenForm();
+  });
+  el.querySelector('#rekapSiswa').addEventListener('change', e => {
+    absensiRekapUserId = e.target.value;
+    renderAbsenRekap();
+  });
+  el.querySelector('#saveAbsen').addEventListener('click', saveAbsensi);
+
+  renderAbsenForm();
+  renderAbsenRekap();
+}
+
+function renderAbsenForm(){
+  const box = document.getElementById('absenFormList');
+  if(!box) return;
+  const users = getUsers();
+  const records = getAbsen().filter(a => a.tanggal === absensiDate);
+
+  if(!users.length){ box.innerHTML = emptyState('👥', 'Belum ada siswa', 'Tambahkan siswa terlebih dahulu.'); return; }
+
+  box.innerHTML =
+    '<div style="margin:6px 0 14px"><span class="chip">📅 ' + esc(fmtDate(absensiDate)) + '</span> ' +
+    '<span class="muted small">— ' + (records.length ? records.length + ' data tersimpan untuk tanggal ini' : 'belum ada data tersimpan') + '</span></div>' +
+    users.map(u => {
+      const rec = records.find(r => r.userId === u.id);
+      const st = rec ? rec.status : 'Hadir';
+      return '<div class="absen-row" data-user="' + u.id + '">' +
+        '<div class="who-l"><div class="mini-av">' +
+        (u.foto ? '<img src="' + esc(u.foto) + '" alt="' + esc(u.namaLengkap) + '">' : esc(initials(u.namaLengkap))) + '</div>' +
+        '<div><div class="nm">' + esc(u.namaLengkap) + '</div><div class="sb">' + esc(u.kartuAtlet) + ' · ' + esc(u.asalSekolah) + '</div></div></div>' +
+        '<div class="seg" role="radiogroup">' +
+          ['Hadir','Izin','Alfa'].map(s =>
+            '<button type="button" class="' + (st === s ? 'on' : '') + '" data-status="' + s + '">' + s + '</button>').join('') +
+        '</div></div>';
+    }).join('');
+
+  box.querySelectorAll('.seg button').forEach(b => b.addEventListener('click', () => {
+    b.parentNode.querySelectorAll('button').forEach(x => x.classList.remove('on'));
+    b.classList.add('on');
+  }));
+}
+
+function saveAbsensi(){
+  if(!absensiDate){ toast('Pilih tanggal sesi terlebih dahulu.', 'err'); return; }
+  const rows = document.querySelectorAll('#absenFormList .absen-row');
+  if(!rows.length){ toast('Tidak ada siswa untuk dicatat.', 'warn'); return; }
+
+  let all = getAbsen().filter(a => a.tanggal !== absensiDate);
+  let n = 0;
+  rows.forEach(r => {
+    const on = r.querySelector('.seg button.on');
+    all.push({id:uid('a'), userId:r.dataset.user, tanggal:absensiDate, status:on ? on.dataset.status : 'Hadir'});
+    n++;
+  });
+  setAbsen(all);
+  toast('Absensi ' + fmtDate(absensiDate) + ' tersimpan (' + n + ' siswa). ✅');
+  renderAbsenForm();
+  renderAbsenRekap();
+}
+
+function renderAbsenRekap(){
+  const box = document.getElementById('absenRekap');
+  if(!box) return;
+  const all = getAbsen();
+
+  if(!all.length){
+    box.innerHTML = emptyState('📈', 'Belum ada data absensi', 'Catat kehadiran pada sesi latihan di atas.');
+    return;
+  }
+
+  if(absensiRekapUserId){
+    const u = getUser(absensiRekapUserId);
+    if(!u){ absensiRekapUserId = ''; renderAbsenRekap(); return; }
+    const s = absenStats(u.id);
+    const rows = s.rows.slice().sort((a,b) => b.tanggal.localeCompare(a.tanggal));
+    box.innerHTML =
+      '<div class="grid g4" style="margin-bottom:14px">' +
+        statCard('Total Sesi', s.total, 'sesi') +
+        statCard('Hadir', s.hadir, 'sesi') +
+        statCard('Izin', s.izin, 'sesi') +
+        statCard('Alfa', s.alfa, 'sesi · ' + s.persen + '% hadir') +
+      '</div>' +
+      (rows.length
+        ? '<div class="tw"><table class="stack"><thead><tr><th>Tanggal</th><th>Status</th></tr></thead><tbody>' +
+          rows.map(a => '<tr><td data-label="Tanggal">📅 ' + esc(fmtDate(a.tanggal)) + '</td>' +
+            '<td data-label="Status"><span class="badge ' + a.status.toLowerCase() + '">' + esc(a.status) + '</span></td></tr>').join('') +
+          '</tbody></table></div>'
+        : emptyState('🗓️', 'Belum ada absensi', 'Belum ada data absensi untuk siswa ini.'));
+    return;
+  }
+
+  const dates = [...new Set(all.map(a => a.tanggal))].sort((a,b) => b.localeCompare(a));
+  const rows = dates.map(d => {
+    const onDate = all.filter(a => a.tanggal === d);
+    const h = onDate.filter(a => a.status === 'Hadir').length;
+    const i = onDate.filter(a => a.status === 'Izin').length;
+    const f = onDate.filter(a => a.status === 'Alfa').length;
+    return '<tr>' +
+      '<td data-label="Tanggal">📅 ' + esc(fmtDate(d)) + '</td>' +
+      '<td data-label="Hadir"><span class="badge hadir">' + h + '</span></td>' +
+      '<td data-label="Izin"><span class="badge izin">' + i + '</span></td>' +
+      '<td data-label="Alfa"><span class="badge alfa">' + f + '</span></td>' +
+      '<td data-label="Total Sesi">' + onDate.length + ' siswa</td></tr>';
+  }).join('');
+
+  const totalHadir = all.filter(a => a.status === 'Hadir').length;
+  const totalIzin = all.filter(a => a.status === 'Izin').length;
+  const totalAlfa = all.filter(a => a.status === 'Alfa').length;
+
+  box.innerHTML =
+    '<div class="grid g4" style="margin-bottom:14px">' +
+      statCard('Total Sesi', dates.length, 'tanggal latihan') +
+      statCard('Hadir', totalHadir, 'catatan kehadiran') +
+      statCard('Izin', totalIzin, 'catatan') +
+      statCard('Alfa', totalAlfa, 'catatan · ' + pct(totalHadir, all.length) + '% hadir') +
+    '</div>' +
+    '<div class="tw"><table class="stack"><thead><tr><th>Tanggal Sesi</th><th>Hadir</th><th>Izin</th><th>Alfa</th><th>Peserta</th></tr></thead>' +
+    '<tbody>' + rows + '</tbody></table></div>';
+}
+
+/* ==================================================================
+   JALANKAN
+================================================================== */
+/* ---- PWA: daftarkan service worker hanya lewat http/https ---- */
+if('serviceWorker' in navigator && /^https?:$/.test(location.protocol)){
+  window.addEventListener('load', function(){
+    navigator.serviceWorker.register('sw.js').catch(function(){});
+  });
+}
+
+bersihkanDummyLama();
+seed(false);
+migrateTes();
+hitungUlangNorma();
+if(sessionValid()){
+  showApp();
+}else{
+  session = null;
+  showAuth();
+}
+</script>
+</body>
+</html>

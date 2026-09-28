@@ -1,0 +1,6 @@
+# Editor / tooling
+.qodo/
+
+# OS
+Thumbs.db
+.DS_Store
