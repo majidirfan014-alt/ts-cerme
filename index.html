@@ -631,6 +631,11 @@ td .stack-lines b{color:var(--ink);font-weight:700}
 <!-- Chart.js — chart radar profil kondisi fisik (lewat CDN) -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
 
+<!-- Firebase (compat) — sinkron data ke Firestore. Bila gagal dimuat
+     (offline/CDN diblokir) aplikasi tetap jalan penuh dengan localStorage. -->
+<script src="https://www.gstatic.com/firebasejs/11.6.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore-compat.js"></script>
+
 <script>
 /* ==================================================================
    PENYIMPANAN
@@ -682,11 +687,111 @@ const findAdmin = (un, pw) => {
   const legacy = getAdmin();
   return (un === legacy.username && pw === legacy.password) ? legacy : null;
 };
-const setUsers  = v => store.set(K.users, v);
-const setTests  = v => store.set(K.tests, v);
-const setAbsen  = v => store.set(K.absen, v);
+/* Tulis ke localStorage + ikut didorong ke Firestore. */
+const setUsers  = v => saveList(K.users, 'users', v);
+const setTests  = v => saveList(K.tests, 'tests', v);
+const setAbsen  = v => saveList(K.absen, 'absen', v);
 
 const getUser = id => getUsers().find(u => u.id === id);
+
+/* ==================================================================
+   SINKRONISASI FIRESTORE (localStorage tetap sumber utama)
+   ------------------------------------------------------------------
+   • Simpan (setUsers/setTests/setAbsen) -> di-push ke Firestore
+     dengan diff: id baru/di-update di-set, id yang hilang dihapus.
+   • onSnapshot menarik perubahan dari perangkat lain, digabung ke
+     localStorage (id sama -> versi cloud menang; id lokal yang tidak
+     ada di cloud tetap dipertahankan) lalu tampilan direfresh.
+   • Flag `syncingApply` mencegah loop (cloud -> local -> cloud).
+   • Bila SDK tidak tersedia, semua fungsi di bawah jadi no-op dan
+     aplikasi berjalan persis seperti sebelumnya (murni lokal).
+================================================================== */
+const FIREBASE_CONFIG = {
+  apiKey: "AIzaSyCBlJz2mn5RZEGxR3j1E4FiE4LnRZoQlcE",
+  authDomain: "ts-cerme.firebaseapp.com",
+  projectId: "ts-cerme",
+  storageBucket: "ts-cerme.firebasestorage.app",
+  messagingSenderId: "184103105591",
+  appId: "1:184103105591:web:134400034598c7c2057bb2"
+};
+
+const SYNC_COLS = [
+  {coll:'users', key:K.users},
+  {coll:'tests', key:K.tests},
+  {coll:'absen', key:K.absen}
+];
+
+let FDB = null;
+try{
+  if(typeof firebase !== 'undefined'){
+    if(!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
+    FDB = firebase.firestore();
+  }
+}catch(e){ FDB = null; console.warn('Firebase tidak aktif:', e && e.message); }
+
+let syncingApply = false; /* true saat menulis data cloud ke lokal */
+
+function pushList(coll, oldArr, newArr){
+  if(!FDB || syncingApply) return;
+  try{
+    const col = FDB.collection(coll);
+    const idsBaru = (newArr || []).map(x => String(x.id));
+    (newArr || []).forEach(x =>
+      Promise.resolve(col.doc(String(x.id)).set(x)).catch(err => console.warn('sync push', coll, err)));
+    (oldArr || []).filter(x => idsBaru.indexOf(String(x.id)) === -1).forEach(x =>
+      Promise.resolve(col.doc(String(x.id)).delete()).catch(err => console.warn('sync hapus', coll, err)));
+  }catch(e){ console.warn('sync push gagal:', e && e.message); }
+}
+
+function saveList(storeKey, coll, v){
+  const lama = store.get(storeKey, []);
+  const ok = store.set(storeKey, v);
+  if(ok) pushList(coll, lama, v);
+  return ok;
+}
+
+function applyCloud(coll, key, cloud){
+  if(syncingApply) return;
+  const lokal = store.get(key, []);
+  const byId = {};
+  (cloud || []).forEach(x => { if(x && x.id != null) byId[String(x.id)] = x; });
+  lokal.forEach(x => { if(x && x.id != null && !(String(x.id) in byId)) byId[String(x.id)] = x; });
+  const gabung = Object.keys(byId).map(k => byId[k]);
+  if(JSON.stringify(gabung) === JSON.stringify(lokal)) return;
+  syncingApply = true;
+  try{ store.set(key, gabung); } finally{ syncingApply = false; }
+  redrawAfterSync();
+}
+
+function redrawAfterSync(){
+  if(document.querySelector('.overlay')) return; /* modal terbuka -> jangan ganggu */
+  if(!currentView || !renderers || !renderers[currentView]) return;
+  try{ renderers[currentView](); }catch(e){ console.warn('refresh tampilan:', e && e.message); }
+}
+
+function startCloudSync(){
+  if(!FDB) return false;
+  SYNC_COLS.forEach(c => {
+    let pertama = true;
+    try{
+      FDB.collection(c.coll).onSnapshot(snap => {
+        const cloud = [];
+        snap.forEach(d => { const v = d.data(); if(v) cloud.push(v); });
+        if(pertama){
+          pertama = false;
+          /* Cloud masih kosong -> unggah isi lokal sekali di awal. */
+          if(!cloud.length){
+            const lokal = store.get(c.key, []);
+            if(lokal.length) pushList(c.coll, [], lokal);
+            return;
+          }
+        }
+        applyCloud(c.coll, c.key, cloud);
+      }, err => console.warn('sync dengar', c.coll, err));
+    }catch(e){ console.warn('sync dengar gagal:', e && e.message); }
+  });
+  return true;
+}
 
 /* ==================================================================
    TABEL NORMA & RUMUS NILAI FISIK (HITUNG OTOMATIS)
@@ -3236,6 +3341,9 @@ if(sessionValid()){
   session = null;
   showAuth();
 }
+/* Tarik data cloud + dengarkan perubahan perangkat lain (no-op bila
+   SDK Firebase tidak termuat). */
+startCloudSync();
 </script>
 </body>
 </html>
