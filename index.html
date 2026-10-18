@@ -501,6 +501,15 @@ th[data-sort]:hover{color:var(--g700)}
 .catatan-item .ci-who{font-weight:800;font-size:14px;letter-spacing:-.2px}
 .catatan-item .ci-txt{margin-top:7px;font-size:13.5px;color:#334155;line-height:1.5}
 .stack-gap > * + *{margin-top:10px}
+
+/* ================= EDIT PROFIL ATLET ================= */
+.field-err{display:none;color:var(--danger);font-size:12.3px;font-weight:700;margin-top:5px}
+.field-err.show{display:block}
+.locked-note{background:var(--tile);border:1px solid var(--line);border-radius:13px;padding:11px 13px}
+.locked-note .k{font-size:11.5px;font-weight:800;letter-spacing:.5px;text-transform:uppercase;color:var(--muted)}
+.locked-note .v{margin-top:7px;display:flex;flex-wrap:wrap;gap:7px 14px;font-size:13px;font-weight:600;color:#334155}
+.locked-note .v b{font-weight:800}
+.locked-note .v span{display:inline-flex;align-items:center;gap:5px}
 </style>
 <meta name="theme-color" content="#1e1b4b">
 <meta name="description" content="Monitoring kondisi fisik, teknik, dan kehadiran latihan siswa Tapak Suci Cabang Cerme.">
@@ -519,7 +528,7 @@ th[data-sort]:hover{color:var(--g700)}
 <!-- ============ LAYAR AUTH ============ -->
 <div id="authScreen" class="auth">
   <div class="auth-hero">
-    <div class="logo-mark"><img src="lambangtapaksucidanartinya.jpg" alt="Lambang Tapak Suci"></div>
+    <div class="logo-mark"><img src="IMG_3379.JPG.jpeg" alt="Lambang Tapak Suci"></div>
     <h1>Tapak Suci Cabang Cerme</h1>
     <p class="tag">Pantau fisik, teknik, dan kehadiran latihan siswa dalam satu aplikasi.</p>
     <div class="auth-pills">
@@ -609,7 +618,7 @@ th[data-sort]:hover{color:var(--g700)}
 <!-- ============ LAYAR APLIKASI ============ -->
 <div id="appScreen" class="hidden">
   <header class="topbar">
-    <div class="brand-sm"><span class="mark"><img src="lambangtapaksucidanartinya.jpg" alt="Lambang Tapak Suci"></span><span class="t">Tapak Suci <b>Cerme</b></span></div>
+    <div class="brand-sm"><span class="mark"><img src="IMG_3379.JPG.jpeg" alt="Lambang Tapak Suci"></span><span class="t">Tapak Suci <b>Cerme</b></span></div>
     <div class="spacer"></div>
     <div class="who">
       <div class="ava-top" id="whoAvatar">?</div>
@@ -2039,7 +2048,8 @@ function renderUserProfil(){
   ];
 
   document.getElementById('view-user-profil').innerHTML =
-    pageHead('Profil Siswa', 'Data dirimu. Perubahan hanya dapat dilakukan oleh pelatih/admin.') +
+    pageHead('Profil Siswa', 'Data dirimu. Sebagian data bisa kamu ubah sendiri lewat tombol Edit Profil.',
+      '<button class="btn primary" id="btnEditProfil">✏️ Edit Profil</button>') +
     hero(
       '<div class="hero-id">' + avatarHTML(u, 'lg') +
         '<div><div class="h-lbl">Kartu Atlet</div>' +
@@ -2058,8 +2068,198 @@ function renderUserProfil(){
     '</div>' +
     '<div class="card"><div class="info-grid">' + info.map(i =>
       '<div class="info"><div class="k">' + esc(i[0]) + '</div><div class="v">' + (i[2] ? i[1] : esc(i[1])) + '</div></div>').join('') +
-    '</div></div>';
+    '</div></div>' +
+    '<div class="note">✏️ Nama, tempat & tanggal lahir, asal sekolah, tinggi, dan berat badan bisa kamu ubah sendiri. ' +
+    'Nomor kartu, username, password, dan jenis kelamin diatur oleh pelatih/admin.</div>';
+
+  const btnEdit = document.getElementById('btnEditProfil');
+  if(btnEdit) btnEdit.addEventListener('click', openEditProfil);
 }
+
+/* ==================================================================
+   EDIT PROFIL OLEH ATLET
+   ------------------------------------------------------------------
+   Atlet boleh memperbaiki 6 data dirinya sendiri: nama lengkap, tempat
+   lahir, tanggal lahir, asal sekolah, tinggi badan, berat badan.
+   Data lain (nomor kartu, username, password, jenis kelamin) terkunci
+   dan diatur pelatih/admin. Penyimpanan berdasarkan id user sehingga
+   relasi ke tes, absensi, dan logbook tetap utuh.
+================================================================== */
+const EP_FIELD = ['nama','tempat','tanggal','sekolah','tinggi','berat'];
+
+function epVal(id){
+  const el = document.getElementById(id);
+  return el ? String(el.value).trim() : '';
+}
+
+function tutupEditProfil(){
+  const root = document.getElementById('modalRoot');
+  if(root){ buangRadar(root); root.innerHTML = ''; modalOnSubmit = null; }
+}
+
+function validasiEditProfil(){
+  const errs = {};
+  const nama = epVal('ep_nama');
+  const tempat = epVal('ep_tempat');
+  const tgl = epVal('ep_tanggal');
+  const sekolah = epVal('ep_sekolah');
+  const tinggiRaw = epVal('ep_tinggi');
+  const beratRaw = epVal('ep_berat');
+
+  if(!nama) errs.nama = 'Nama lengkap wajib diisi.';
+  if(!tempat) errs.tempat = 'Tempat lahir wajib diisi.';
+  if(!tgl) errs.tanggal = 'Tanggal lahir wajib diisi.';
+  else if(tgl > todayISO()) errs.tanggal = 'Tanggal lahir tidak boleh di masa depan.';
+  if(!sekolah) errs.sekolah = 'Asal sekolah wajib diisi.';
+
+  if(tinggiRaw !== ''){
+    const t = Number(tinggiRaw);
+    if(isNaN(t) || t <= 0) errs.tinggi = 'Tinggi badan harus angka positif.';
+    else if(t < 50 || t > 250) errs.tinggi = 'Tinggi badan wajar antara 50 sampai 250 cm.';
+  }
+  if(beratRaw !== ''){
+    const b = Number(beratRaw);
+    if(isNaN(b) || b <= 0) errs.berat = 'Berat badan harus angka positif.';
+    else if(b < 10 || b > 200) errs.berat = 'Berat badan wajar antara 10 sampai 200 kg.';
+  }
+  return errs;
+}
+
+function tampilkanErrorEditProfil(errs){
+  let fokus = null;
+  EP_FIELD.forEach(f => {
+    const msg = errs[f] || '';
+    const err = document.getElementById('ep_err_' + f);
+    const inp = document.getElementById('ep_' + f);
+    if(err){ err.textContent = msg; err.classList.toggle('show', !!msg); }
+    if(inp){
+      inp.style.borderColor = msg ? 'var(--danger)' : '';
+      if(msg && !fokus) fokus = inp;
+    }
+  });
+  if(fokus) fokus.focus();
+  return !Object.keys(errs).length;
+}
+
+function openEditProfil(){
+  const u = getUser(session.userId);
+  if(!u){ toast('Data siswa tidak ditemukan.', 'err'); return; }
+  const root = document.getElementById('modalRoot');
+  const v = x => esc(x == null ? '' : x);
+  const fld = (name, label, type, value, opts) => {
+    opts = opts || {};
+    return '<div class="field' + (opts.full ? ' full' : '') + '">' +
+      '<label for="ep_' + name + '">' + esc(label) + (opts.req ? ' <span class="req">*</span>' : '') + '</label>' +
+      '<input id="ep_' + name + '" type="' + type + '" value="' + v(value) + '"' +
+        (opts.ph ? ' placeholder="' + esc(opts.ph) + '"' : '') + (opts.extra || '') + '>' +
+      (opts.hint ? '<small class="hint">' + esc(opts.hint) + '</small>' : '') +
+      '<small class="field-err" id="ep_err_' + name + '"></small>' +
+    '</div>';
+  };
+
+  root.innerHTML =
+    '<div class="overlay" data-overlay><div class="modal" role="dialog" aria-modal="true">' +
+      '<div class="modal-head"><h3>✏️ Edit Profil Saya</h3>' +
+      '<button type="button" class="icon-btn" data-ep-close aria-label="Tutup">&#10005;</button></div>' +
+      '<form novalidate><div class="modal-body">' +
+        '<div class="f-sec">Data yang Bisa Kamu Ubah</div>' +
+        fld('nama', 'Nama Lengkap', 'text', u.namaLengkap, {req:true, ph:'Nama lengkap'}) +
+        fld('tempat', 'Tempat Lahir', 'text', u.tempatLahir, {req:true, ph:'mis. Cerme'}) +
+        fld('tanggal', 'Tanggal Lahir', 'date', u.tanggalLahir, {req:true}) +
+        fld('sekolah', 'Asal Sekolah', 'text', u.asalSekolah, {req:true, ph:'mis. SMP Negeri 1 Cerme'}) +
+        fld('tinggi', 'Tinggi Badan (cm)', 'number', u.tinggiBadan, {ph:'mis. 165', extra:' step="0.1"', hint:'Boleh dikosongkan · rentang wajar 50 - 250 cm'}) +
+        fld('berat', 'Berat Badan (kg)', 'number', u.beratBadan, {ph:'mis. 52', extra:' step="0.1"', hint:'Boleh dikosongkan · rentang wajar 10 - 200 kg'}) +
+        '<div class="gizi-box"><div class="k">Ringkasan IMT / Status Gizi (terhitung otomatis)</div>' +
+        '<div class="v" id="epGiziVal">—</div></div>' +
+        '<div class="f-sec">Data Terkunci (diatur pelatih/admin)</div>' +
+        '<div class="field full"><div class="locked-note">' +
+          '<div class="k">Data berikut tidak bisa diubah sendiri</div>' +
+          '<div class="v">' +
+            '<span>🪪 Nomor Kartu: <b>' + v(u.kartuAtlet || '—') + '</b></span>' +
+            '<span>👤 Username: <b>' + v(u.username || '—') + '</b></span>' +
+            '<span>🔒 Password: <b>••••••</b></span>' +
+            '<span>🧾 Jenis Kelamin: <b>' + v(u.jenisKelamin === 'L' ? 'Laki-laki (L)' : u.jenisKelamin === 'P' ? 'Perempuan (P)' : '—') + '</b></span>' +
+          '</div>' +
+          '<small class="hint">Salah data di atas? Hubungi pelatih/admin untuk memperbaikinya.</small>' +
+        '</div></div>' +
+      '</div>' +
+      '<div class="modal-foot">' +
+        '<button type="button" class="btn ghost" data-ep-close>Batal</button>' +
+        '<button type="submit" class="btn primary">💾 Simpan Perubahan</button>' +
+      '</div></form></div></div>';
+
+  const updGizi = () => {
+    const el = document.getElementById('epGiziVal');
+    if(!el) return;
+    const g = statusGiziOf({
+      tinggiBadan: epVal('ep_tinggi'),
+      beratBadan: epVal('ep_berat'),
+      jenisKelamin: u.jenisKelamin,
+      tanggalLahir: epVal('ep_tanggal')
+    });
+    el.innerHTML = g.imt
+      ? 'IMT <b>' + esc(g.imt) + '</b> kg/m²' + (g.status ? ' ' + kategoriBadge(g.status) : '')
+      : '<span class="muted">Isi tinggi &amp; berat badan untuk melihat IMT.</span>';
+  };
+
+  EP_FIELD.forEach(f => {
+    const el = document.getElementById('ep_' + f);
+    if(!el) return;
+    el.addEventListener('input', () => {
+      const err = document.getElementById('ep_err_' + f);
+      if(err){ err.textContent = ''; err.classList.remove('show'); }
+      el.style.borderColor = '';
+      if(f === 'tinggi' || f === 'berat' || f === 'tanggal') updGizi();
+    });
+    el.addEventListener('change', updGizi);
+  });
+  updGizi();
+
+  root.querySelectorAll('[data-ep-close]').forEach(b => b.addEventListener('click', tutupEditProfil));
+  const overlay = root.querySelector('[data-overlay]');
+  if(overlay) overlay.addEventListener('mousedown', e => {
+    if(e.target.hasAttribute('data-overlay')) tutupEditProfil();
+  });
+  root.querySelector('form').addEventListener('submit', e => {
+    e.preventDefault();
+    simpanEditProfil();
+  });
+
+  const first = root.querySelector('input');
+  if(first) setTimeout(() => first.focus(), 60);
+}
+
+function simpanEditProfil(){
+  const errs = validasiEditProfil();
+  if(!tampilkanErrorEditProfil(errs)){
+    toast('Periksa kembali isian yang ditandai merah.', 'err');
+    return;
+  }
+  const users = getUsers();
+  const i = users.findIndex(x => x.id === session.userId);
+  if(i === -1){ toast('Data siswa tidak ditemukan.', 'err'); tutupEditProfil(); return; }
+
+  users[i] = Object.assign({}, users[i], {
+    namaLengkap: epVal('ep_nama'),
+    tempatLahir: epVal('ep_tempat'),
+    tanggalLahir: epVal('ep_tanggal'),
+    asalSekolah: epVal('ep_sekolah'),
+    tinggiBadan: epVal('ep_tinggi'),
+    beratBadan: epVal('ep_berat')
+  });
+  setUsers(users);
+
+  /* nama & inisial di header kanan atas ikut berubah */
+  document.getElementById('whoName').textContent = users[i].namaLengkap;
+  document.getElementById('whoAvatar').innerHTML = users[i].foto
+    ? '<img src="' + esc(users[i].foto) + '" alt="' + esc(users[i].namaLengkap) + '">'
+    : esc(initials(users[i].namaLengkap));
+
+  tutupEditProfil();
+  toast('Perubahan profil tersimpan. ✅');
+  renderUserProfil();
+}
+
 function statCard(lbl, val, sub){
   return '<div class="stat"><div class="lbl">' + esc(lbl) + '</div><div class="val">' + esc(String(val)) + '</div><div class="sub">' + esc(sub) + '</div></div>';
 }
