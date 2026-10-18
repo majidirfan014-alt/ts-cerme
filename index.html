@@ -510,6 +510,24 @@ th[data-sort]:hover{color:var(--g700)}
 .locked-note .v{margin-top:7px;display:flex;flex-wrap:wrap;gap:7px 14px;font-size:13px;font-weight:600;color:#334155}
 .locked-note .v b{font-weight:800}
 .locked-note .v span{display:inline-flex;align-items:center;gap:5px}
+
+/* ================= PROGRES & BADGE LOGBOOK ================= */
+.nav-badge{margin-left:auto;background:var(--danger);color:#fff;font-size:11px;font-weight:800;
+  border-radius:999px;padding:2px 8px;line-height:1.5;letter-spacing:0;flex:0 0 auto}
+.bottomnav .nav-item{position:relative}
+.bottomnav .nav-badge{position:absolute;top:3px;right:7px;margin:0;padding:1px 6px;font-size:9.5px}
+.badge.st-baru{background:#eef0ff;color:#3730a3;border:1px solid #dfe2ff}
+.badge.st-isi{background:#dcfce7;color:#15803d;border:1px solid #bbf7d0}
+.badge.st-belum{background:#fef9c3;color:#a16207;border:1px solid #fde68a}
+.badge.st-terlambat{background:#fee2e2;color:#b91c1c;border:1px solid #fecaca}
+.cmp{display:inline-block;border-radius:999px;padding:2px 9px;font-size:12px;font-weight:800;white-space:nowrap}
+.cmp-ok{background:#dcfce7;color:#15803d;border:1px solid #bbf7d0}
+.cmp-sedang{background:#fef9c3;color:#a16207;border:1px solid #fde68a}
+.cmp-besar{background:#fee2e2;color:#b91c1c;border:1px solid #fecaca}
+.prog-item .pj{display:flex;flex-wrap:wrap;gap:7px;align-items:center}
+.ket-program{background:var(--g050);border:1px dashed var(--g400);border-radius:14px;padding:11px 14px;
+  font-size:13px;font-weight:600;color:var(--g800);line-height:1.5}
+.ket-program b{letter-spacing:-.2px}
 </style>
 <meta name="theme-color" content="#1e1b4b">
 <meta name="description" content="Monitoring kondisi fisik, teknik, dan kehadiran latihan siswa Tapak Suci Cabang Cerme.">
@@ -637,13 +655,13 @@ th[data-sort]:hover{color:var(--g700)}
         <button class="nav-item" data-view="user-profil"><span class="e">🧑‍🎓</span> Profil Siswa</button>
         <button class="nav-item" data-view="user-tes"><span class="e">💪</span> Kondisi Fisik &amp; Teknik</button>
         <button class="nav-item" data-view="user-absen"><span class="e">🗓️</span> Absensi</button>
-        <button class="nav-item" data-view="user-logbook"><span class="e">📒</span> Logbook</button>
+        <button class="nav-item" data-view="user-logbook"><span class="e">📒</span> Logbook <span class="nav-badge hidden" id="navBadgeUser">0</span></button>
       </nav>
       <nav id="navAdmin" class="hidden">
         <button class="nav-item" data-view="admin-siswa"><span class="e">👥</span> Profil Siswa</button>
         <button class="nav-item" data-view="admin-tes"><span class="e">📊</span> Kondisi Fisik &amp; Teknik</button>
         <button class="nav-item" data-view="admin-absensi"><span class="e">🗓️</span> Absensi</button>
-        <button class="nav-item" data-view="admin-logbook"><span class="e">📒</span> Logbook</button>
+        <button class="nav-item" data-view="admin-logbook"><span class="e">📒</span> Logbook <span class="nav-badge hidden" id="navBadgeAdmin">0</span></button>
       </nav>
       <div class="side-foot">Data disimpan lokal di browser ini.<br>Gunakan <b>Keluar</b> untuk mengganti akun.</div>
     </aside>
@@ -668,13 +686,13 @@ th[data-sort]:hover{color:var(--g700)}
       <button class="nav-item" data-view="user-profil"><span class="e">🧑‍🎓</span>Profil Siswa</button>
       <button class="nav-item" data-view="user-tes"><span class="e">💪</span>Fisik &amp; Teknik</button>
       <button class="nav-item" data-view="user-absen"><span class="e">🗓️</span>Absensi</button>
-      <button class="nav-item" data-view="user-logbook"><span class="e">📒</span>Logbook</button>
+      <button class="nav-item" data-view="user-logbook"><span class="e">📒</span>Logbook <span class="nav-badge hidden" id="bnavBadgeUser">0</span></button>
     </nav>
     <nav id="bnavAdmin" class="hidden">
       <button class="nav-item" data-view="admin-siswa"><span class="e">👥</span>Profil Siswa</button>
       <button class="nav-item" data-view="admin-tes"><span class="e">📊</span>Fisik &amp; Teknik</button>
       <button class="nav-item" data-view="admin-absensi"><span class="e">🗓️</span>Absensi</button>
-      <button class="nav-item" data-view="admin-logbook"><span class="e">📒</span>Logbook</button>
+      <button class="nav-item" data-view="admin-logbook"><span class="e">📒</span>Logbook <span class="nav-badge hidden" id="bnavBadgeAdmin">0</span></button>
     </nav>
   </div>
 </div>
@@ -696,6 +714,7 @@ th[data-sort]:hover{color:var(--g700)}
 const K = {
   users:'ts_users', tests:'ts_testResults', absen:'ts_absensi',
   program:'ts_programLatihan', logbook:'ts_logbook',
+  programDibaca:'ts_programDibaca', hasilDilihat:'ts_hasilDilihat',
   admin:'ts_adminAccount', session:'ts_session'
 };
 
@@ -720,6 +739,8 @@ const getTests  = () => store.get(K.tests, []);
 const getAbsen  = () => store.get(K.absen, []);
 const getProgram = () => store.get(K.program, []);
 const getLogbook = () => store.get(K.logbook, []);
+const getProgramDibaca = () => store.get(K.programDibaca, {});
+const getHasilDilihat = () => store.get(K.hasilDilihat, {});
 const getAdmin  = () => store.get(K.admin, {username:'admin', password:'admin123'});
 
 /* ==================================================================
@@ -750,6 +771,8 @@ const setAbsen  = v => saveList(K.absen, 'absen', v);
 /* Logbook & program latihan: murni localStorage (tanpa backend/cloud). */
 const setProgram = v => store.set(K.program, v);
 const setLogbook = v => store.set(K.logbook, v);
+const setProgramDibaca = v => store.set(K.programDibaca, v);
+const setHasilDilihat = v => store.set(K.hasilDilihat, v);
 
 const getUser = id => getUsers().find(u => u.id === id);
 
@@ -1761,6 +1784,7 @@ function showApp(){
   const allowed = isAdmin
     ? ['admin-siswa','admin-tes','admin-absensi','admin-logbook']
     : ['user-profil','user-tes','user-absen','user-logbook'];
+  perbaruiBadgeLogbook();
   const req = new URLSearchParams(location.search).get('view');
   go(req && allowed.indexOf(req) > -1 ? req : (isAdmin ? 'admin-siswa' : 'user-profil'));
 }
@@ -3599,6 +3623,12 @@ const KONFIG_BEBAN = {
   panjangKronis: 28
 };
 
+/* Ambang "selisih besar" pada perbandingan rencana vs aktual (mudah diubah). */
+const KONFIG_PROGRES = {
+  selisihDurasi: 15,      /* menit  — ≤15 mnt dekat, ≤30 mnt sedang, >30 mnt besar */
+  selisihRpe: 1           /* poin   — ≤1 dekat, ≤2 sedang, >2 besar */
+};
+
 const JENIS_LATIHAN = ['Fisik','Teknik','Jurus','Sparring','Lainnya'];
 const RPE_SKALA = [
   {maks:2,  label:'Sangat Ringan', pill:'1-2 Sangat Ringan', nilai:1},
@@ -3731,12 +3761,113 @@ function badgeStatus(st){
   return '<span class="badge ' + esc(st.kelas) + '">' + esc(st.label) + '</span>';
 }
 
+/* ---- Relasi program <-> hasil latihan atlet ---- */
+function programIdOf(l){ return (l && l.programId) ? l.programId : null; }
+function programById(id){
+  if(!id) return null;
+  return getProgram().find(p => p.id === id) || null;
+}
+function targetIdsProgram(p){
+  const t = Array.isArray(p.targetAtlet) ? p.targetAtlet : (p.targetAtlet ? [p.targetAtlet] : ['semua']);
+  if(!t.length || t.indexOf('semua') > -1) return getUsers().map(u => u.id);
+  return t.slice();
+}
+function entriProgramUser(userId, programId){
+  return getLogbook().filter(l => l.userId === userId && programIdOf(l) === (programId || null));
+}
+function entriTerbaru(list){
+  return list.slice().sort((a, b) =>
+    (b.tanggal || '').localeCompare(a.tanggal || '') || (b.id || '').localeCompare(a.id || ''))[0] || null;
+}
+/* Status pengisian program untuk satu atlet. */
+function statusProgramAtlet(p, userId){
+  if(entriProgramUser(userId, p.id).length){
+    return {kode:'isi', label:'Sudah Diisi', kelas:'st-isi'};
+  }
+  if(p.tanggal && p.tanggal < hariIni()){
+    return {kode:'terlambat', label:'Terlambat', kelas:'st-terlambat'};
+  }
+  return {kode:'belum', label:'Belum Diisi', kelas:'st-belum'};
+}
+/* Chip sumber entri logbook: program, bebas, atau program yang sudah dihapus. */
+function labelProgramEntri(l){
+  const pid = programIdOf(l);
+  if(!pid) return '<span class="chip">Bebas</span>';
+  const p = programById(pid);
+  if(!p) return '<span class="chip" title="Program sudah dihapus, hasil tetap tersimpan">🗑️ Program dihapus</span>';
+  return '<span class="chip">📋 ' + esc(p.judul || 'Tanpa judul') + '</span>';
+}
+/* Perbandingan rencana -> aktual dengan penanda warna selisih. */
+function chipBanding(rencana, aktual, tipe){
+  const r = Number(rencana), a = Number(aktual);
+  if(rencana === '' || rencana == null || isNaN(r)) return '<span class="muted">—</span>';
+  if(aktual === '' || aktual == null || isNaN(a)) return '<span class="muted">belum diisi</span>';
+  const batas = (tipe === 'rpe') ? KONFIG_PROGRES.selisihRpe : KONFIG_PROGRES.selisihDurasi;
+  const selisih = Math.round((a - r) * 10) / 10;
+  const abs = Math.abs(selisih);
+  const kelas = abs <= batas ? 'cmp-ok' : (abs <= batas * 2 ? 'cmp-sedang' : 'cmp-besar');
+  const tanda = selisih > 0 ? '+' : '';
+  return '<span class="cmp ' + kelas + '">' + esc(fmtAngka(r)) + ' → ' + esc(fmtAngka(a)) +
+    ' (' + tanda + fmtAngka(selisih) + ')</span>';
+}
+
+/* ---- Penanda "Baru" (program belum dibuka atlet) ---- */
+function daftarDibaca(userId){
+  const all = getProgramDibaca();
+  return Array.isArray(all[userId]) ? all[userId] : [];
+}
+function tandaiProgramDibaca(userId, programId){
+  if(!userId || !programId) return;
+  const all = getProgramDibaca();
+  const list = daftarDibaca(userId).slice();
+  if(list.indexOf(programId) === -1){
+    list.push(programId);
+    all[userId] = list;
+    setProgramDibaca(all);
+  }
+}
+function jumlahProgramBaru(userId){
+  const dibaca = daftarDibaca(userId);
+  return programUntukAtlet(userId).filter(p => dibaca.indexOf(p.id) === -1).length;
+}
+/* ---- Penanda hasil latihan baru yang belum dilihat pelatih ---- */
+function jumlahHasilBaru(){
+  if(!session || session.role !== 'admin') return 0;
+  const key = session.username || 'admin';
+  const seen = getHasilDilihat()[key] || [];
+  return getLogbook().filter(l => seen.indexOf(l.id) === -1).length;
+}
+function tandaiHasilDilihat(){
+  if(!session || session.role !== 'admin') return;
+  const all = getHasilDilihat();
+  all[session.username || 'admin'] = getLogbook().map(l => l.id);
+  setHasilDilihat(all);
+}
+function setNavBadge(id, n){
+  const el = document.getElementById(id);
+  if(!el) return;
+  if(n > 0){ el.textContent = n > 99 ? '99+' : String(n); el.classList.remove('hidden'); }
+  else { el.textContent = '0'; el.classList.add('hidden'); }
+}
+function perbaruiBadgeLogbook(){
+  const nUser = (session && session.role === 'user') ? jumlahProgramBaru(session.userId) : 0;
+  const nAdmin = jumlahHasilBaru();
+  setNavBadge('navBadgeUser', nUser);
+  setNavBadge('bnavBadgeUser', nUser);
+  setNavBadge('navBadgeAdmin', nAdmin);
+  setNavBadge('bnavBadgeAdmin', nAdmin);
+}
+
 /* ==================================================================
-   LOGBOOK — ADMIN / PELATIH (2 tab: program & monitoring)
+   LOGBOOK — ADMIN / PELATIH (2 tab: program & progres atlet)
+   ------------------------------------------------------------------
+   Pelatih HANYA menginput program latihan. Data durasi, RPE, dan
+   catatan milik atlet bersifat baca-saja bagi pelatih.
 ================================================================== */
 let adminLogTab = 'program';
 let programFilterTanggal = '';
 let editProgramId = null;
+let prgProgramId = '';
 let monSearch = '';
 let monSortKey = 'nama';
 let monSortDir = 1;
@@ -3752,10 +3883,10 @@ function renderAdminLogbook(){
   const el = document.getElementById('view-admin-logbook');
   if(!el) return;
   el.innerHTML =
-    pageHead('Logbook Latihan', 'Susun program latihan dan pantau kelelahan atlet dari logbook harian mereka.') +
+    pageHead('Logbook Latihan', 'Susun program latihan, lalu pantau progres pengisian oleh atlet.') +
     '<div class="seg-tabs" id="adminLogTabs">' +
       '<button type="button" data-ltab="program"' + (adminLogTab === 'program' ? ' class="on"' : '') + '>📋 Program Latihan</button>' +
-      '<button type="button" data-ltab="monitoring"' + (adminLogTab === 'monitoring' ? ' class="on"' : '') + '>📉 Monitoring Kelelahan</button>' +
+      '<button type="button" data-ltab="progres"' + (adminLogTab === 'progres' ? ' class="on"' : '') + '>📊 Progres Atlet</button>' +
     '</div>' +
     '<div id="adminLogBody"></div>';
 
@@ -3764,8 +3895,13 @@ function renderAdminLogbook(){
     renderAdminLogbook();
   }));
 
-  if(adminLogTab === 'monitoring') renderMonitoringTab();
-  else renderProgramTab();
+  if(adminLogTab === 'progres'){
+    tandaiHasilDilihat();
+    perbaruiBadgeLogbook();
+    renderProgresTab();
+  }else{
+    renderProgramTab();
+  }
 }
 
 function targetAtletHtml(terpilih){
@@ -3889,10 +4025,11 @@ function renderProgramList(){
       const f = document.getElementById('pgJudul');
       if(f) f.scrollIntoView({behavior:'smooth', block:'center'});
     }else{
-      if(!confirm('Hapus program "' + (p.judul || 'tanpa judul') + '"?')) return;
+      if(!confirm('Hapus program "' + (p.judul || 'tanpa judul') + '"?\n\nHasil latihan atlet yang sudah terisi TIDAK akan ikut terhapus — hasil tetap tersimpan dan ditandai "Program dihapus".')) return;
       setProgram(getProgram().filter(x => x.id !== p.id));
       if(editProgramId === p.id) editProgramId = null;
-      toast('Program latihan dihapus.');
+      if(prgProgramId === p.id) prgProgramId = '';
+      toast('Program dihapus. Hasil latihan atlet tetap tersimpan.');
       renderProgramTab();
     }
   }));
@@ -3944,21 +4081,26 @@ function simpanProgram(){
       return;
     }
   }
-  all.push(Object.assign({id:uid('pg')}, data));
+  all.push(Object.assign({id:uid('pg'), dibuatPada:new Date().toISOString()}, data));
   setProgram(all);
   toast('Program latihan "' + judul + '" tersimpan. ✅');
   renderProgramTab();
 }
 
-/* ---------- TAB MONITORING KELELAHAN ---------- */
-function renderMonitoringTab(){
+/* ---------- TAB PROGRES ATLET (baca saja, tanpa input) ---------- */
+function renderProgresTab(){
   const body = document.getElementById('adminLogBody');
   if(!body) return;
   const users = getUsers();
   if(!users.length){
-    body.innerHTML = emptyState('📉', 'Belum ada atlet', 'Tambahkan atlet terlebih dahulu di menu Profil Siswa.');
+    body.innerHTML = emptyState('📊', 'Belum ada atlet', 'Tambahkan atlet terlebih dahulu di menu Profil Siswa.');
     return;
   }
+
+  const programs = getProgram().slice().sort((a, b) =>
+    (b.tanggal || '').localeCompare(a.tanggal || '') || (b.id || '').localeCompare(a.id || ''));
+  if(!prgProgramId || !programs.some(p => p.id === prgProgramId)) prgProgramId = programs.length ? programs[0].id : '';
+  if(!monChartUserId || !users.some(u => u.id === monChartUserId)) monChartUserId = users[0].id;
 
   const rekap = users.map(u => {
     const m = metrikBeban(u.id);
@@ -3967,21 +4109,39 @@ function renderMonitoringTab(){
   });
   const nWaspada = rekap.filter(x => x.m.status.kode === 'waspada').length;
   const nRisiko = rekap.filter(x => x.m.status.kode === 'risiko').length;
-  const nTelat = rekap.filter(x => x.telat).length;
 
-  if(!monChartUserId || !users.some(u => u.id === monChartUserId)) monChartUserId = users[0].id;
+  const optsProg = programs.length
+    ? programs.map(p => '<option value="' + esc(p.id) + '"' + (p.id === prgProgramId ? ' selected' : '') + '>' +
+        esc((p.judul || 'Tanpa judul') + ' · ' + fmtDate(p.tanggal)) + '</option>').join('')
+    : '<option value="">— Belum ada program —</option>';
+  const optsAtlet = users.map(u =>
+    '<option value="' + esc(u.id) + '"' + (u.id === monChartUserId ? ' selected' : '') + '>' + esc(u.namaLengkap) + '</option>').join('');
 
   body.innerHTML =
     '<div class="grid g4" style="margin-bottom:14px">' +
       statCard('Total Atlet', users.length, 'terpantau di logbook') +
-      statCard('Waspada', nWaspada, 'mulai lelah') +
-      statCard('Berisiko', nRisiko, 'perlu istirahat') +
-      statCard('Belum Isi Logbook', nTelat, '≥ ' + KONFIG_BEBAN.hariTanpaIsi + ' hari') +
+      statCard('Program Latihan', programs.length, 'program tersedia') +
+      statCard('Waspada', nWaspada, 'mulai lelah (ACWR)') +
+      statCard('Berisiko', nRisiko, 'perlu istirahat (ACWR)') +
     '</div>' +
 
     '<div class="card" style="margin-bottom:14px">' +
-      '<div class="card-head"><div><h3>📋 Rekap Beban Semua Atlet</h3>' +
-        '<p>Beban 7 hari terakhir, rata-rata RPE, dan ACWR (beban akut / rata-rata beban kronis).</p></div>' +
+      '<div class="card-head"><div><h3>📋 Progres Pengisian Program</h3>' +
+        '<p>Pilih program untuk melihat siapa yang sudah mengisi hasil latihan.</p></div>' +
+        '<div class="toolbar"><select id="prgProgram" style="min-width:230px">' + optsProg + '</select></div></div>' +
+      '<div id="prgProgramWrap"></div>' +
+    '</div>' +
+
+    '<div class="card" style="margin-bottom:14px">' +
+      '<div class="card-head"><div><h3>👤 Ringkasan Per Atlet</h3>' +
+        '<p>Riwayat pengisian program, beban latihan, dan tren mingguan (baca saja).</p></div>' +
+        '<div class="toolbar"><select id="prgAtlet" style="min-width:210px">' + optsAtlet + '</select></div></div>' +
+      '<div id="prgAtletWrap"></div>' +
+    '</div>' +
+
+    '<div class="card" style="margin-bottom:14px">' +
+      '<div class="card-head"><div><h3>🩺 Status Kelelahan Semua Atlet</h3>' +
+        '<p>Beban 7 hari terakhir, rata-rata RPE, dan ACWR — tampilan baca saja.</p></div>' +
         '<div class="toolbar">' +
           '<div class="searchbar"><input type="text" id="monSearch" placeholder="Cari nama / kartu atlet..." value="' + esc(monSearch) + '"></div>' +
           '<select id="monSort">' +
@@ -4005,16 +4165,6 @@ function renderMonitoringTab(){
       '</div>' +
     '</div>' +
 
-    '<div class="card" style="margin-bottom:14px">' +
-      '<div class="card-head"><div><h3>📈 Tren Beban Latihan Mingguan</h3>' +
-        '<p>Session Load per minggu (durasi × RPE) untuk atlet terpilih.</p></div>' +
-        '<div class="toolbar"><select id="monChartUser" style="min-width:210px">' +
-          users.map(u => '<option value="' + esc(u.id) + '"' + (u.id === monChartUserId ? ' selected' : '') + '>' + esc(u.namaLengkap) + '</option>').join('') +
-        '</select></div></div>' +
-      '<div class="chart-box"><canvas id="chartBeban"></canvas></div>' +
-      '<div id="chartBebanPesan"></div>' +
-    '</div>' +
-
     '<div class="grid g2">' +
       '<div class="card"><div class="card-head"><div><h3>💬 Masukan dari Atlet</h3>' +
         '<p>Catatan atlet untuk pelatih, urut dari yang terbaru.</p></div></div><div id="monCatatan"></div></div>' +
@@ -4022,10 +4172,23 @@ function renderMonitoringTab(){
         '<p>Atlet yang tidak mengisi logbook ≥ ' + KONFIG_BEBAN.hariTanpaIsi + ' hari terakhir.</p></div></div><div id="monAktif"></div></div>' +
     '</div>';
 
+  renderProgresProgram();
+  renderRingkasanAtlet();
   renderMonTable();
   renderMonCatatan();
   renderMonTelat();
 
+  const pilihProg = document.getElementById('prgProgram');
+  if(pilihProg) pilihProg.addEventListener('change', e => {
+    prgProgramId = e.target.value;
+    renderProgresProgram();
+  });
+  const pilihAtlet = document.getElementById('prgAtlet');
+  if(pilihAtlet) pilihAtlet.addEventListener('change', e => {
+    monChartUserId = e.target.value;
+    renderRingkasanAtlet();
+    pasangChartBeban();
+  });
   const cari = document.getElementById('monSearch');
   if(cari) cari.addEventListener('input', e => { monSearch = e.target.value; renderMonTable(); });
   const sort = document.getElementById('monSort');
@@ -4039,10 +4202,128 @@ function renderMonitoringTab(){
     dir.textContent = monSortDir === 1 ? 'Urut Naik ▲' : 'Urut Turun ▼';
     renderMonTable();
   });
-  const pilih = document.getElementById('monChartUser');
-  if(pilih) pilih.addEventListener('change', e => { monChartUserId = e.target.value; pasangChartBeban(); });
 
   pasangChartBeban();
+}
+
+/* Progres pengisian satu program: ringkasan + tabel atlet target (baca saja). */
+function renderProgresProgram(){
+  const box = document.getElementById('prgProgramWrap');
+  if(!box) return;
+  const programs = getProgram().slice().sort((a, b) =>
+    (b.tanggal || '').localeCompare(a.tanggal || '') || (b.id || '').localeCompare(a.id || ''));
+  if(!programs.length){
+    box.innerHTML = emptyState('📋', 'Belum ada program latihan', 'Buat program lewat tab "Program Latihan" untuk memantau progres atlet.');
+    return;
+  }
+  const p = programById(prgProgramId) || programs[0];
+  prgProgramId = p.id;
+
+  const rows = [];
+  const terpakai = [];
+  targetIdsProgram(p).forEach(id => {
+    const u = getUser(id);
+    if(!u) return;
+    terpakai.push(id);
+    rows.push({u:u, st:statusProgramAtlet(p, id), e:entriTerbaru(entriProgramUser(id, p.id))});
+  });
+  getLogbook().filter(l => programIdOf(l) === p.id).forEach(l => {
+    if(terpakai.indexOf(l.userId) > -1) return;
+    const u = getUser(l.userId);
+    if(!u) return;
+    terpakai.push(l.userId);
+    rows.push({u:u, st:statusProgramAtlet(p, l.userId), e:entriTerbaru(entriProgramUser(l.userId, p.id)), luar:true});
+  });
+
+  const total = rows.length;
+  const terisi = rows.filter(r => r.st.kode === 'isi').length;
+  const persen = total ? Math.round(terisi / total * 100) : 0;
+  const isiRows = rows.filter(r => r.e);
+  const rataDurasi = isiRows.length
+    ? Math.round(isiRows.reduce((a, r) => a + (Number(r.e.durasi) || 0), 0) / isiRows.length) : null;
+  const rataRpe = isiRows.length
+    ? Math.round(isiRows.reduce((a, r) => a + (Number(r.e.rpe) || 0), 0) / isiRows.length * 10) / 10 : null;
+
+  box.innerHTML =
+    '<div class="grid g4" style="margin-bottom:14px">' +
+      statCard('Atlet Target', total, 'peserta program') +
+      statCard('Sudah Mengisi', terisi + ' / ' + total, persen + '% penyelesaian') +
+      statCard('Rata-rata Durasi Aktual', rataDurasi == null ? '—' : fmtAngka(rataDurasi) + ' mnt',
+        p.durasiRencana ? 'rencana ' + esc(p.durasiRencana) + ' mnt' : 'tanpa rencana durasi') +
+      statCard('Rata-rata RPE Aktual', rataRpe == null ? '—' : fmtAngka(rataRpe),
+        p.targetRPE ? 'target RPE ' + esc(p.targetRPE) : 'tanpa target RPE') +
+    '</div>' +
+
+    '<div class="ket-program" style="margin-bottom:14px">📋 <b>' + esc(p.judul || 'Tanpa judul') + '</b> · ' +
+      esc(fmtDate(p.tanggal)) + ' · ' + esc(p.jenis || 'Lainnya') +
+      (p.durasiRencana ? ' · rencana ' + esc(p.durasiRencana) + ' menit' : '') +
+      (p.targetRPE ? ' · target RPE ' + esc(p.targetRPE) + ' (' + esc(rpeKet(p.targetRPE)) + ')' : '') +
+      '<br>' + (p.deskripsi ? esc(p.deskripsi) : '<span class="muted">Tanpa deskripsi.</span>') +
+    '</div>' +
+
+    (total
+      ? '<div class="tw"><table class="stack"><thead><tr>' +
+        '<th>Nama</th><th>Status</th><th>Durasi (rencana → aktual)</th><th>RPE (target → aktual)</th><th>Beban Sesi</th><th>Catatan Atlet</th>' +
+        '</tr></thead><tbody>' +
+        rows.map(r => {
+          const e = r.e;
+          return '<tr class="' + (r.st.kode === 'terlambat' ? 'risiko-row' : (r.st.kode === 'belum' ? 'waspada-row' : '')) + '">' +
+            '<td data-label="Nama"><div class="stack-lines"><b>' + esc(r.u.namaLengkap) + '</b>' +
+              '<span>' + esc(r.u.kartuAtlet || '') + (r.luar ? ' · di luar target saat ini' : '') + '</span></div></td>' +
+            '<td data-label="Status">' + badgeStatus(r.st) + '</td>' +
+            '<td data-label="Durasi">' + chipBanding(p.durasiRencana, e ? e.durasi : null, 'durasi') + '</td>' +
+            '<td data-label="RPE">' + chipBanding(p.targetRPE, e ? e.rpe : null, 'rpe') + '</td>' +
+            '<td data-label="Beban Sesi">' + (e ? '<b>' + fmtAngka(e.bebanSesi != null ? e.bebanSesi : (Number(e.durasi) || 0) * (Number(e.rpe) || 0)) + '</b>' : '<span class="muted">—</span>') + '</td>' +
+            '<td data-label="Catatan Atlet">' + (e && e.catatanUntukPelatih ? esc(e.catatanUntukPelatih) : '<span class="muted">—</span>') + '</td>' +
+          '</tr>';
+        }).join('') +
+        '</tbody></table></div>'
+      : emptyState('👥', 'Belum ada atlet target', 'Program ini belum menunjuk atlet mana pun.')) +
+
+    '<div class="lb-legend" style="margin-top:12px">' +
+      '<span><span class="cmp cmp-ok">dekat</span> selisih wajar</span>' +
+      '<span><span class="cmp cmp-sedang">sedang</span> selisih sedang</span>' +
+      '<span><span class="cmp cmp-besar">besar</span> selisih besar (≤' + KONFIG_PROGRES.selisihDurasi + ' mnt / ≤' + KONFIG_PROGRES.selisihRpe + ' poin = dekat)</span>' +
+    '</div>';
+}
+
+/* Ringkasan satu atlet: status program, beban, ACWR, tren (baca saja). */
+function renderRingkasanAtlet(){
+  const box = document.getElementById('prgAtletWrap');
+  if(!box) return;
+  const u = getUser(monChartUserId);
+  if(!u){
+    box.innerHTML = emptyState('👤', 'Atlet tidak ditemukan', 'Pilih atlet lain pada daftar di atas.');
+    return;
+  }
+  const m = metrikBeban(u.id);
+  const program = programUntukAtlet(u.id);
+  const terisi = program.filter(p => statusProgramAtlet(p, u.id).kode === 'isi').length;
+
+  box.innerHTML =
+    '<div class="grid g4" style="margin-bottom:14px">' +
+      statCard('Beban Minggu Ini', fmtAngka(m.akut), 'durasi × RPE (7 hari)') +
+      statCard('Rata-rata RPE', m.rataRpe == null ? '—' : fmtAngka(m.rataRpe), '7 hari terakhir') +
+      '<div class="stat"><div class="lbl">Status Kelelahan</div>' +
+        '<div class="val" style="font-size:15px;letter-spacing:-.2px;margin-top:8px">' + badgeStatus(m.status) + '</div>' +
+        '<div class="sub">ACWR ' + (m.acwr == null ? '—' : fmtAngka(m.acwr)) + ' · monotony ' + fmtAngka(m.monotony) + ' · strain ' + fmtAngka(m.strain) + '</div></div>' +
+      statCard('Program Terisi', terisi + ' / ' + program.length, 'program untuk atlet ini') +
+    '</div>' +
+
+    (program.length
+      ? '<div class="stack-gap" style="margin-bottom:14px">' + program.map(p => {
+          const st = statusProgramAtlet(p, u.id);
+          return '<div class="prog-item"><div class="pj">' + esc(p.judul || 'Tanpa judul') + ' ' + badgeStatus(st) + '</div>' +
+            '<div class="pm">' +
+              '<span class="chip">📅 ' + esc(fmtDate(p.tanggal)) + '</span>' + jenisChip(p.jenis) +
+              '<span class="chip">Rencana ' + (p.durasiRencana ? esc(p.durasiRencana) + ' mnt' : '—') + '</span>' +
+              '<span class="chip">Target RPE ' + (p.targetRPE ? esc(p.targetRPE) : '—') + '</span>' +
+            '</div></div>';
+        }).join('') + '</div>'
+      : '<div style="margin-bottom:14px">' + emptyState('📋', 'Belum ada program untuk atlet ini', 'Program yang ditujukan untuk atlet ini akan tampil di sini.') + '</div>') +
+
+    '<div class="chart-box"><canvas id="chartBeban"></canvas></div>' +
+    '<div id="chartBebanPesan"></div>';
 }
 
 function renderMonTable(){
@@ -4123,6 +4404,7 @@ function renderMonCatatan(){
       '<div class="ci-head"><div class="ci-who">👤 ' + esc(u ? u.namaLengkap : 'Atlet') + '</div>' +
         '<span class="chip">📅 ' + esc(fmtDate(l.tanggal)) + '</span></div>' +
       '<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px">' +
+        labelProgramEntri(l) +
         jenisChip(l.jenisLatihan) +
         '<span class="chip">⏱️ ' + esc(l.durasi) + ' menit</span>' +
         '<span class="chip">RPE ' + esc(l.rpe) + '</span>' +
@@ -4226,6 +4508,53 @@ function previewBeban(){
       ' <span class="muted small">(isi durasi positif &amp; RPE 1-10 untuk melihat angkanya)</span>';
 }
 
+/* Keterangan program terpilih pada form logbook atlet. */
+function updateKetProgram(){
+  const sel = document.getElementById('lbProgram');
+  const box = document.getElementById('lbKetProgram');
+  if(!sel || !box) return;
+  const p = programById(sel.value);
+  if(!p){ box.classList.add('hidden'); box.innerHTML = ''; return; }
+  box.classList.remove('hidden');
+  box.innerHTML = '📋 <b>' + esc(p.judul || 'Tanpa judul') + '</b> · ' + esc(fmtDate(p.tanggal)) + ' · ' + esc(p.jenis || 'Lainnya') +
+    (p.durasiRencana ? ' · rencana ' + esc(p.durasiRencana) + ' menit' : '') +
+    (p.targetRPE ? ' · target RPE ' + esc(p.targetRPE) : '') +
+    (p.deskripsi ? '<br>' + esc(p.deskripsi) : '');
+}
+
+/* Tombol "Isi Hasil Latihan": isi otomatis tanggal, jenis, dan keterangan
+   program ke form — atlet tinggal mengisi durasi, RPE, dan catatan. */
+function isiDariProgram(programId){
+  const p = programById(programId);
+  if(!p){ toast('Program tidak ditemukan.', 'err'); return; }
+  if(editLogId){ editLogId = null; renderUserLogbook(); }
+  const set = (id, val) => { const el = document.getElementById(id); if(el) el.value = val; };
+  set('lbTanggal', p.tanggal || hariIni());
+  set('lbJenis', p.jenis || 'Lainnya');
+  const sel = document.getElementById('lbProgram');
+  if(sel) sel.value = p.id;
+  set('lbDurasi', '');
+  set('lbCatatan', '');
+  const rpeTarget = p.targetRPE ? String(p.targetRPE) : '5';
+  set('lbRpeNilai', rpeTarget);
+  const rpeEl = document.getElementById('lbRpe');
+  if(rpeEl) rpeEl.value = rpeTarget;
+  const rn = document.getElementById('lbRpeNilai');
+  if(rn) rn.dispatchEvent(new Event('input', {bubbles:true}));
+  const du = document.getElementById('lbDurasi');
+  if(du) du.dispatchEvent(new Event('input', {bubbles:true}));
+  updateKetProgram();
+
+  tandaiProgramDibaca(session.userId, p.id);
+  const card = document.querySelector('[data-prog-card="' + p.id + '"]');
+  if(card){ const b = card.querySelector('.badge-baru'); if(b && b.parentNode) b.parentNode.removeChild(b); }
+  perbaruiBadgeLogbook();
+
+  toast('Form diisi dari program "' + (p.judul || 'tanpa judul') + '". Tinggal isi durasi, RPE, dan catatan.');
+  const f = document.getElementById('lbTanggal');
+  if(f && f.scrollIntoView) f.scrollIntoView({behavior:'smooth', block:'center'});
+}
+
 function renderUserLogbook(){
   const u = getUser(session.userId);
   if(!u){ go('user-profil'); return; }
@@ -4240,6 +4569,16 @@ function renderUserLogbook(){
   const rpeAwal = edit ? edit.rpe : 5;
   const acwrPct = m.acwr == null ? 0 : Math.max(0, Math.min(100, Math.round(m.acwr / KONFIG_BEBAN.acwrWaspadaMaks * 100)));
   const warnaDonut = m.status.kode === 'risiko' ? '#f87171' : (m.status.kode === 'waspada' ? '#facc15' : '#4ade80');
+
+  /* Pilihan "Terkait program" pada form (opsional). */
+  const programTerpilih = edit ? programIdOf(edit) : '';
+  const optsProgram = ['<option value="">— Tanpa program (logbook bebas) —</option>']
+    .concat(program.map(p =>
+      '<option value="' + esc(p.id) + '"' + (programTerpilih === p.id ? ' selected' : '') + '>' +
+      esc((p.judul || 'Tanpa judul') + ' · ' + fmtDate(p.tanggal)) + '</option>'));
+  if(programTerpilih && !program.some(p => p.id === programTerpilih)){
+    optsProgram.push('<option value="' + esc(programTerpilih) + '" selected>🗑️ Program dihapus (hasil tetap tersimpan)</option>');
+  }
 
   el.innerHTML =
     pageHead('Logbook Latihan', 'Catat durasi & RPE latihanmu setiap hari. Data logbookmu hanya terlihat olehmu dan pelatih.') +
@@ -4268,6 +4607,9 @@ function renderUserLogbook(){
           '<select id="lbJenis">' + JENIS_LATIHAN.map(j =>
             '<option' + (edit && edit.jenisLatihan === j ? ' selected' : '') + '>' + esc(j) + '</option>').join('') +
           '</select></div>' +
+        '<div class="field"><label for="lbProgram">Terkait Program <span class="opt">(opsional)</span></label>' +
+          '<select id="lbProgram">' + optsProgram.join('') + '</select>' +
+          '<div class="ket-program hidden" id="lbKetProgram" style="margin-top:9px"></div></div>' +
         '<div class="field"><label for="lbDurasi">Durasi Latihan (menit) <span class="req">*</span></label>' +
           '<input type="number" id="lbDurasi" min="1" step="1" placeholder="mis. 90" value="' + esc(edit ? edit.durasi : '') + '">' +
           '<small class="hint">Harus angka positif, dalam menit.</small></div>' +
@@ -4305,10 +4647,11 @@ function renderUserLogbook(){
         '<p>Hanya entri milikmu. Ubah atau hapus bila ada kesalahan input.</p></div></div>' +
       (milik.length
         ? '<div class="tw"><table class="stack"><thead><tr>' +
-          '<th>Tanggal</th><th>Jenis</th><th>Durasi</th><th>RPE</th><th>Beban Sesi</th><th>Catatan</th><th>Aksi</th>' +
+          '<th>Tanggal</th><th>Program</th><th>Jenis</th><th>Durasi</th><th>RPE</th><th>Beban Sesi</th><th>Catatan</th><th>Aksi</th>' +
           '</tr></thead><tbody>' +
           milik.map(l => '<tr>' +
             '<td data-label="Tanggal">📅 ' + esc(fmtDate(l.tanggal)) + '</td>' +
+            '<td data-label="Program">' + labelProgramEntri(l) + '</td>' +
             '<td data-label="Jenis">' + jenisChip(l.jenisLatihan) + '</td>' +
             '<td data-label="Durasi">' + esc(l.durasi) + ' mnt</td>' +
             '<td data-label="RPE">' + esc(l.rpe) + ' <span class="muted small">(' + esc(rpeKet(l.rpe)) + ')</span></td>' +
@@ -4325,20 +4668,27 @@ function renderUserLogbook(){
 
     '<div class="card" style="margin-top:14px">' +
       '<div class="card-head"><div><h3>📋 Program Latihan dari Pelatih</h3>' +
-        '<p>Program yang ditujukan untukmu — hanya tampilan, diatur oleh pelatih.</p></div></div>' +
+        '<p>Program yang ditujukan untukmu. Ketuk <b>Isi Hasil Latihan</b> setelah selesai latihan.</p></div></div>' +
       (program.length
-        ? '<div class="stack-gap">' + program.map(p =>
-          '<div class="prog-item">' +
-            '<div class="pj">' + esc(p.judul || '(tanpa judul)') + '</div>' +
-            '<div class="pm">' +
-              '<span class="chip">📅 ' + esc(fmtDate(p.tanggal)) + '</span>' +
-              jenisChip(p.jenis) +
-              '<span class="chip">⏱️ ' + (p.durasiRencana ? esc(p.durasiRencana) + ' menit' : 'bebas') + '</span>' +
-              '<span class="chip">Target RPE ' + (p.targetRPE ? esc(p.targetRPE) + ' (' + esc(rpeKet(p.targetRPE)) + ')' : '—') + '</span>' +
-              '<span class="chip">' + esc(labelTargetProgram(p)) + '</span>' +
-            '</div>' +
-            (p.deskripsi ? '<div class="pd">' + esc(p.deskripsi) + '</div>' : '') +
-          '</div>').join('') + '</div>'
+        ? '<div class="stack-gap">' + program.map(p => {
+            const st = statusProgramAtlet(p, u.id);
+            const baru = daftarDibaca(u.id).indexOf(p.id) === -1;
+            return '<div class="prog-item" data-prog-card="' + esc(p.id) + '">' +
+              '<div class="pj">' + esc(p.judul || '(tanpa judul)') + ' ' + badgeStatus(st) +
+                (baru ? ' <span class="badge st-baru badge-baru">Baru</span>' : '') + '</div>' +
+              '<div class="pm">' +
+                '<span class="chip">📅 ' + esc(fmtDate(p.tanggal)) + '</span>' +
+                jenisChip(p.jenis) +
+                '<span class="chip">⏱️ ' + (p.durasiRencana ? esc(p.durasiRencana) + ' menit' : 'bebas') + '</span>' +
+                '<span class="chip">Target RPE ' + (p.targetRPE ? esc(p.targetRPE) + ' (' + esc(rpeKet(p.targetRPE)) + ')' : '—') + '</span>' +
+                '<span class="chip">' + esc(labelTargetProgram(p)) + '</span>' +
+              '</div>' +
+              (p.deskripsi ? '<div class="pd">' + esc(p.deskripsi) + '</div>' : '') +
+              '<div class="toolbar" style="margin-top:11px">' +
+                '<button class="btn primary sm" data-isi-program="' + esc(p.id) + '">✏️ Isi Hasil Latihan</button>' +
+              '</div>' +
+            '</div>';
+          }).join('') + '</div>'
         : emptyState('📋', 'Belum ada program untukmu', 'Program latihan dari pelatih akan tampil di sini.')) +
     '</div>';
 
@@ -4367,12 +4717,17 @@ function renderUserLogbook(){
   }));
   const durasiEl = document.getElementById('lbDurasi');
   if(durasiEl) durasiEl.addEventListener('input', previewBeban);
+  const progEl = document.getElementById('lbProgram');
+  if(progEl) progEl.addEventListener('change', updateKetProgram);
   syncRpe('slider');
+  updateKetProgram();
 
   const simpan = document.getElementById('lbSimpan');
   if(simpan) simpan.addEventListener('click', simpanLogbook);
   const batal = document.getElementById('lbBatal');
   if(batal) batal.addEventListener('click', () => { editLogId = null; renderUserLogbook(); });
+
+  el.querySelectorAll('[data-isi-program]').forEach(b => b.addEventListener('click', () => isiDariProgram(b.dataset.isiProgram)));
 
   el.querySelectorAll('[data-lb]').forEach(b => b.addEventListener('click', () => {
     const l = getLogbook().find(x => x.id === b.dataset.id && x.userId === session.userId);
@@ -4390,6 +4745,8 @@ function renderUserLogbook(){
       renderUserLogbook();
     }
   }));
+
+  perbaruiBadgeLogbook();
 }
 
 function simpanLogbook(){
@@ -4411,9 +4768,11 @@ function simpanLogbook(){
   }
 
   const bebanSesi = Math.round(durasi * rpe);
+  const selProgram = document.getElementById('lbProgram');
+  const programId = (selProgram && selProgram.value) ? selProgram.value : null;
   const data = {
     tanggal:tanggal, jenisLatihan:jenis, durasi:durasi, rpe:rpe,
-    bebanSesi:bebanSesi, catatanUntukPelatih:catatan
+    bebanSesi:bebanSesi, catatanUntukPelatih:catatan, programId:programId
   };
 
   const all = getLogbook();
@@ -4423,6 +4782,8 @@ function simpanLogbook(){
     if(i > -1){
       all[i] = Object.assign({}, all[i], data);
       setLogbook(all);
+      if(programId) tandaiProgramDibaca(session.userId, programId);
+      perbaruiBadgeLogbook();
       toast('Perubahan logbook tersimpan. ✅');
       renderUserLogbook();
       return;
@@ -4430,6 +4791,8 @@ function simpanLogbook(){
   }
   all.push(Object.assign({id:uid('lb'), userId:session.userId}, data));
   setLogbook(all);
+  if(programId) tandaiProgramDibaca(session.userId, programId);
+  perbaruiBadgeLogbook();
   toast('Logbook ' + fmtDate(tanggal) + ' tersimpan (beban sesi ' + bebanSesi + '). ✅');
   renderUserLogbook();
 }
