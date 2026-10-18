@@ -463,6 +463,44 @@ td .stack-lines b{color:var(--ink);font-weight:700}
 @media(max-width:520px){.modal-body{grid-template-columns:1fr}}
 .modal-foot{display:flex;gap:10px;justify-content:flex-end;padding:14px 20px 18px;border-top:1px solid var(--line);
   position:sticky;bottom:0;background:#fff;border-radius:0 0 26px 26px}
+
+/* ================= LOGBOOK ================= */
+.lb-rpe-wrap{background:#fff;border:1px solid var(--line);border-radius:16px;padding:12px 14px}
+.lb-range{width:100%;accent-color:var(--g600);height:26px;cursor:pointer}
+.rpe-scale{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.rpe-pill{border:1px solid var(--line);background:#fff;border-radius:999px;padding:6px 11px;font-size:11.3px;
+  font-weight:800;cursor:pointer;color:var(--muted);transition:.15s;letter-spacing:-.1px}
+.rpe-pill:hover{border-color:var(--g400);color:var(--g800)}
+.rpe-pill.on{background:var(--grad-brand);color:#fff;border-color:transparent}
+.rpe-out{margin-top:9px;font-size:13px;font-weight:700;color:var(--ink)}
+.rpe-out .big-rpe{font-size:21px;font-weight:800;letter-spacing:-.6px}
+.lb-live{display:flex;flex-wrap:wrap;gap:10px;align-items:center;background:var(--g050);
+  border:1px dashed var(--g400);border-radius:14px;padding:11px 14px;font-size:13.6px;font-weight:700;color:var(--g800)}
+.lb-live b{font-size:17px;letter-spacing:-.4px}
+.badge.st-aman{background:#dcfce7;color:#15803d;border:1px solid #bbf7d0}
+.badge.st-waspada{background:#fef9c3;color:#a16207;border:1px solid #fde68a}
+.badge.st-risiko{background:#fee2e2;color:#b91c1c;border:1px solid #fecaca}
+.badge.st-kosong{background:#f1f5f9;color:#475569;border:1px solid #e2e8f0}
+tr.waspada-row td:first-child{box-shadow:inset 3px 0 0 var(--y500)}
+tr.risiko-row td:first-child{box-shadow:inset 3px 0 0 var(--danger)}
+th[data-sort]{cursor:pointer;user-select:none;white-space:nowrap}
+th[data-sort]:hover{color:var(--g700)}
+.prog-item{border:1px solid var(--line);background:#fff;border-radius:18px;padding:14px 15px}
+.prog-item .pj{font-weight:800;font-size:15px;letter-spacing:-.2px}
+.prog-item .pm{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;align-items:center}
+.prog-item .pd{margin-top:8px;font-size:13.2px;color:#334155;line-height:1.5}
+.chk-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:8px;margin-top:9px}
+.chk-item{display:flex;align-items:center;gap:8px;background:#fff;border:1px solid var(--line);
+  border-radius:12px;padding:8px 11px;font-size:13px;font-weight:600;cursor:pointer}
+.chk-item:hover{border-color:var(--g400);background:var(--g050)}
+.chk-item input{accent-color:var(--g600);width:16px;height:16px;cursor:pointer}
+.chart-box{background:#fff;border:1px solid var(--line);border-radius:18px;padding:14px;position:relative;height:310px}
+.chart-box canvas{width:100% !important;height:100% !important}
+.catatan-item{border:1px solid var(--line);background:#fff;border-radius:16px;padding:12px 14px}
+.catatan-item .ci-head{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between}
+.catatan-item .ci-who{font-weight:800;font-size:14px;letter-spacing:-.2px}
+.catatan-item .ci-txt{margin-top:7px;font-size:13.5px;color:#334155;line-height:1.5}
+.stack-gap > * + *{margin-top:10px}
 </style>
 <meta name="theme-color" content="#1e1b4b">
 <meta name="description" content="Monitoring kondisi fisik, teknik, dan kehadiran latihan siswa Tapak Suci Cabang Cerme.">
@@ -590,11 +628,13 @@ td .stack-lines b{color:var(--ink);font-weight:700}
         <button class="nav-item" data-view="user-profil"><span class="e">🧑‍🎓</span> Profil Siswa</button>
         <button class="nav-item" data-view="user-tes"><span class="e">💪</span> Kondisi Fisik &amp; Teknik</button>
         <button class="nav-item" data-view="user-absen"><span class="e">🗓️</span> Absensi</button>
+        <button class="nav-item" data-view="user-logbook"><span class="e">📒</span> Logbook</button>
       </nav>
       <nav id="navAdmin" class="hidden">
         <button class="nav-item" data-view="admin-siswa"><span class="e">👥</span> Profil Siswa</button>
         <button class="nav-item" data-view="admin-tes"><span class="e">📊</span> Kondisi Fisik &amp; Teknik</button>
         <button class="nav-item" data-view="admin-absensi"><span class="e">🗓️</span> Absensi</button>
+        <button class="nav-item" data-view="admin-logbook"><span class="e">📒</span> Logbook</button>
       </nav>
       <div class="side-foot">Data disimpan lokal di browser ini.<br>Gunakan <b>Keluar</b> untuk mengganti akun.</div>
     </aside>
@@ -607,6 +647,8 @@ td .stack-lines b{color:var(--ink);font-weight:700}
         <section id="view-admin-siswa" class="view hidden"></section>
         <section id="view-admin-tes" class="view hidden"></section>
         <section id="view-admin-absensi" class="view hidden"></section>
+        <section id="view-user-logbook" class="view hidden"></section>
+        <section id="view-admin-logbook" class="view hidden"></section>
         <footer class="muted small center">Monitoring Tapak Suci Cabang Cerme — versi lokal (HTML + localStorage).</footer>
       </div>
     </main>
@@ -617,11 +659,13 @@ td .stack-lines b{color:var(--ink);font-weight:700}
       <button class="nav-item" data-view="user-profil"><span class="e">🧑‍🎓</span>Profil Siswa</button>
       <button class="nav-item" data-view="user-tes"><span class="e">💪</span>Fisik &amp; Teknik</button>
       <button class="nav-item" data-view="user-absen"><span class="e">🗓️</span>Absensi</button>
+      <button class="nav-item" data-view="user-logbook"><span class="e">📒</span>Logbook</button>
     </nav>
     <nav id="bnavAdmin" class="hidden">
       <button class="nav-item" data-view="admin-siswa"><span class="e">👥</span>Profil Siswa</button>
       <button class="nav-item" data-view="admin-tes"><span class="e">📊</span>Fisik &amp; Teknik</button>
       <button class="nav-item" data-view="admin-absensi"><span class="e">🗓️</span>Absensi</button>
+      <button class="nav-item" data-view="admin-logbook"><span class="e">📒</span>Logbook</button>
     </nav>
   </div>
 </div>
@@ -642,6 +686,7 @@ td .stack-lines b{color:var(--ink);font-weight:700}
 ================================================================== */
 const K = {
   users:'ts_users', tests:'ts_testResults', absen:'ts_absensi',
+  program:'ts_programLatihan', logbook:'ts_logbook',
   admin:'ts_adminAccount', session:'ts_session'
 };
 
@@ -664,6 +709,8 @@ const todayISO = () => new Date().toISOString().slice(0,10);
 const getUsers  = () => store.get(K.users, []);
 const getTests  = () => store.get(K.tests, []);
 const getAbsen  = () => store.get(K.absen, []);
+const getProgram = () => store.get(K.program, []);
+const getLogbook = () => store.get(K.logbook, []);
 const getAdmin  = () => store.get(K.admin, {username:'admin', password:'admin123'});
 
 /* ==================================================================
@@ -691,6 +738,9 @@ const findAdmin = (un, pw) => {
 const setUsers  = v => saveList(K.users, 'users', v);
 const setTests  = v => saveList(K.tests, 'tests', v);
 const setAbsen  = v => saveList(K.absen, 'absen', v);
+/* Logbook & program latihan: murni localStorage (tanpa backend/cloud). */
+const setProgram = v => store.set(K.program, v);
+const setLogbook = v => store.set(K.logbook, v);
 
 const getUser = id => getUsers().find(u => u.id === id);
 
@@ -1699,7 +1749,9 @@ function showApp(){
   document.getElementById('navUser').classList.toggle('hidden', isAdmin);
   document.getElementById('bnavAdmin').classList.toggle('hidden', !isAdmin);
   document.getElementById('bnavUser').classList.toggle('hidden', isAdmin);
-  const allowed = isAdmin ? ['admin-siswa','admin-tes','admin-absensi'] : ['user-profil','user-tes','user-absen'];
+  const allowed = isAdmin
+    ? ['admin-siswa','admin-tes','admin-absensi','admin-logbook']
+    : ['user-profil','user-tes','user-absen','user-logbook'];
   const req = new URLSearchParams(location.search).get('view');
   go(req && allowed.indexOf(req) > -1 ? req : (isAdmin ? 'admin-siswa' : 'user-profil'));
 }
@@ -1871,9 +1923,11 @@ const renderers = {
   'user-profil': renderUserProfil,
   'user-tes': renderUserTes,
   'user-absen': renderUserAbsen,
+  'user-logbook': renderUserLogbook,
   'admin-siswa': renderAdminSiswa,
   'admin-tes': renderAdminTes,
-  'admin-absensi': renderAdminAbsensi
+  'admin-absensi': renderAdminAbsensi,
+  'admin-logbook': renderAdminLogbook
 };
 
 function go(view){
@@ -3319,6 +3373,865 @@ function renderAbsenRekap(){
     '</div>' +
     '<div class="tw"><table class="stack"><thead><tr><th>Tanggal Sesi</th><th>Hadir</th><th>Izin</th><th>Alfa</th><th>Peserta</th></tr></thead>' +
     '<tbody>' + rows + '</tbody></table></div>';
+}
+
+/* ==================================================================
+   LOGBOOK — PROGRAM LATIHAN & MONITORING KELELAHAN ATLET
+   ------------------------------------------------------------------
+   Data murni di localStorage (tanpa backend):
+     programLatihan: [{ id, tanggal, judul, jenis, durasiRencana,
+                        targetRPE, deskripsi, targetAtlet }]
+     logbook       : [{ id, userId, tanggal, jenisLatihan, durasi, rpe,
+                        bebanSesi, catatanUntukPelatih }]
+   targetAtlet = ['semua'] atau daftar id atlet pilihan.
+   Beban sesi (Session Load) = durasi (menit) x RPE.
+================================================================== */
+
+/* ---- KONFIGURASI AMBANG BATAS (mudah diubah di sini) ---- */
+const KONFIG_BEBAN = {
+  acwrRendah: 0.8,        /* ACWR < 0,8       -> beban rendah     */
+  acwrOptimalMaks: 1.3,   /* ACWR 0,8 s/d 1,3 -> zona optimal     */
+  acwrWaspadaMaks: 1.5,   /* ACWR 1,3 s/d 1,5 -> waspada          */
+                          /* ACWR > 1,5       -> berisiko tinggi  */
+  hariTanpaIsi: 3,        /* penanda atlet belum isi logbook (hari) */
+  mingguTren: 8,          /* rentang grafik tren beban (minggu)     */
+  panjangMinggu: 7,
+  panjangKronis: 28
+};
+
+const JENIS_LATIHAN = ['Fisik','Teknik','Jurus','Sparring','Lainnya'];
+const RPE_SKALA = [
+  {maks:2,  label:'Sangat Ringan', pill:'1-2 Sangat Ringan', nilai:1},
+  {maks:4,  label:'Ringan',        pill:'3-4 Ringan',        nilai:3},
+  {maks:6,  label:'Sedang',        pill:'5-6 Sedang',        nilai:5},
+  {maks:8,  label:'Berat',         pill:'7-8 Berat',         nilai:7},
+  {maks:10, label:'Sangat Berat',  pill:'9-10 Sangat Berat', nilai:9}
+];
+
+function rpeKet(v){
+  const n = Number(v) || 0;
+  if(n < 1) return '—';
+  for(const s of RPE_SKALA){ if(n <= s.maks) return s.label; }
+  return 'Sangat Berat';
+}
+function rpeKelompok(v){
+  const n = Number(v) || 5;
+  for(const s of RPE_SKALA){ if(n <= s.maks) return s.nilai; }
+  return 9;
+}
+function fmtAngka(x){
+  if(x == null || isNaN(x)) return '—';
+  return String(Math.round(Number(x) * 100) / 100).replace('.', ',');
+}
+function isoYMD(d){
+  return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+}
+function hariIni(){ return isoYMD(new Date()); }
+function tanggalOffset(isoRef, geserHari){
+  const d = isoRef ? new Date(isoRef + 'T00:00:00') : new Date();
+  if(isNaN(d)) return isoRef || '';
+  d.setDate(d.getDate() + geserHari);
+  return isoYMD(d);
+}
+function fmtTanggalPendek(iso){
+  const d = new Date(iso + 'T00:00:00');
+  if(isNaN(d)) return iso;
+  return d.toLocaleDateString('id-ID', {day:'numeric', month:'short'});
+}
+function hariSejak(iso){
+  if(!iso) return null;
+  const a = new Date(iso + 'T00:00:00');
+  const b = new Date(hariIni() + 'T00:00:00');
+  if(isNaN(a) || isNaN(b)) return null;
+  return Math.round((b - a) / 86400000);
+}
+
+/* ---- METRIK BEBAN LATIHAN ---- */
+function entriLogbookUser(userId){
+  return getLogbook().filter(l => l.userId === userId);
+}
+function bebanPerHari(userId, tanggal){
+  return getLogbook()
+    .filter(l => l.userId === userId && l.tanggal === tanggal)
+    .reduce((a, l) => a + (Number(l.bebanSesi) || (Number(l.durasi) || 0) * (Number(l.rpe) || 0)), 0);
+}
+function deretHarian(userId, nHari, ref){
+  const out = [];
+  for(let i = nHari - 1; i >= 0; i--){
+    const t = tanggalOffset(ref, -i);
+    out.push({tanggal:t, beban:bebanPerHari(userId, t)});
+  }
+  return out;
+}
+function rataRpeUser(userId, nHari, ref){
+  const dari = tanggalOffset(ref, -(nHari - 1));
+  const rows = getLogbook().filter(l => l.userId === userId && l.tanggal >= dari && l.tanggal <= ref);
+  if(!rows.length) return null;
+  const jumlah = rows.reduce((a, l) => a + (Number(l.rpe) || 0), 0);
+  return Math.round(jumlah / rows.length * 10) / 10;
+}
+/* Status tingkat kelelahan berdasarkan ambang ACWR di KONFIG_BEBAN. */
+function statusBeban(acwr, akut, totalEntri){
+  const c = KONFIG_BEBAN;
+  if(!totalEntri) return {kode:'kosong', label:'Belum Ada Data', kelas:'st-kosong', ket:'Belum pernah mengisi logbook'};
+  if(acwr == null){
+    return akut > 0
+      ? {kode:'waspada', label:'Waspada / Data Terbatas', kelas:'st-waspada', ket:'Beban kronis 28 hari belum terbentuk'}
+      : {kode:'kosong', label:'Tidak Ada Beban', kelas:'st-kosong', ket:'Tidak ada latihan tercatat'};
+  }
+  if(acwr < c.acwrRendah) return {kode:'aman', label:'Aman / Segar', kelas:'st-aman', ket:'Beban rendah (ACWR ' + fmtAngka(acwr) + ')'};
+  if(acwr <= c.acwrOptimalMaks) return {kode:'aman', label:'Aman / Segar', kelas:'st-aman', ket:'Zona optimal (ACWR ' + fmtAngka(acwr) + ')'};
+  if(acwr <= c.acwrWaspadaMaks) return {kode:'waspada', label:'Waspada / Mulai Lelah', kelas:'st-waspada', ket:'ACWR ' + fmtAngka(acwr) + ' — pantau pemulihan'};
+  return {kode:'risiko', label:'Berisiko / Perlu Istirahat', kelas:'st-risiko', ket:'ACWR ' + fmtAngka(acwr) + ' — beban terlalu tinggi'};
+}
+/* Session Load, beban mingguan, monotony, strain, dan ACWR per atlet. */
+function metrikBeban(userId, ref){
+  const r = ref || hariIni();
+  const d7 = deretHarian(userId, KONFIG_BEBAN.panjangMinggu, r);
+  const d28 = deretHarian(userId, KONFIG_BEBAN.panjangKronis, r);
+  const akut = d7.reduce((a, d) => a + d.beban, 0);
+  const total28 = d28.reduce((a, d) => a + d.beban, 0);
+  const kronis = total28 / 4;                       /* rata-rata beban per minggu (28 hari) */
+  const mean = akut / d7.length;
+  const varians = d7.reduce((a, d) => a + Math.pow(d.beban - mean, 2), 0) / d7.length;
+  const sd = Math.sqrt(varians);
+  let monotony = sd === 0 ? (mean === 0 ? 0 : d7.length) : mean / sd;
+  monotony = Math.round(monotony * 100) / 100;
+  const strain = Math.round(akut * monotony);
+  const acwr = kronis > 0 ? Math.round(akut / kronis * 100) / 100 : null;
+  const totalEntri = entriLogbookUser(userId).length;
+  return {
+    akut:Math.round(akut), total28:Math.round(total28), kronis:Math.round(kronis),
+    monotony:monotony, strain:strain, acwr:acwr,
+    rataRpe:rataRpeUser(userId, KONFIG_BEBAN.panjangMinggu, r),
+    totalEntri:totalEntri,
+    status:statusBeban(acwr, akut, totalEntri)
+  };
+}
+function logbookTerakhir(userId){
+  const t = entriLogbookUser(userId).map(l => l.tanggal).filter(Boolean).sort();
+  return t.length ? t[t.length - 1] : null;
+}
+function labelTargetProgram(p){
+  const t = Array.isArray(p.targetAtlet) ? p.targetAtlet : (p.targetAtlet ? [p.targetAtlet] : ['semua']);
+  if(!t.length || t.indexOf('semua') > -1) return 'Semua Atlet';
+  const nama = t.map(id => { const u = getUser(id); return u ? u.namaLengkap : null; }).filter(Boolean);
+  return nama.length ? nama.join(', ') : 'Atlet terpilih';
+}
+function programUntukAtlet(userId){
+  return getProgram().filter(p => {
+    const t = Array.isArray(p.targetAtlet) ? p.targetAtlet : (p.targetAtlet ? [p.targetAtlet] : ['semua']);
+    return t.indexOf('semua') > -1 || t.indexOf(userId) > -1;
+  }).sort((a, b) => (b.tanggal || '').localeCompare(a.tanggal || '') || (b.id || '').localeCompare(a.id || ''));
+}
+function jenisChip(jenis){
+  return '<span class="chip">' + esc(jenis || 'Lainnya') + '</span>';
+}
+function badgeStatus(st){
+  return '<span class="badge ' + esc(st.kelas) + '">' + esc(st.label) + '</span>';
+}
+
+/* ==================================================================
+   LOGBOOK — ADMIN / PELATIH (2 tab: program & monitoring)
+================================================================== */
+let adminLogTab = 'program';
+let programFilterTanggal = '';
+let editProgramId = null;
+let monSearch = '';
+let monSortKey = 'nama';
+let monSortDir = 1;
+let monChartUserId = '';
+let chartBebanInstance = null;
+
+function buangChartBeban(){
+  if(chartBebanInstance){ try{ chartBebanInstance.destroy(); }catch(e){} chartBebanInstance = null; }
+}
+
+function renderAdminLogbook(){
+  buangChartBeban();
+  const el = document.getElementById('view-admin-logbook');
+  if(!el) return;
+  el.innerHTML =
+    pageHead('Logbook Latihan', 'Susun program latihan dan pantau kelelahan atlet dari logbook harian mereka.') +
+    '<div class="seg-tabs" id="adminLogTabs">' +
+      '<button type="button" data-ltab="program"' + (adminLogTab === 'program' ? ' class="on"' : '') + '>📋 Program Latihan</button>' +
+      '<button type="button" data-ltab="monitoring"' + (adminLogTab === 'monitoring' ? ' class="on"' : '') + '>📉 Monitoring Kelelahan</button>' +
+    '</div>' +
+    '<div id="adminLogBody"></div>';
+
+  el.querySelectorAll('#adminLogTabs button').forEach(b => b.addEventListener('click', () => {
+    adminLogTab = b.dataset.ltab;
+    renderAdminLogbook();
+  }));
+
+  if(adminLogTab === 'monitoring') renderMonitoringTab();
+  else renderProgramTab();
+}
+
+function targetAtletHtml(terpilih){
+  const t = Array.isArray(terpilih) ? terpilih : [];
+  const semua = !t.length || t.indexOf('semua') > -1;
+  return '<label class="chk-item" style="max-width:230px"><input type="checkbox" id="pgSemua"' +
+      (semua ? ' checked' : '') + '> Semua Atlet</label>' +
+    '<div class="chk-grid' + (semua ? ' hidden' : '') + '" id="pgTargetGrid">' +
+    getUsers().map(u => '<label class="chk-item"><input type="checkbox" value="' + esc(u.id) + '"' +
+      (!semua && t.indexOf(u.id) > -1 ? ' checked' : '') + '> ' + esc(u.namaLengkap) + '</label>').join('') +
+    '</div>';
+}
+
+function renderProgramTab(){
+  const body = document.getElementById('adminLogBody');
+  if(!body) return;
+  const users = getUsers();
+  const edit = editProgramId ? getProgram().find(p => p.id === editProgramId) : null;
+
+  body.innerHTML =
+    (users.length ? '' : emptyState('👥', 'Belum ada atlet', 'Tambahkan atlet terlebih dahulu di menu Profil Siswa.')) +
+    '<div class="card"' + (users.length ? '' : ' hidden') + ' style="margin-bottom:14px">' +
+      '<div class="card-head"><div><h3>✏️ ' + (edit ? 'Ubah Program Latihan' : 'Form Program Latihan') + '</h3>' +
+      '<p>Isi detail sesi latihan, lalu tentukan target atletnya.</p></div></div>' +
+      '<div class="grid g2">' +
+        '<div class="field"><label for="pgTanggal">Tanggal <span class="req">*</span></label>' +
+          '<input type="date" id="pgTanggal" value="' + esc(edit ? edit.tanggal : hariIni()) + '"></div>' +
+        '<div class="field"><label for="pgJudul">Judul Sesi <span class="req">*</span></label>' +
+          '<input type="text" id="pgJudul" placeholder="mis. Latihan Fisik Pagi" value="' + esc(edit ? edit.judul : '') + '"></div>' +
+        '<div class="field"><label for="pgJenis">Jenis Latihan</label><select id="pgJenis">' +
+          JENIS_LATIHAN.map(j => '<option' + (edit && edit.jenis === j ? ' selected' : '') + '>' + esc(j) + '</option>').join('') +
+        '</select></div>' +
+        '<div class="field"><label for="pgDurasi">Durasi Rencana (menit)</label>' +
+          '<input type="number" id="pgDurasi" min="1" step="5" placeholder="mis. 90" value="' + esc(edit ? edit.durasiRencana : '') + '"></div>' +
+        '<div class="field"><label for="pgRpe">Target RPE (1-10)</label>' +
+          '<input type="number" id="pgRpe" min="1" max="10" step="1" placeholder="mis. 7" value="' + esc(edit ? edit.targetRPE : '') + '">' +
+          '<small class="hint">1-2 sangat ringan · 3-4 ringan · 5-6 sedang · 7-8 berat · 9-10 sangat berat</small></div>' +
+        '<div class="field"><label>Target Atlet</label>' + targetAtletHtml(edit ? edit.targetAtlet : ['semua']) + '</div>' +
+        '<div class="field full"><label for="pgDeskripsi">Deskripsi / Isi Program</label>' +
+          '<textarea id="pgDeskripsi" rows="3" placeholder="Uraian materi: pemanasan, inti, pendinginan...">' + esc(edit ? edit.deskripsi : '') + '</textarea></div>' +
+      '</div>' +
+      '<div class="toolbar">' +
+        '<button class="btn primary" id="pgSimpan">💾 ' + (edit ? 'Simpan Perubahan' : 'Simpan Program') + '</button>' +
+        (edit ? '<button class="btn ghost" id="pgBatal">Batal Edit</button>' : '') +
+        '<span class="muted small">"Semua Atlet" = program untuk seluruh atlet.</span>' +
+      '</div>' +
+    '</div>' +
+    '<div class="card">' +
+      '<div class="card-head"><div><h3>📋 Daftar Program Latihan</h3>' +
+        '<p>Filter berdasarkan tanggal untuk menemukan sesi lebih cepat.</p></div>' +
+        '<div class="toolbar">' +
+          '<input type="date" id="pgFilter" value="' + esc(programFilterTanggal) + '" style="max-width:170px">' +
+          '<button class="btn ghost sm" id="pgFilterReset">Semua Tanggal</button>' +
+        '</div></div>' +
+      '<div id="pgList"></div>' +
+    '</div>';
+
+  renderProgramList();
+
+  const semua = document.getElementById('pgSemua');
+  if(semua) semua.addEventListener('change', () => {
+    const grid = document.getElementById('pgTargetGrid');
+    if(!grid) return;
+    grid.classList.toggle('hidden', semua.checked);
+    if(semua.checked) grid.querySelectorAll('input').forEach(i => { i.checked = false; });
+  });
+  const simpan = document.getElementById('pgSimpan');
+  if(simpan) simpan.addEventListener('click', simpanProgram);
+  const batal = document.getElementById('pgBatal');
+  if(batal) batal.addEventListener('click', () => { editProgramId = null; renderProgramTab(); });
+  const filter = document.getElementById('pgFilter');
+  if(filter) filter.addEventListener('change', e => {
+    programFilterTanggal = e.target.value || '';
+    renderProgramList();
+  });
+  const reset = document.getElementById('pgFilterReset');
+  if(reset) reset.addEventListener('click', () => {
+    programFilterTanggal = '';
+    const f = document.getElementById('pgFilter');
+    if(f) f.value = '';
+    renderProgramList();
+  });
+}
+
+function renderProgramList(){
+  const box = document.getElementById('pgList');
+  if(!box) return;
+  let rows = getProgram().slice().sort((a, b) =>
+    (b.tanggal || '').localeCompare(a.tanggal || '') || (b.id || '').localeCompare(a.id || ''));
+  if(programFilterTanggal) rows = rows.filter(p => p.tanggal === programFilterTanggal);
+  if(!rows.length){
+    box.innerHTML = emptyState('📋', 'Belum ada program latihan',
+      programFilterTanggal ? 'Tidak ada program pada tanggal yang dipilih.' : 'Buat program pertama lewat form di atas.');
+    return;
+  }
+  box.innerHTML =
+    '<div class="tw"><table class="stack"><thead><tr>' +
+    '<th>Tanggal</th><th>Judul Sesi</th><th>Jenis</th><th>Durasi</th><th>Target RPE</th><th>Target Atlet</th><th>Aksi</th>' +
+    '</tr></thead><tbody>' +
+    rows.map(p => '<tr>' +
+      '<td data-label="Tanggal">📅 ' + esc(fmtDate(p.tanggal)) + '</td>' +
+      '<td data-label="Judul Sesi"><div class="stack-lines"><b>' + esc(p.judul || '(tanpa judul)') + '</b>' +
+        (p.deskripsi ? '<span>' + esc(p.deskripsi) + '</span>' : '') + '</div></td>' +
+      '<td data-label="Jenis">' + jenisChip(p.jenis) + '</td>' +
+      '<td data-label="Durasi">' + (p.durasiRencana ? esc(p.durasiRencana) + ' mnt' : '—') + '</td>' +
+      '<td data-label="Target RPE">' + (p.targetRPE ? esc(p.targetRPE) + ' (' + esc(rpeKet(p.targetRPE)) + ')' : '—') + '</td>' +
+      '<td data-label="Target Atlet">' + esc(labelTargetProgram(p)) + '</td>' +
+      '<td data-label="Aksi"><div class="acts">' +
+        '<button class="ibtn" data-pg="edit" data-id="' + esc(p.id) + '" title="Ubah program">✏️</button>' +
+        '<button class="ibtn danger" data-pg="hapus" data-id="' + esc(p.id) + '" title="Hapus program">🗑️</button>' +
+      '</div></td>' +
+    '</tr>').join('') +
+    '</tbody></table></div>';
+
+  box.querySelectorAll('[data-pg]').forEach(b => b.addEventListener('click', () => {
+    const p = getProgram().find(x => x.id === b.dataset.id);
+    if(!p) return;
+    if(b.dataset.pg === 'edit'){
+      editProgramId = p.id;
+      renderProgramTab();
+      const f = document.getElementById('pgJudul');
+      if(f) f.scrollIntoView({behavior:'smooth', block:'center'});
+    }else{
+      if(!confirm('Hapus program "' + (p.judul || 'tanpa judul') + '"?')) return;
+      setProgram(getProgram().filter(x => x.id !== p.id));
+      if(editProgramId === p.id) editProgramId = null;
+      toast('Program latihan dihapus.');
+      renderProgramTab();
+    }
+  }));
+}
+
+function simpanProgram(){
+  const tanggal = (document.getElementById('pgTanggal') || {}).value || '';
+  const judul = ((document.getElementById('pgJudul') || {}).value || '').trim();
+  const jenis = (document.getElementById('pgJenis') || {}).value || 'Lainnya';
+  const durasiRaw = (document.getElementById('pgDurasi') || {}).value || '';
+  const rpeRaw = (document.getElementById('pgRpe') || {}).value || '';
+  const deskripsi = ((document.getElementById('pgDeskripsi') || {}).value || '').trim();
+
+  if(!tanggal){ toast('Tanggal program wajib diisi.', 'err'); return; }
+  if(!judul){ toast('Judul sesi wajib diisi.', 'err'); return; }
+  const durasi = Number(durasiRaw);
+  if(durasiRaw !== '' && (isNaN(durasi) || durasi <= 0)){
+    toast('Durasi rencana harus angka positif (menit).', 'err'); return;
+  }
+  const rpe = Number(rpeRaw);
+  if(rpeRaw !== '' && (isNaN(rpe) || rpe < 1 || rpe > 10)){
+    toast('Target RPE harus antara 1 sampai 10.', 'err'); return;
+  }
+
+  let targetAtlet = ['semua'];
+  const semua = document.getElementById('pgSemua');
+  const grid = document.getElementById('pgTargetGrid');
+  if(semua && !semua.checked && grid){
+    const ids = [].slice.call(grid.querySelectorAll('input:checked')).map(i => i.value);
+    if(ids.length) targetAtlet = ids;
+  }
+
+  const all = getProgram();
+  const data = {
+    tanggal:tanggal, judul:judul, jenis:jenis,
+    durasiRencana:durasiRaw === '' ? '' : durasi,
+    targetRPE:rpeRaw === '' ? '' : rpe,
+    deskripsi:deskripsi, targetAtlet:targetAtlet
+  };
+
+  if(editProgramId){
+    const i = all.findIndex(p => p.id === editProgramId);
+    editProgramId = null;
+    if(i > -1){
+      all[i] = Object.assign({}, all[i], data);
+      setProgram(all);
+      toast('Perubahan program tersimpan. ✅');
+      renderProgramTab();
+      return;
+    }
+  }
+  all.push(Object.assign({id:uid('pg')}, data));
+  setProgram(all);
+  toast('Program latihan "' + judul + '" tersimpan. ✅');
+  renderProgramTab();
+}
+
+/* ---------- TAB MONITORING KELELAHAN ---------- */
+function renderMonitoringTab(){
+  const body = document.getElementById('adminLogBody');
+  if(!body) return;
+  const users = getUsers();
+  if(!users.length){
+    body.innerHTML = emptyState('📉', 'Belum ada atlet', 'Tambahkan atlet terlebih dahulu di menu Profil Siswa.');
+    return;
+  }
+
+  const rekap = users.map(u => {
+    const m = metrikBeban(u.id);
+    const h = hariSejak(logbookTerakhir(u.id));
+    return {u:u, m:m, telat:(h === null || h >= KONFIG_BEBAN.hariTanpaIsi)};
+  });
+  const nWaspada = rekap.filter(x => x.m.status.kode === 'waspada').length;
+  const nRisiko = rekap.filter(x => x.m.status.kode === 'risiko').length;
+  const nTelat = rekap.filter(x => x.telat).length;
+
+  if(!monChartUserId || !users.some(u => u.id === monChartUserId)) monChartUserId = users[0].id;
+
+  body.innerHTML =
+    '<div class="grid g4" style="margin-bottom:14px">' +
+      statCard('Total Atlet', users.length, 'terpantau di logbook') +
+      statCard('Waspada', nWaspada, 'mulai lelah') +
+      statCard('Berisiko', nRisiko, 'perlu istirahat') +
+      statCard('Belum Isi Logbook', nTelat, '≥ ' + KONFIG_BEBAN.hariTanpaIsi + ' hari') +
+    '</div>' +
+
+    '<div class="card" style="margin-bottom:14px">' +
+      '<div class="card-head"><div><h3>📋 Rekap Beban Semua Atlet</h3>' +
+        '<p>Beban 7 hari terakhir, rata-rata RPE, dan ACWR (beban akut / rata-rata beban kronis).</p></div>' +
+        '<div class="toolbar">' +
+          '<div class="searchbar"><input type="text" id="monSearch" placeholder="Cari nama / kartu atlet..." value="' + esc(monSearch) + '"></div>' +
+          '<select id="monSort">' +
+            '<option value="nama">Urut: Nama</option>' +
+            '<option value="beban">Urut: Beban Tertinggi</option>' +
+            '<option value="rpe">Urut: RPE Tertinggi</option>' +
+            '<option value="acwr">Urut: ACWR Tertinggi</option>' +
+            '<option value="status">Urut: Status</option>' +
+          '</select>' +
+          '<button class="btn ghost sm" id="monSortDir">' + (monSortDir === 1 ? 'Urut Naik ▲' : 'Urut Turun ▼') + '</button>' +
+        '</div></div>' +
+      '<div id="monTableWrap"></div>' +
+      '<div class="lb-legend" style="margin-top:12px">' +
+        '<span><span class="badge st-aman">Hijau</span> Aman / Segar</span>' +
+        '<span><span class="badge st-waspada">Kuning</span> Waspada / Mulai Lelah</span>' +
+        '<span><span class="badge st-risiko">Merah</span> Berisiko / Perlu Istirahat</span>' +
+        '<span class="muted">Ambang ACWR: &lt;' + fmtAngka(KONFIG_BEBAN.acwrRendah) + ' beban rendah · ' +
+        fmtAngka(KONFIG_BEBAN.acwrRendah) + '-' + fmtAngka(KONFIG_BEBAN.acwrOptimalMaks) + ' optimal · ' +
+        fmtAngka(KONFIG_BEBAN.acwrOptimalMaks) + '-' + fmtAngka(KONFIG_BEBAN.acwrWaspadaMaks) + ' waspada · &gt;' +
+        fmtAngka(KONFIG_BEBAN.acwrWaspadaMaks) + ' berisiko tinggi</span>' +
+      '</div>' +
+    '</div>' +
+
+    '<div class="card" style="margin-bottom:14px">' +
+      '<div class="card-head"><div><h3>📈 Tren Beban Latihan Mingguan</h3>' +
+        '<p>Session Load per minggu (durasi × RPE) untuk atlet terpilih.</p></div>' +
+        '<div class="toolbar"><select id="monChartUser" style="min-width:210px">' +
+          users.map(u => '<option value="' + esc(u.id) + '"' + (u.id === monChartUserId ? ' selected' : '') + '>' + esc(u.namaLengkap) + '</option>').join('') +
+        '</select></div></div>' +
+      '<div class="chart-box"><canvas id="chartBeban"></canvas></div>' +
+      '<div id="chartBebanPesan"></div>' +
+    '</div>' +
+
+    '<div class="grid g2">' +
+      '<div class="card"><div class="card-head"><div><h3>💬 Masukan dari Atlet</h3>' +
+        '<p>Catatan atlet untuk pelatih, urut dari yang terbaru.</p></div></div><div id="monCatatan"></div></div>' +
+      '<div class="card"><div class="card-head"><div><h3>⚠️ Belum Isi Logbook</h3>' +
+        '<p>Atlet yang tidak mengisi logbook ≥ ' + KONFIG_BEBAN.hariTanpaIsi + ' hari terakhir.</p></div></div><div id="monAktif"></div></div>' +
+    '</div>';
+
+  renderMonTable();
+  renderMonCatatan();
+  renderMonTelat();
+
+  const cari = document.getElementById('monSearch');
+  if(cari) cari.addEventListener('input', e => { monSearch = e.target.value; renderMonTable(); });
+  const sort = document.getElementById('monSort');
+  if(sort){
+    sort.value = monSortKey;
+    sort.addEventListener('change', e => { monSortKey = e.target.value; renderMonTable(); });
+  }
+  const dir = document.getElementById('monSortDir');
+  if(dir) dir.addEventListener('click', () => {
+    monSortDir = -monSortDir;
+    dir.textContent = monSortDir === 1 ? 'Urut Naik ▲' : 'Urut Turun ▼';
+    renderMonTable();
+  });
+  const pilih = document.getElementById('monChartUser');
+  if(pilih) pilih.addEventListener('change', e => { monChartUserId = e.target.value; pasangChartBeban(); });
+
+  pasangChartBeban();
+}
+
+function renderMonTable(){
+  const wrap = document.getElementById('monTableWrap');
+  if(!wrap) return;
+  let rows = getUsers().map(u => {
+    const m = metrikBeban(u.id);
+    const h = hariSejak(logbookTerakhir(u.id));
+    return {u:u, m:m, telat:(h === null || h >= KONFIG_BEBAN.hariTanpaIsi)};
+  });
+  const q = (monSearch || '').toLowerCase().trim();
+  if(q){
+    rows = rows.filter(x =>
+      (x.u.namaLengkap || '').toLowerCase().indexOf(q) > -1 ||
+      (x.u.kartuAtlet || '').toLowerCase().indexOf(q) > -1);
+  }
+  const rank = {risiko:3, waspada:2, kosong:1, aman:0};
+  rows.sort((a, b) => {
+    let r = 0;
+    if(monSortKey === 'beban') r = (a.m.akut || 0) - (b.m.akut || 0);
+    else if(monSortKey === 'rpe') r = ((a.m.rataRpe == null ? -1 : a.m.rataRpe) - (b.m.rataRpe == null ? -1 : b.m.rataRpe));
+    else if(monSortKey === 'acwr') r = ((a.m.acwr == null ? -1 : a.m.acwr) - (b.m.acwr == null ? -1 : b.m.acwr));
+    else if(monSortKey === 'status') r = (rank[a.m.status.kode] || 0) - (rank[b.m.status.kode] || 0);
+    else r = (a.u.namaLengkap || '').localeCompare(b.u.namaLengkap || '');
+    return r * monSortDir;
+  });
+
+  if(!rows.length){
+    wrap.innerHTML = emptyState('🔍', 'Tidak ada atlet yang cocok', 'Coba kata kunci pencarian lain.');
+    return;
+  }
+
+  const panah = k => monSortKey === k ? (monSortDir === 1 ? ' ▲' : ' ▼') : '';
+  wrap.innerHTML =
+    '<div class="tw"><table class="stack"><thead><tr>' +
+    '<th data-sort="nama">Nama' + panah('nama') + '</th>' +
+    '<th data-sort="beban">Beban Minggu Ini' + panah('beban') + '</th>' +
+    '<th data-sort="rpe">Rata-rata RPE' + panah('rpe') + '</th>' +
+    '<th data-sort="acwr">ACWR' + panah('acwr') + '</th>' +
+    '<th data-sort="status">Status' + panah('status') + '</th>' +
+    '</tr></thead><tbody>' +
+    rows.map(x => {
+      const st = x.m.status;
+      return '<tr class="' + (st.kode === 'risiko' ? 'risiko-row' : (st.kode === 'waspada' ? 'waspada-row' : '')) + '">' +
+        '<td data-label="Nama"><div class="stack-lines"><b>' + esc(x.u.namaLengkap) + '</b>' +
+          '<span>' + esc(x.u.kartuAtlet || '—') + (x.telat ? ' · ⚠️ belum isi logbook' : '') + '</span></div></td>' +
+        '<td data-label="Beban Minggu Ini"><b>' + fmtAngka(x.m.akut) + '</b></td>' +
+        '<td data-label="Rata-rata RPE">' + (x.m.rataRpe == null ? '—' : fmtAngka(x.m.rataRpe)) + '</td>' +
+        '<td data-label="ACWR">' + (x.m.acwr == null ? '—' : fmtAngka(x.m.acwr)) + '</td>' +
+        '<td data-label="Status">' + badgeStatus(st) + '</td>' +
+      '</tr>';
+    }).join('') +
+    '</tbody></table></div>';
+
+  wrap.querySelectorAll('th[data-sort]').forEach(th => th.addEventListener('click', () => {
+    const k = th.dataset.sort;
+    if(monSortKey === k) monSortDir = -monSortDir;
+    else { monSortKey = k; monSortDir = 1; }
+    const sel = document.getElementById('monSort');
+    if(sel) sel.value = monSortKey;
+    renderMonTable();
+  }));
+}
+
+function renderMonCatatan(){
+  const box = document.getElementById('monCatatan');
+  if(!box) return;
+  const rows = getLogbook()
+    .filter(l => l.catatanUntukPelatih && String(l.catatanUntukPelatih).trim())
+    .sort((a, b) => (b.tanggal || '').localeCompare(a.tanggal || '') || (b.id || '').localeCompare(a.id || ''));
+  if(!rows.length){
+    box.innerHTML = emptyState('💬', 'Belum ada masukan', 'Catatan dari atlet akan tampil di sini setelah mereka mengisi logbook.');
+    return;
+  }
+  box.innerHTML = '<div class="stack-gap">' + rows.map(l => {
+    const u = getUser(l.userId);
+    return '<div class="catatan-item">' +
+      '<div class="ci-head"><div class="ci-who">👤 ' + esc(u ? u.namaLengkap : 'Atlet') + '</div>' +
+        '<span class="chip">📅 ' + esc(fmtDate(l.tanggal)) + '</span></div>' +
+      '<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px">' +
+        jenisChip(l.jenisLatihan) +
+        '<span class="chip">⏱️ ' + esc(l.durasi) + ' menit</span>' +
+        '<span class="chip">RPE ' + esc(l.rpe) + '</span>' +
+        '<span class="chip">Beban ' + esc(l.bebanSesi != null ? l.bebanSesi : (Number(l.durasi) * Number(l.rpe))) + '</span>' +
+      '</div>' +
+      '<div class="ci-txt">“' + esc(l.catatanUntukPelatih) + '”</div>' +
+    '</div>';
+  }).join('') + '</div>';
+}
+
+function renderMonTelat(){
+  const box = document.getElementById('monAktif');
+  if(!box) return;
+  const rows = getUsers().map(u => {
+    const last = logbookTerakhir(u.id);
+    return {u:u, last:last, h:hariSejak(last)};
+  }).filter(x => x.h === null || x.h >= KONFIG_BEBAN.hariTanpaIsi)
+    .sort((a, b) => ((b.h === null ? 9999 : b.h) - (a.h === null ? 9999 : a.h)));
+  if(!rows.length){
+    box.innerHTML = emptyState('✅', 'Semua atlet aktif mengisi logbook',
+      'Tidak ada atlet yang bolong mengisi logbook dalam ' + KONFIG_BEBAN.hariTanpaIsi + ' hari terakhir.');
+    return;
+  }
+  box.innerHTML = '<div class="stack-gap">' + rows.map(x =>
+    '<div class="catatan-item">' +
+      '<div class="ci-head"><div class="ci-who">👤 ' + esc(x.u.namaLengkap) + '</div>' +
+      '<span class="badge st-waspada">' + (x.h === null ? 'Belum pernah isi' : esc(x.h) + ' hari lalu') + '</span></div>' +
+      '<div class="ci-txt muted small">Terakhir mengisi logbook: ' +
+        (x.last ? esc(fmtDate(x.last)) : 'belum pernah') + ' · ' + esc(x.u.kartuAtlet || '') + '</div>' +
+    '</div>').join('') + '</div>';
+}
+
+function pasangChartBeban(){
+  const cv = document.getElementById('chartBeban');
+  const pesan = document.getElementById('chartBebanPesan');
+  if(!cv) return;
+  buangChartBeban();
+  if(typeof Chart === 'undefined'){
+    cv.style.display = 'none';
+    if(pesan) pesan.innerHTML = '<div class="empty" style="margin-top:12px"><span class="ico">📈</span>' +
+      '<b>Grafik belum dapat dimuat</b>Pustaka Chart.js (CDN) belum termuat. Data rekap tetap tersimpan.</div>';
+    return;
+  }
+  if(pesan) pesan.innerHTML = '';
+  cv.style.display = '';
+
+  const ref = hariIni();
+  const labels = [], data = [];
+  for(let w = KONFIG_BEBAN.mingguTren - 1; w >= 0; w--){
+    const akhir = tanggalOffset(ref, -(w * KONFIG_BEBAN.panjangMinggu));
+    const mulai = tanggalOffset(akhir, -(KONFIG_BEBAN.panjangMinggu - 1));
+    const total = deretHarian(monChartUserId, KONFIG_BEBAN.panjangMinggu, akhir).reduce((a, d) => a + d.beban, 0);
+    labels.push(fmtTanggalPendek(mulai));
+    data.push(Math.round(total));
+  }
+
+  chartBebanInstance = new Chart(cv.getContext('2d'), {
+    type: 'bar',
+    data: {
+      labels: labels,
+      datasets: [{
+        label: 'Beban latihan',
+        data: data,
+        backgroundColor: 'rgba(34,163,82,.72)',
+        borderColor: '#166534',
+        borderWidth: 1.5,
+        borderRadius: 10,
+        maxBarThickness: 48
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {display: false},
+        tooltip: {callbacks: {label: function(c){ return 'Beban: ' + c.parsed.y; }}}
+      },
+      scales: {
+        y: {beginAtZero: true, title: {display: true, text: 'Beban (durasi × RPE)'}},
+        x: {grid: {display: false}, title: {display: true, text: 'Mulai minggu'}}
+      }
+    }
+  });
+}
+
+/* ==================================================================
+   LOGBOOK — ATLET (input harian, riwayat pribadi, program pelatih)
+================================================================== */
+let editLogId = null;
+
+function previewBeban(){
+  const dRaw = (document.getElementById('lbDurasi') || {}).value || '';
+  const rRaw = (document.getElementById('lbRpeNilai') || {}).value || '';
+  const d = Number(dRaw), r = Number(rRaw);
+  const out = document.getElementById('lbPreview');
+  if(!out) return;
+  const valid = dRaw !== '' && !isNaN(d) && d > 0 && rRaw !== '' && !isNaN(r) && r >= 1 && r <= 10;
+  out.innerHTML = valid
+    ? '⚡ Beban sesi: ' + d + ' menit × RPE ' + r + ' = <b>' + Math.round(d * r) + '</b>'
+    : '⚡ Beban sesi dihitung otomatis: durasi (menit) × RPE.' +
+      ' <span class="muted small">(isi durasi positif &amp; RPE 1-10 untuk melihat angkanya)</span>';
+}
+
+function renderUserLogbook(){
+  const u = getUser(session.userId);
+  if(!u){ go('user-profil'); return; }
+  const el = document.getElementById('view-user-logbook');
+  if(!el) return;
+
+  const m = metrikBeban(u.id);
+  const milik = entriLogbookUser(u.id).slice().sort((a, b) =>
+    (b.tanggal || '').localeCompare(a.tanggal || '') || (b.id || '').localeCompare(a.id || ''));
+  const program = programUntukAtlet(u.id);
+  const edit = editLogId ? getLogbook().find(l => l.id === editLogId && l.userId === u.id) : null;
+  const rpeAwal = edit ? edit.rpe : 5;
+  const acwrPct = m.acwr == null ? 0 : Math.max(0, Math.min(100, Math.round(m.acwr / KONFIG_BEBAN.acwrWaspadaMaks * 100)));
+  const warnaDonut = m.status.kode === 'risiko' ? '#f87171' : (m.status.kode === 'waspada' ? '#facc15' : '#4ade80');
+
+  el.innerHTML =
+    pageHead('Logbook Latihan', 'Catat durasi & RPE latihanmu setiap hari. Data logbookmu hanya terlihat olehmu dan pelatih.') +
+    hero(
+      '<div><div class="h-lbl">Ringkasan Bebanmu (7 hari)</div>' +
+      '<div class="h-big">' + fmtAngka(m.akut) + '</div>' +
+      '<div class="h-sub">Beban sesi = durasi (menit) × RPE · ' + esc(m.status.ket) + '</div>' +
+      '<div class="h-meta">' +
+        '<span class="h-chip">ACWR ' + (m.acwr == null ? '—' : fmtAngka(m.acwr)) + '</span>' +
+        '<span class="h-chip">' + esc(m.status.label) + '</span>' +
+        '<span class="h-chip">Monotony ' + fmtAngka(m.monotony) + '</span>' +
+        '<span class="h-chip">Strain ' + fmtAngka(m.strain) + '</span>' +
+        '<span class="h-chip">📒 ' + milik.length + ' entri</span>' +
+      '</div></div>' +
+      donut(acwrPct, {color:warnaDonut, track:'rgba(255,255,255,.22)',
+        text:(m.acwr == null ? '—' : fmtAngka(m.acwr)), label:'ACWR'})
+    ) +
+
+    '<div class="card">' +
+      '<div class="card-head"><div><h3>✏️ ' + (edit ? 'Ubah Entri Logbook' : 'Input Logbook Harian') + '</h3>' +
+      '<p>Isi setiap selesai latihan agar pelatih bisa memantau beban & kelelahanmu.</p></div></div>' +
+      '<div class="grid g2">' +
+        '<div class="field"><label for="lbTanggal">Tanggal <span class="req">*</span></label>' +
+          '<input type="date" id="lbTanggal" value="' + esc(edit ? edit.tanggal : hariIni()) + '"></div>' +
+        '<div class="field"><label for="lbJenis">Jenis Latihan <span class="req">*</span></label>' +
+          '<select id="lbJenis">' + JENIS_LATIHAN.map(j =>
+            '<option' + (edit && edit.jenisLatihan === j ? ' selected' : '') + '>' + esc(j) + '</option>').join('') +
+          '</select></div>' +
+        '<div class="field"><label for="lbDurasi">Durasi Latihan (menit) <span class="req">*</span></label>' +
+          '<input type="number" id="lbDurasi" min="1" step="1" placeholder="mis. 90" value="' + esc(edit ? edit.durasi : '') + '">' +
+          '<small class="hint">Harus angka positif, dalam menit.</small></div>' +
+        '<div class="field"><label for="lbRpeNilai">RPE (Skala 1-10) <span class="req">*</span></label>' +
+          '<input type="number" id="lbRpeNilai" min="1" max="10" step="1" value="' + esc(rpeAwal) + '" style="max-width:110px">' +
+          '<small class="hint">Geser slider atau ketuk pilihan di bawah.</small></div>' +
+        '<div class="field full"><label>Skala RPE</label>' +
+          '<div class="lb-rpe-wrap">' +
+            '<input type="range" id="lbRpe" min="1" max="10" step="1" value="' + esc(rpeAwal) + '" class="lb-range">' +
+            '<div class="rpe-scale">' + RPE_SKALA.map(s =>
+              '<button type="button" class="rpe-pill' + (rpeKelompok(rpeAwal) === s.nilai ? ' on' : '') +
+              '" data-rpe="' + s.nilai + '">' + esc(s.pill) + '</button>').join('') + '</div>' +
+            '<div class="rpe-out" id="lbRpeOut"></div>' +
+          '</div></div>' +
+        '<div class="field full"><label for="lbCatatan">Masukan / Catatan untuk Pelatih <span class="opt">(opsional)</span></label>' +
+          '<textarea id="lbCatatan" rows="3" placeholder="mis. lutut terasa pegal setelah sparring...">' +
+          esc(edit ? edit.catatanUntukPelatih : '') + '</textarea></div>' +
+      '</div>' +
+      '<div class="lb-live" id="lbPreview"></div>' +
+      '<div class="toolbar" style="margin-top:14px">' +
+        '<button class="btn primary" id="lbSimpan">💾 ' + (edit ? 'Simpan Perubahan' : 'Simpan Logbook') + '</button>' +
+        (edit ? '<button class="btn ghost" id="lbBatal">Batal</button>' : '') +
+      '</div>' +
+    '</div>' +
+
+    '<div class="grid g4" style="margin-top:14px">' +
+      statCard('Total Entri', m.totalEntri, 'catatan logbook') +
+      statCard('Beban Minggu Ini', fmtAngka(m.akut), 'durasi × RPE') +
+      statCard('Rata-rata RPE', m.rataRpe == null ? '—' : fmtAngka(m.rataRpe), '7 hari terakhir') +
+      statCard('ACWR', m.acwr == null ? '—' : fmtAngka(m.acwr), m.status.label) +
+    '</div>' +
+
+    '<div class="card" style="margin-top:14px">' +
+      '<div class="card-head"><div><h3>📚 Riwayat Logbook Saya</h3>' +
+        '<p>Hanya entri milikmu. Ubah atau hapus bila ada kesalahan input.</p></div></div>' +
+      (milik.length
+        ? '<div class="tw"><table class="stack"><thead><tr>' +
+          '<th>Tanggal</th><th>Jenis</th><th>Durasi</th><th>RPE</th><th>Beban Sesi</th><th>Catatan</th><th>Aksi</th>' +
+          '</tr></thead><tbody>' +
+          milik.map(l => '<tr>' +
+            '<td data-label="Tanggal">📅 ' + esc(fmtDate(l.tanggal)) + '</td>' +
+            '<td data-label="Jenis">' + jenisChip(l.jenisLatihan) + '</td>' +
+            '<td data-label="Durasi">' + esc(l.durasi) + ' mnt</td>' +
+            '<td data-label="RPE">' + esc(l.rpe) + ' <span class="muted small">(' + esc(rpeKet(l.rpe)) + ')</span></td>' +
+            '<td data-label="Beban Sesi"><b>' + esc(l.bebanSesi != null ? l.bebanSesi : (Number(l.durasi) * Number(l.rpe))) + '</b></td>' +
+            '<td data-label="Catatan">' + (l.catatanUntukPelatih ? esc(l.catatanUntukPelatih) : '<span class="muted">—</span>') + '</td>' +
+            '<td data-label="Aksi"><div class="acts">' +
+              '<button class="ibtn" data-lb="edit" data-id="' + esc(l.id) + '" title="Ubah entri">✏️</button>' +
+              '<button class="ibtn danger" data-lb="hapus" data-id="' + esc(l.id) + '" title="Hapus entri">🗑️</button>' +
+            '</div></td>' +
+          '</tr>').join('') +
+          '</tbody></table></div>'
+        : emptyState('📒', 'Belum ada logbook', 'Isi form di atas setiap selesai latihan untuk memulai.')) +
+    '</div>' +
+
+    '<div class="card" style="margin-top:14px">' +
+      '<div class="card-head"><div><h3>📋 Program Latihan dari Pelatih</h3>' +
+        '<p>Program yang ditujukan untukmu — hanya tampilan, diatur oleh pelatih.</p></div></div>' +
+      (program.length
+        ? '<div class="stack-gap">' + program.map(p =>
+          '<div class="prog-item">' +
+            '<div class="pj">' + esc(p.judul || '(tanpa judul)') + '</div>' +
+            '<div class="pm">' +
+              '<span class="chip">📅 ' + esc(fmtDate(p.tanggal)) + '</span>' +
+              jenisChip(p.jenis) +
+              '<span class="chip">⏱️ ' + (p.durasiRencana ? esc(p.durasiRencana) + ' menit' : 'bebas') + '</span>' +
+              '<span class="chip">Target RPE ' + (p.targetRPE ? esc(p.targetRPE) + ' (' + esc(rpeKet(p.targetRPE)) + ')' : '—') + '</span>' +
+              '<span class="chip">' + esc(labelTargetProgram(p)) + '</span>' +
+            '</div>' +
+            (p.deskripsi ? '<div class="pd">' + esc(p.deskripsi) + '</div>' : '') +
+          '</div>').join('') + '</div>'
+        : emptyState('📋', 'Belum ada program untukmu', 'Program latihan dari pelatih akan tampil di sini.')) +
+    '</div>';
+
+  /* --- interaksi form logbook --- */
+  const rpeEl = document.getElementById('lbRpe');
+  const rpeNum = document.getElementById('lbRpeNilai');
+  const syncRpe = (dari) => {
+    const raw = dari === 'slider' ? rpeEl.value : rpeNum.value;
+    const n = Number(raw);
+    const valid = raw !== '' && !isNaN(n) && n >= 1 && n <= 10;
+    if(dari === 'slider'){ rpeNum.value = rpeEl.value; }
+    else if(valid){ rpeEl.value = n; }
+    const tampil = valid ? n : (Number(rpeEl.value) || 5);
+    const out = document.getElementById('lbRpeOut');
+    if(out) out.innerHTML = valid
+      ? 'RPE saat ini: <span class="big-rpe">' + n + '</span> — ' + esc(rpeKet(n))
+      : '<span style="color:var(--danger)">RPE harus angka 1 sampai 10.</span>';
+    el.querySelectorAll('.rpe-pill').forEach(b => b.classList.toggle('on', Number(b.dataset.rpe) === rpeKelompok(tampil)));
+    previewBeban();
+  };
+  if(rpeEl) rpeEl.addEventListener('input', () => syncRpe('slider'));
+  if(rpeNum) rpeNum.addEventListener('input', () => syncRpe('angka'));
+  el.querySelectorAll('.rpe-pill').forEach(b => b.addEventListener('click', () => {
+    if(rpeNum) rpeNum.value = b.dataset.rpe;
+    syncRpe('angka');
+  }));
+  const durasiEl = document.getElementById('lbDurasi');
+  if(durasiEl) durasiEl.addEventListener('input', previewBeban);
+  syncRpe('slider');
+
+  const simpan = document.getElementById('lbSimpan');
+  if(simpan) simpan.addEventListener('click', simpanLogbook);
+  const batal = document.getElementById('lbBatal');
+  if(batal) batal.addEventListener('click', () => { editLogId = null; renderUserLogbook(); });
+
+  el.querySelectorAll('[data-lb]').forEach(b => b.addEventListener('click', () => {
+    const l = getLogbook().find(x => x.id === b.dataset.id && x.userId === session.userId);
+    if(!l){ toast('Entri tidak ditemukan.', 'err'); return; }
+    if(b.dataset.lb === 'edit'){
+      editLogId = l.id;
+      renderUserLogbook();
+      const f = document.getElementById('lbTanggal');
+      if(f) f.scrollIntoView({behavior:'smooth', block:'center'});
+    }else{
+      if(!confirm('Hapus logbook tanggal ' + fmtDate(l.tanggal) + '?')) return;
+      setLogbook(getLogbook().filter(x => x.id !== l.id));
+      if(editLogId === l.id) editLogId = null;
+      toast('Entri logbook dihapus.');
+      renderUserLogbook();
+    }
+  }));
+}
+
+function simpanLogbook(){
+  const tanggal = (document.getElementById('lbTanggal') || {}).value || '';
+  const jenis = (document.getElementById('lbJenis') || {}).value || '';
+  const durasiRaw = (document.getElementById('lbDurasi') || {}).value || '';
+  const rpeRaw = (document.getElementById('lbRpeNilai') || {}).value || '';
+  const catatan = ((document.getElementById('lbCatatan') || {}).value || '').trim();
+
+  if(!tanggal){ toast('Tanggal logbook wajib diisi.', 'err'); return; }
+  if(!jenis){ toast('Jenis latihan wajib dipilih.', 'err'); return; }
+  const durasi = Number(durasiRaw);
+  if(!durasiRaw || isNaN(durasi) || durasi <= 0){
+    toast('Durasi latihan wajib diisi dengan angka positif (menit).', 'err'); return;
+  }
+  const rpe = Number(rpeRaw);
+  if(!rpeRaw || isNaN(rpe) || rpe < 1 || rpe > 10){
+    toast('RPE wajib diisi dengan angka 1 sampai 10.', 'err'); return;
+  }
+
+  const bebanSesi = Math.round(durasi * rpe);
+  const data = {
+    tanggal:tanggal, jenisLatihan:jenis, durasi:durasi, rpe:rpe,
+    bebanSesi:bebanSesi, catatanUntukPelatih:catatan
+  };
+
+  const all = getLogbook();
+  if(editLogId){
+    const i = all.findIndex(l => l.id === editLogId && l.userId === session.userId);
+    editLogId = null;
+    if(i > -1){
+      all[i] = Object.assign({}, all[i], data);
+      setLogbook(all);
+      toast('Perubahan logbook tersimpan. ✅');
+      renderUserLogbook();
+      return;
+    }
+  }
+  all.push(Object.assign({id:uid('lb'), userId:session.userId}, data));
+  setLogbook(all);
+  toast('Logbook ' + fmtDate(tanggal) + ' tersimpan (beban sesi ' + bebanSesi + '). ✅');
+  renderUserLogbook();
 }
 
 /* ==================================================================
